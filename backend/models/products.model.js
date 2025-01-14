@@ -48,6 +48,10 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Kategori',
         required: true
+    },
+    image: {
+        type: String,
+        required: true,
     }
 }, { timestamps: true }); 
 
