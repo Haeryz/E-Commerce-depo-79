@@ -1,15 +1,19 @@
 import { useState } from 'react'
-import { Button, HStack } from '@chakra-ui/react'
+import { Box, Button, HStack } from '@chakra-ui/react'
+import Navbar from './components/main/Navbar'
+import { Route, Routes } from 'react-router-dom'
+import Home from './pages/Home'
+import Footer from './components/main/Footer'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <HStack>
-      <Button>
-        mewing
-      </Button>
-    </HStack>
+  <Box>
+    <Navbar/>
+    <Routes>
+      <Route path="/" element={<Home/>}/>
+    </Routes>
+    <Footer/>
+  </Box>
   )
 }
 
