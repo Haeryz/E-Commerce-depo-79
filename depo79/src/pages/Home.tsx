@@ -1,6 +1,7 @@
-import { Box, Center, Image, Text, VStack } from "@chakra-ui/react";
+import { Box, Image, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import Banner from "../assets/Intersect.png";
+import BarangBaru from "../components/home/BarangBaru";
 
 const Home: React.FC = () => {
 
@@ -24,6 +25,10 @@ const Home: React.FC = () => {
         <Text color={"gray.500"}>
           Sekarang Juga
         </Text>
+      </Box>
+
+      <Box justifyItems={"center"} mt={10}>
+        <BarangBaru />
       </Box>
     </VStack>
   );
