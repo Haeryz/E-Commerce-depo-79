@@ -5,7 +5,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Field } from "../components/ui/field";
 import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 import { useColorModeValue } from "../components/ui/color-mode";
 import Turnstile, { useTurnstile } from "react-turnstile";
 
@@ -41,7 +41,8 @@ const Login: React.FC = () => {
 
     return (
         <Box
-            mt={20}
+            mt={185}
+            mb={260}
             w="md"
             mx="auto"
             p={6}
@@ -79,6 +80,18 @@ const Login: React.FC = () => {
                             backgroundColor={inputBgColor}
                         />
                     </Field>
+
+                    <Box display="flex" justifyContent="center" width="full">
+                        <Text>
+                            Belum memiliki akun ? Registrasi{" "}
+                            <Link to="/register">
+                                <Text as="span" color="blue.500" cursor="pointer">
+                                    disini
+                                </Text>
+                            </Link>
+                        </Text>
+                    </Box>
+                    
                     <Box display="flex" justifyContent="center" width="100%">
                         <Turnstile
                             sitekey="0x4AAAAAAA5XlhkyPKe_seiW" // Replace with your Turnstile site key
