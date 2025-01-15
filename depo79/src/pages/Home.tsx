@@ -1,37 +1,31 @@
-import { Box, Button, Text, Stack } from "@chakra-ui/react";
-import React, { useEffect } from "react";
-import { useAuthStore } from "../store/auth";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Box, Center, Image, Text, VStack } from "@chakra-ui/react";
+import React from "react";
+import Banner from "../assets/Intersect.png";
 
 const Home: React.FC = () => {
-  const { user, logout, isAuthenticated } = useAuthStore((state) => state);
-  const navigate = useNavigate();
 
   return (
-    <Box mt={20} maxW="sm" mx="auto" p={4} borderWidth={1} borderRadius="md">
-      {isAuthenticated ? (
-        // Tampilan untuk user yang sudah login
-        <>
-          <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
-            Welcome, {user?.name}
-          </Text>
-          <Stack align="center">
-            <Text>Email: {user?.email}</Text>
-            <Button onClick={logout} colorScheme="red">
-              Logout
-            </Button>
-          </Stack>
-        </>
-      ) : (
-        // Tampilan untuk user yang belum login
-        <Stack align="center">
-          <Text>Welcome to Our Website</Text>
-          <Button onClick={() => navigate("/login")} colorScheme="blue">
-            Login
-          </Button>
-        </Stack>
-      )}
-    </Box>
+    <VStack mt={7}>
+      <Box>
+        <Image 
+        src={Banner}
+        />
+      </Box>
+
+      <Box justifyItems={"center"}>
+        <Text fontWeight={"bold"} fontSize={60} mt={10}>
+          BAHAN BARU
+        </Text>
+
+        <Text color={"gray.500"}>
+          Bahan Bangunan Terbaru. Dapatkan Untuk Rumahmu
+        </Text>
+
+        <Text color={"gray.500"}>
+          Sekarang Juga
+        </Text>
+      </Box>
+    </VStack>
   );
 };
 
