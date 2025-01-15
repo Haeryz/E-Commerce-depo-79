@@ -6,6 +6,7 @@ import Kategoriroutes from "./routes/kategori.route.js";
 import Productroutes from "./routes/product.route.js";
 import authroutes from "./routes/auth.route.js";
 import protectedRoutes from "./routes/protected.route.js";
+import reviewRoutes from "./routes/review.route.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use("/api/kategori", Kategoriroutes);
 app.use("/api/product", Productroutes);
 app.use("/api/auth", authroutes);
 app.use("/api/protected", protectedRoutes);
+app.use("/api/review", reviewRoutes);
 
 app.get("/depo79DB", (req, res) => {    
     res.send("Hello World!");
