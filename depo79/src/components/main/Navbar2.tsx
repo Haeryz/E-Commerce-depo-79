@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input } from '@chakra-ui/react';
+import React from 'react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 import { Avatar } from '../ui/avatar';
 import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -22,7 +22,15 @@ function Navbar2() {
   return (
     <HStack wrap="wrap" gap="7" bg={colorMode === 'light' ? 'white' : 'gray.800'} p={4}>
       <HStack>
-        <Text>DEPO 79</Text>
+        <Link to="/">
+        <Image
+          src="https://bit.ly/naruto-sage"
+          boxSize="45px"
+    borderRadius="full"
+    fit="cover"
+    alt="Naruto Uzumaki"
+  />
+        </Link>
       </HStack>
       <Button
         textStyle="xs"
@@ -70,22 +78,26 @@ function Navbar2() {
         >
           <MdOutlineDarkMode />
         </IconButton>
-        <IconButton
-          aria-label="Chat"
-          variant="outline"
-          size="lg"
-          colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-        >
-          <MdChat />
-        </IconButton>
-        <IconButton
-          aria-label="Shopping Cart"
-          variant="outline"
-          size="lg"
-          colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-        >
-          <MdOutlineShoppingCart />
-        </IconButton>
+        {isAuthenticated && (
+          <>
+            <IconButton
+              aria-label="Chat"
+              variant="outline"
+              size="lg"
+              colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
+            >
+              <MdChat />
+            </IconButton>
+            <IconButton
+              aria-label="Shopping Cart"
+              variant="outline"
+              size="lg"
+              colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
+            >
+              <MdOutlineShoppingCart />
+            </IconButton>
+          </>
+        )}
         {isAuthenticated && user ? (
           <Avatar name={user.name} colorPalette={pickPalette(user.name)} />
         ) : (

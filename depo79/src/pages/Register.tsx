@@ -36,7 +36,8 @@ const Register: React.FC = () => {
 
     return (
         <Box
-            mt={20}
+            mt={135}
+            mb={232}
             w="md"
             mx="auto"
             p={6}
@@ -99,10 +100,10 @@ const Register: React.FC = () => {
 
                     <Box display="flex" justifyContent="center" width="full">
                         <Text>
-                            Already have an account? Login{" "}
+                            Sudah memiliki akun ? Login{" "}
                             <Link to="/login">
                                 <Text as="span" color="blue.500" cursor="pointer">
-                                    here
+                                    disini
                                 </Text>
                             </Link>
                         </Text>
