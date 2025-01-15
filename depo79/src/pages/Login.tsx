@@ -7,15 +7,16 @@ import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
 import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 import { useColorModeValue } from "../components/ui/color-mode";
+import Turnstile, { useTurnstile } from "react-turnstile";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null); // Store Turnstile token
 
     const loginUser = useAuthStore((state) => state.loginUser); // Get the loginUser action
     const navigate = useNavigate(); // Initialize the useNavigate hook
 
-    // Dynamically set background color and text color based on the color mode
     const bgColor = useColorModeValue("gray.100", "gray.800"); // Light and dark mode bg
     const textColor = useColorModeValue("black", "white"); // Light and dark mode text color
     const inputBgColor = useColorModeValue("gray.200", "gray.700"); // Light and dark mode input background
@@ -23,11 +24,15 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!turnstileToken) {
+            alert("Please complete the Turnstile challenge.");
+            return;
+        }
+
         try {
             // Call the loginUser action from the store
-            await loginUser(email, password);
+            await loginUser(email, password, turnstileToken); // Send Turnstile token
 
-            // If no errors, navigate to the home page
             navigate("/");
         } catch (error) {
             alert(error);
@@ -44,8 +49,8 @@ const Login: React.FC = () => {
             borderRadius="30px"
             border="1px solid #000"
             boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
-            bg={bgColor} // Dynamically apply bgColor here
-            color={textColor} // Dynamically apply textColor here
+            bg={bgColor}
+            color={textColor}
         >
             <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
                 Login
@@ -60,7 +65,7 @@ const Login: React.FC = () => {
                             placeholder="Enter Email"
                             borderRadius="30px"
                             padding="8px 16px"
-                            backgroundColor={inputBgColor} // Dynamically set input background color
+                            backgroundColor={inputBgColor}
                         />
                     </Field>
 
@@ -71,9 +76,15 @@ const Login: React.FC = () => {
                             placeholder="Enter password"
                             borderRadius="30px"
                             padding="8px 16px"
-                            backgroundColor={inputBgColor} // Dynamically set input background color
+                            backgroundColor={inputBgColor}
                         />
                     </Field>
+                    <Box display="flex" justifyContent="center" width="100%">
+                        <Turnstile
+                            sitekey="0x4AAAAAAA5XlhkyPKe_seiW" // Replace with your Turnstile site key
+                            onSuccess={(token) => setTurnstileToken(token)} // Save Turnstile token
+                        />
+                    </Box>
 
                     <Box display="flex" justifyContent="center" width="full">
                         <Button type="submit" colorScheme="blue" width="l" borderRadius="50px" pl={10} pr={10}>
