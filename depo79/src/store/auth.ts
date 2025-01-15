@@ -20,7 +20,7 @@ interface AuthState {
         password: string,
         role: "customer" | "admin"
     ) => Promise<void>;
-    loginUser: (email: string, password: string) => Promise<void>;
+    loginUser: (email: string, password: string, turnstileToken: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -44,8 +44,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         // Force page refresh to apply changes
         window.location.reload();
     },
-
-
 
     registerUser: async (name, email, password, role) => {
         try {
@@ -85,14 +83,16 @@ export const useAuthStore = create<AuthState>((set) => ({
             alert("An error occurred while registering.");
         }
     },
-    loginUser: async (email, password) => {
+
+    // Updated loginUser to accept the turnstileToken argument
+    loginUser: async (email, password, turnstileToken) => {
         try {
             const response = await fetch("api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, turnstileToken }), // Include turnstileToken in the request
             });
 
             const data = await response.json();
