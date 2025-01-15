@@ -12,12 +12,6 @@ function Navbar2() {
   const { user, isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login'); // Redirect to login if not authenticated
-    }
-  }, [isAuthenticated, navigate]);
-
   const colorPalette = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
 
   const pickPalette = (name: string) => {

@@ -1,5 +1,4 @@
 import { Box } from '@chakra-ui/react'
-import Navbar from './components/main/Navbar'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Footer from './components/main/Footer'
