@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, Box } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 import { Avatar } from '../ui/avatar';
@@ -12,6 +12,19 @@ function Navbar2() {
   const { user, isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
   const navigate = useNavigate();
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const colorPalette = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
 
   const pickPalette = (name: string) => {
@@ -20,38 +33,59 @@ function Navbar2() {
   };
 
   return (
-    <HStack wrap="wrap" gap="7" bg={colorMode === 'light' ? 'white' : 'gray.800'} p={4}>
+    <HStack
+      wrap="wrap"
+      gap="7"
+      bg={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
+      p={4}
+      position="sticky"
+      top="0"
+      zIndex="1000"
+      boxShadow={isScrolled ? 'md' : 'none'}
+      transition="background-color 0.3s ease, box-shadow 0.3s ease"
+    >
       <HStack>
         <Link to="/">
-        <Image
-          src="https://bit.ly/naruto-sage"
-          boxSize="45px"
-    borderRadius="full"
-    fit="cover"
-    alt="Naruto Uzumaki"
-  />
+          <Image
+            src="https://bit.ly/naruto-sage"
+            boxSize="45px"
+            borderRadius="full"
+            fit="cover"
+            alt="Naruto Uzumaki"
+          />
         </Link>
       </HStack>
       <Button
-        textStyle="xs"
+        textStyle=""
         w={16}
         h={11}
-        background={colorMode === 'light' ? 'white' : 'gray.800'}
+        background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
         color={colorMode === 'light' ? 'black' : 'white'}
-        variant="outline"
+        border={isScrolled ? 'none' : 'none'}
+        borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
+        _hover={{
+          background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
+        }}
+        transition="background-color 0.3s ease, border-color 0.3s ease"
       >
         Diskon
       </Button>
       <Button
-        textStyle="xs"
+        textStyle=""
         w={16}
         h={11}
-        background={colorMode === 'light' ? 'white' : 'gray.800'}
+        background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
         color={colorMode === 'light' ? 'black' : 'white'}
-        variant="outline"
+        border={isScrolled ? 'none' : 'none'}
+        borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
+        _hover={{
+          background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
+        }}
+        transition="background-color 0.3s ease, border-color 0.3s ease"
       >
         Alamat
       </Button>
+
 
       <Spacer />
 
@@ -71,7 +105,7 @@ function Navbar2() {
         </Field>
         <IconButton
           aria-label="Toggle theme"
-          variant="outline"
+          variant="ghost"
           size="lg"
           colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
           onClick={toggleColorMode}
@@ -82,7 +116,7 @@ function Navbar2() {
           <>
             <IconButton
               aria-label="Chat"
-              variant="outline"
+              variant="ghost"
               size="lg"
               colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
             >
@@ -90,7 +124,7 @@ function Navbar2() {
             </IconButton>
             <IconButton
               aria-label="Shopping Cart"
-              variant="outline"
+              variant="ghost"
               size="lg"
               colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
             >

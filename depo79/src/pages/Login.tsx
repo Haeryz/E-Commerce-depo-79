@@ -42,7 +42,7 @@ const Login: React.FC = () => {
     return (
         <Box
             mt={185}
-            mb={260}
+            mb={500}
             w="md"
             mx="auto"
             p={6}
