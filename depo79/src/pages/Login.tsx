@@ -5,17 +5,27 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Field } from "../components/ui/field";
 import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
+import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
     const loginUser = useAuthStore((state) => state.loginUser); // Get the loginUser action
+    const navigate = useNavigate(); // Initialize the useNavigate hook
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        await loginUser(email, password); // Call the loginUser action from the store
+        try {
+            // Call the loginUser action from the store
+            await loginUser(email, password);
+
+            // If no errors, navigate to the home page
+            navigate("/");
+        } catch (error) {
+            alert(error);
+        }
     };
 
     return (

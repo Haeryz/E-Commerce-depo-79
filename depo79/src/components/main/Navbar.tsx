@@ -4,8 +4,6 @@ import { LuPhone } from "react-icons/lu"
 
 function Navbar() {
   return (
-    
-    <div> 
     <HStack wrap="wrap" gap="8">
       <For each={["xs"]}>
         {(size) => (
@@ -22,8 +20,6 @@ function Navbar() {
         )}
       </For>
     </HStack>
-    </div>
-    
   )
 }
 

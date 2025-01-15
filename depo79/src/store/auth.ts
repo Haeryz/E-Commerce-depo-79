@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import Cookies from "js-cookie";
 
 interface User {
     name: string;
@@ -13,23 +14,41 @@ interface AuthState {
     setUser: (user: User) => void;
     setToken: (token: string) => void;
     logout: () => void;
-    registerUser: (name: string, email: string, password: string, role: "customer" | "admin") => Promise<void>;
+    registerUser: (
+        name: string,
+        email: string,
+        password: string,
+        role: "customer" | "admin"
+    ) => Promise<void>;
     loginUser: (email: string, password: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
-    token: null,
-    isAuthenticated: false,
+    token: Cookies.get("authToken") || null, // Initialize token from cookies
+    isAuthenticated: !!Cookies.get("authToken"), // Check if token exists in cookies
 
     setUser: (user) => set({ user, isAuthenticated: true }),
-    setToken: (token) => set({ token, isAuthenticated: true }),
-    logout: () => set({ user: null, token: null, isAuthenticated: false }),
+    setToken: (token) => {
+        Cookies.set("authToken", token, { expires: 1 });
+        set({ token, isAuthenticated: true });
+    },
 
-    // Register the user action
+    logout: () => {
+        // Remove the token from cookies
+        Cookies.remove("authToken");
+
+        // Update the store state to reflect logout
+        set({ user: null, token: null, isAuthenticated: false });
+
+        // Force page refresh to apply changes
+        window.location.reload();
+    },
+
+
+
     registerUser: async (name, email, password, role) => {
         try {
-            // Register the user
             const response = await fetch("api/auth/register", {
                 method: "POST",
                 headers: {
@@ -43,7 +62,6 @@ export const useAuthStore = create<AuthState>((set) => ({
                 return;
             }
 
-            // After successful registration, log the user in
             const loginResponse = await fetch("api/auth/login", {
                 method: "POST",
                 headers: {
@@ -55,7 +73,9 @@ export const useAuthStore = create<AuthState>((set) => ({
             const loginData = await loginResponse.json();
 
             if (loginResponse.ok) {
-                set({ user: { name, email, role }, token: loginData.token, isAuthenticated: true });
+                set({ user: { name, email, role }, isAuthenticated: true });
+                set({ token: loginData.token });
+                Cookies.set("authToken", loginData.token, { expires: 1 });
                 alert("User registered and logged in successfully");
             } else {
                 alert("Error logging in after registration");
@@ -65,8 +85,6 @@ export const useAuthStore = create<AuthState>((set) => ({
             alert("An error occurred while registering.");
         }
     },
-
-    // Add the loginUser action here
     loginUser: async (email, password) => {
         try {
             const response = await fetch("api/auth/login", {
@@ -80,7 +98,10 @@ export const useAuthStore = create<AuthState>((set) => ({
             const data = await response.json();
 
             if (response.ok) {
-                set({ user: data.user, token: data.token, isAuthenticated: true });
+                // Now, we get the user data from the response
+                set({ user: data.user, isAuthenticated: true });
+                set({ token: data.token });
+                Cookies.set("authToken", data.token, { expires: 1 });
                 alert("Login successful");
             } else {
                 alert("Invalid credentials");
