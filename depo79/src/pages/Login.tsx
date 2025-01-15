@@ -29,7 +29,7 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Box mt={20} maxW="sm" mx="auto" p={4} borderWidth={1} borderRadius="md">
+        <Box mt={20} w="md" mx="auto" p={6} borderWidth={2} borderRadius="30px" border="1px solid #000" boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)">
             <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
                 Login
             </Text>
@@ -41,6 +41,9 @@ const Login: React.FC = () => {
                             value={email}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                             placeholder="Enter Email"
+                            borderRadius="30px"
+                            padding="8px 16px"
+                            backgroundColor="#D9D9D9"
                         />
                     </Field>
 
@@ -49,12 +52,18 @@ const Login: React.FC = () => {
                             value={password}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                             placeholder="Enter password"
+                            borderRadius="30px"
+                            padding="8px 16px"
+                            backgroundColor="#D9D9D9"
                         />
                     </Field>
 
-                    <Button type="submit" colorScheme="blue" width="full">
-                        Submit
-                    </Button>
+
+                    <Box display="flex" justifyContent="center" width="full">
+                        <Button type="submit" colorScheme="blue" width="l" borderRadius="50px" pl={10} pr={10}>
+                            Submit
+                        </Button>
+                    </Box>
                 </Stack>
             </form>
         </Box>
