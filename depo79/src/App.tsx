@@ -13,26 +13,31 @@ import Payment from './pages/client/Payment'
 import StatusPengiriman from './pages/client/StatusPengiriman'
 import Ulasan from './pages/client/Ulasan'
 import Profile from './pages/client/Profile'
+import { useColorModeValue } from './components/ui/color-mode'
 
 function App() {
+  // Dynamically set the background color based on the color mode
+  const bgColor = useColorModeValue('gray.100', 'gray.900')
+  const textColor = useColorModeValue('black', 'white') // Adjust text color for visibility
+
   return (
-  <Box>
-    <Navbar/>
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/register" element={<Register/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path="/cart" element={<Cart/>}/>
-      <Route path="/chat" element={<Chat/>}/>
-      <Route path="/chekcout" element={<Checkout/>}/>
-      <Route path="/list-barang" element={<ListBarang/>}/>
-      <Route path="/payment" element={<Payment/>}/>
-      <Route path="/status-pengiriman" element={<StatusPengiriman/>}/>
-      <Route path="/ulasan" element={<Ulasan/>}/>
-      <Route path="/profile" element={<Profile/>}/>
-    </Routes>
-    <Footer/>
-  </Box>
+    <Box bg={bgColor} color={textColor} minHeight="100vh">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/list-barang" element={<ListBarang />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/status-pengiriman" element={<StatusPengiriman />} />
+        <Route path="/ulasan" element={<Ulasan />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+      <Footer />
+    </Box>
   )
 }
 

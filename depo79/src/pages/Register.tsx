@@ -6,6 +6,7 @@ import { Field } from "../components/ui/field";
 import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { useColorModeValue } from "../components/ui/color-mode";
 
 const Register: React.FC = () => {
     const [name, setName] = useState<string>("");
@@ -15,6 +16,11 @@ const Register: React.FC = () => {
     const [role] = useState<'customer' | 'admin'>("customer");  // Role is fixed here, no need for setRole
 
     const registerUser = useAuthStore((state) => state.registerUser);
+
+    // Dynamically set background color and text color based on color mode
+    const bgColor = useColorModeValue("gray.100", "gray.900"); // Light and dark mode bg
+    const textColor = useColorModeValue("black", "white"); // Light and dark mode text color
+    const inputBgColor = useColorModeValue("gray.200", "gray.700"); // Light and dark mode input background
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -29,7 +35,18 @@ const Register: React.FC = () => {
     };
 
     return (
-        <Box mt={20} w="md" mx="auto" p={6} borderWidth={2} borderRadius="30px" border="1px solid #000" boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)">
+        <Box
+            mt={20}
+            w="md"
+            mx="auto"
+            p={6}
+            borderWidth={2}
+            borderRadius="30px"
+            border="1px solid #000"
+            boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
+            bg={bgColor} // Dynamically apply bgColor here
+            color={textColor} // Dynamically apply textColor here
+        >
             <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
                 Register
             </Text>
@@ -43,7 +60,7 @@ const Register: React.FC = () => {
                             placeholder="Enter username"
                             borderRadius="30px"
                             padding="8px 16px"
-                            backgroundColor="#D9D9D9"
+                            backgroundColor={inputBgColor} // Dynamically set input background color
                         />
                     </Field>
 
@@ -54,7 +71,7 @@ const Register: React.FC = () => {
                             placeholder="Enter Email"
                             borderRadius="30px"
                             padding="8px 16px"
-                            backgroundColor="#D9D9D9"
+                            backgroundColor={inputBgColor} // Dynamically set input background color
                         />
                     </Field>
 
@@ -65,7 +82,7 @@ const Register: React.FC = () => {
                             placeholder="Enter password"
                             borderRadius="30px"
                             padding="8px 16px"
-                            backgroundColor="#D9D9D9"
+                            backgroundColor={inputBgColor} // Dynamically set input background color
                         />
                     </Field>
 
@@ -76,16 +93,16 @@ const Register: React.FC = () => {
                             placeholder="Re-entry password"
                             borderRadius="30px"
                             padding="8px 16px"
-                            backgroundColor="#D9D9D9"
+                            backgroundColor={inputBgColor} // Dynamically set input background color
                         />
                     </Field>
 
                     <Box display="flex" justifyContent="center" width="full">
                         <Text>
-                            Sudah Punya Akun ? Login{" "}
+                            Already have an account? Login{" "}
                             <Link to="/login">
                                 <Text as="span" color="blue.500" cursor="pointer">
-                                    Disini
+                                    here
                                 </Text>
                             </Link>
                         </Text>
