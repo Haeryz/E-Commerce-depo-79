@@ -14,6 +14,7 @@ import StatusPengiriman from './pages/client/StatusPengiriman'
 import Ulasan from './pages/client/Ulasan'
 import Profile from './pages/client/Profile'
 import { useColorModeValue } from './components/ui/color-mode'
+import Navbar2 from './components/main/Navbar2'
 
 function App() {
   // Dynamically set the background color based on the color mode
@@ -22,7 +23,7 @@ function App() {
 
   return (
     <Box bg={bgColor} color={textColor} minHeight="100vh">
-      <Navbar />
+      <Navbar2 />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
