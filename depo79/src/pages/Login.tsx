@@ -91,12 +91,13 @@ const Login: React.FC = () => {
                             </Link>
                         </Text>
                     </Box>
-                    
+
                     <Box display="flex" justifyContent="center" width="100%">
                         <Turnstile
-                            sitekey="0x4AAAAAAA5XlhkyPKe_seiW" // Replace with your Turnstile site key
+                            sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
                             onSuccess={(token) => setTurnstileToken(token)} // Save Turnstile token
                         />
+
                     </Box>
 
                     <Box display="flex" justifyContent="center" width="full">
