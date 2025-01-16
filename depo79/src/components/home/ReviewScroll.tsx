@@ -39,6 +39,8 @@ function ReviewScroll() {
             >
                 <InfiniteSlider
                     pauseOnHover
+                    toRight={true}
+                    duration={12}
                 >
                     {reviews.map((review) => {
                         const productName = productMap[review.product] || "Unknown Product"; // Use this pattern for fetching product name
