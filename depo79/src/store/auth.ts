@@ -24,26 +24,26 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-    user: null,
+    user: Cookies.get("authToken") ? JSON.parse(Cookies.get("user") || "{}") : null,
     token: Cookies.get("authToken") || null, // Initialize token from cookies
     isAuthenticated: !!Cookies.get("authToken"), // Check if token exists in cookies
+    
 
-    setUser: (user) => set({ user, isAuthenticated: true }),
+    setUser: (user) => {
+        Cookies.set("user", JSON.stringify(user), { expires: 1 });
+        set({ user, isAuthenticated: true });
+    },
     setToken: (token) => {
         Cookies.set("authToken", token, { expires: 1 });
         set({ token, isAuthenticated: true });
     },
 
     logout: () => {
-        // Remove the token from cookies
         Cookies.remove("authToken");
-
-        // Update the store state to reflect logout
+        Cookies.remove("user");
         set({ user: null, token: null, isAuthenticated: false });
-
-        // Force page refresh to apply changes
-        window.location.reload();
     },
+    
 
     registerUser: async (name, email, password, role) => {
         try {

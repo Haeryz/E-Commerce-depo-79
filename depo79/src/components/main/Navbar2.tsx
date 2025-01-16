@@ -29,9 +29,13 @@ function Navbar2() {
   const colorPalette = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
 
   const pickPalette = (name: string) => {
+    if (typeof name !== 'string' || !name) {
+      return 'gray'; // Default color if the name is invalid
+    }
     const index = name.charCodeAt(0) % colorPalette.length;
     return colorPalette[index];
   };
+  
 
   return (
     <HStack
