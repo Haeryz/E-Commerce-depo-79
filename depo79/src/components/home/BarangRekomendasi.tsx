@@ -26,7 +26,7 @@ function BarangRekomendasi() {
                     ? Array.from({ length: 8 }).map((_, index) => ( // Adjust length to match expected skeletons
                         <Stack key={index} gap="6" maxW="sm">
                             <Skeleton height="200px" />
-                            <SkeletonText noOfLines={2} spacing="4" />
+                            <SkeletonText noOfLines={2} />
                             <SkeletonText noOfLines={1} width="50%" />
                         </Stack>
                     ))
@@ -37,7 +37,6 @@ function BarangRekomendasi() {
                                     src={product.image} // Dynamic image URL from the product data
                                     alt={product.nama} // Dynamic alt text from the product name
                                     objectFit="cover" // Ensures the image covers the area without distortion
-                                    layout="fill" // The image will fill the container
                                 />
                             </Box>
                             <Card.Body gap="2">
