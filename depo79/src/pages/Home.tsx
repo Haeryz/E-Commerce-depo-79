@@ -1,12 +1,13 @@
-import { Box, Image, Text, VStack } from "@chakra-ui/react";
+import { Box, Image, Separator, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import Banner from "../assets/Intersect.png";
 import BarangBaru from "../components/home/BarangBaru";
+import BarangRekomendasi from "../components/home/BarangRekomendasi";
 
 const Home: React.FC = () => {
 
   return (
-    <VStack mt={7}>
+    <VStack mt={7} overflow={"hidden"}>
       <Box>
         <Image 
         src={Banner}
@@ -29,6 +30,12 @@ const Home: React.FC = () => {
 
       <Box justifyItems={"center"} mt={10}>
         <BarangBaru />
+      </Box>
+
+      <Separator variant={"solid"} size={"xs"} mb={5} mt={5} borderColor={"gray.500"}/>
+
+      <Box justifyItems={"center"} mt={10}>
+        <BarangRekomendasi />
       </Box>
     </VStack>
   );

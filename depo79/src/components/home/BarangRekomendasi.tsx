@@ -1,9 +1,10 @@
-import { Card, Image, Text, Box, SimpleGrid } from '@chakra-ui/react'
-import React, { useEffect } from 'react'
-import { Button } from '../ui/button'
-import { useProductStore } from '../../store/Barang'
+import { useEffect } from 'react'
+import { useProductStore } from '../../store/Barang';
+import { Box, Card, Image, SimpleGrid, Text } from '@chakra-ui/react';
+import { Button } from '../ui/button';
 
-function BarangBaru() {
+
+function BarangRekomendasi() {
     const { products, loading, error, fetchProducts } = useProductStore();
 
     useEffect(() => {
@@ -12,10 +13,9 @@ function BarangBaru() {
 
     if (loading) return <Box>Loading products...</Box>; // Replaced div with Box
     if (error) return <Box>Error: {error}</Box>; // Replaced div with Box
-
     return (
         <Box> {/* Replaced div with Box */}
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gapX={4} gapY={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={4} gapY={4}>
                 {products.map((product) => (
                     <Card.Root key={product._id} maxW="sm" overflow="hidden">
                         <Box position="relative" height="200px" width="100%" overflow="hidden">
@@ -50,7 +50,7 @@ function BarangBaru() {
                 ))}
             </SimpleGrid>
         </Box>
-    );
+    )
 }
 
-export default BarangBaru;
+export default BarangRekomendasi
