@@ -2,19 +2,22 @@ import { useEffect } from "react";
 import { Box, Text, VStack, Spinner } from "@chakra-ui/react";
 import InfiniteSlider from "react-infinite-logo-slider";
 import { useReviewStore } from "../../store/review";
-import { useProductStore } from "../../store/product"; // Import the product store
+import { useProductStore } from "../../store/product";
+import { useProfileStore } from "../../store/profile";  // Import profile store
 
 function ReviewScroll() {
     const { reviews, loading, error, fetchReviews } = useReviewStore();
     const { productMap, loading: loadingProducts, error: productError, fetchProducts } = useProductStore();
+    const { profileMap, loading: loadingProfile, error: profileError, fetchProfiles } = useProfileStore(); // Access profile store
 
-    // Fetch reviews and products when component mounts
+    // Fetch reviews, products, and profiles when component mounts
     useEffect(() => {
         fetchReviews();
-        fetchProducts(); // Make sure products are also fetched
-    }, [fetchReviews, fetchProducts]);
+        fetchProducts();
+        fetchProfiles(); // Fetch all profiles (not just the current user's profile)
+    }, [fetchReviews, fetchProducts, fetchProfiles]);
 
-    if (loading || loadingProducts) {
+    if (loading || loadingProducts || loadingProfile) {
         return (
             <Box p={8} bg="gray.100" display="flex" justifyContent="center" alignItems="center">
                 <Spinner size="xl" />
@@ -22,10 +25,10 @@ function ReviewScroll() {
         );
     }
 
-    if (error || productError) {
+    if (error || productError || profileError) {
         return (
             <Box p={8} bg="gray.100" display="flex" justifyContent="center" alignItems="center">
-                <Text color="red.500">{error || productError}</Text>
+                <Text color="red.500">{error || productError || profileError}</Text>
             </Box>
         );
     }
@@ -40,10 +43,10 @@ function ReviewScroll() {
                 <InfiniteSlider
                     pauseOnHover
                     toRight={true}
-                    duration={12}
                 >
                     {reviews.map((review) => {
-                        const productName = productMap[review.product] || "Unknown Product"; // Use this pattern for fetching product name
+                        const productName = productMap[review.product] || "Unknown Product";
+                        const userName = profileMap[review.user]?.nama || "Anonymous User"; // Fetch user name from profileMap
                         return (
                             <Box
                                 key={review._id}
@@ -65,13 +68,13 @@ function ReviewScroll() {
                             >
                                 <VStack align="stretch">
                                     <Text fontWeight="bold" fontSize="md" textAlign="center">
-                                        {review.user}
+                                        {userName} {/* Display user name from profileMap */}
                                     </Text>
                                     <Text fontSize="sm" color="gray.500" textAlign="center">
                                         {productName} {/* Display the product name */}
                                     </Text>
                                     <Text fontSize="sm" color="gray.700" textAlign="justify">
-                                        {review.comment}
+                                        {review.comment} {/* Display review comment */}
                                     </Text>
                                 </VStack>
                             </Box>
