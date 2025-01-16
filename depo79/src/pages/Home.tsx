@@ -34,6 +34,20 @@ const Home: React.FC = () => {
 
       <Separator variant={"solid"} size={"xs"} mb={5} mt={5} borderColor={"gray.500"}/>
 
+      <Box justifyItems={"center"}>
+        <Text fontWeight={"bold"} fontSize={60} mt={10}>
+          BAHAN REKOMENDASI
+        </Text>
+
+        <Text color={"gray.500"}>
+          Bahan Bangunan Terbaru. Dapatkan Untuk Rumahmu
+        </Text>
+
+        <Text color={"gray.500"}>
+          Sekarang Juga
+        </Text>
+      </Box>
+
       <Box justifyItems={"center"} mt={10}>
         <BarangRekomendasi />
       </Box>

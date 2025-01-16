@@ -14,6 +14,7 @@ import Ulasan from './pages/client/Ulasan'
 import Profile from './pages/client/Profile'
 import { useColorModeValue } from './components/ui/color-mode'
 import Navbar2 from './components/main/Navbar2'
+import Test from './pages/test';
 
 function App() {
   // Dynamically set the background color based on the color mode
@@ -35,6 +36,7 @@ function App() {
         <Route path="/status-pengiriman" element={<StatusPengiriman />} />
         <Route path="/ulasan" element={<Ulasan />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/test" element={<Test />} />
       </Routes>
       <Footer />
     </Box>
