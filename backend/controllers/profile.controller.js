@@ -26,9 +26,9 @@ export const getProfile = async (req, res) => {
 };
 
 export const createProfile = async (req, res) => {
-  const { User, nomorhp, alamat, jeniskelamin } = req.body;
+  const { User, nama, nomorhp, alamat, jeniskelamin } = req.body;
 
-  if (!User || !nomorhp || !alamat || !jeniskelamin) {
+  if (!User || !nama || !nomorhp || !alamat || !jeniskelamin) {
     return res
       .status(400)
       .json({
@@ -37,7 +37,7 @@ export const createProfile = async (req, res) => {
       });
   }
 
-  const newProfile = new Profile({ User, nomorhp, alamat, jeniskelamin });
+  const newProfile = new Profile({ User, nama, nomorhp, alamat, jeniskelamin });
 
   try {
     await newProfile.save();
@@ -50,7 +50,7 @@ export const createProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   const { id } = req.params;
-  const { User, nomorhp, alamat, jeniskelamin } = req.body;
+  const { User, nama, nomorhp, alamat, jeniskelamin } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -58,7 +58,7 @@ export const updateProfile = async (req, res) => {
       .json({ success: false, message: "Profile not found" });
   }
 
-  const updatedProfile = { User, nomorhp, alamat, jeniskelamin, _id: id };
+  const updatedProfile = { User, nama, nomorhp, alamat, jeniskelamin, _id: id };
 
   try {
     await Profile.findByIdAndUpdate(id, updatedProfile, { new: true });
