@@ -88,7 +88,7 @@ function Footer() {
             ))}
           </VStack>
 
-          <VStack alignItems={'flex-start'} mt={{ base: 0, md: "32px" }}>
+          <VStack alignItems={'flex-start'} mt={{ base: 0, md: "32px" }} ml={10}>
             {["Elektrik", "Kaca", "Alumunium", "Pipa"].map((item) => (
               <Button
                 key={item}
@@ -105,7 +105,7 @@ function Footer() {
           </VStack>
 
           {/* Social Media Section */}
-          <VStack alignItems={'flex-start'} >
+          <VStack alignItems={'flex-start'} ml={10}>
             <Text fontWeight="bold">Sosmed</Text>
             {["Facebook", "Twitter", "Instagram", "LinkedIn", "YouTube"].map((item) => (
               <Button
