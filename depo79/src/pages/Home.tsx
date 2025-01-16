@@ -3,6 +3,7 @@ import React from "react";
 import Banner from "../assets/Intersect.png";
 import BarangBaru from "../components/home/BarangBaru";
 import BarangRekomendasi from "../components/home/BarangRekomendasi";
+import ReviewScroll from "../components/home/ReviewScroll";
 
 const Home: React.FC = () => {
 
@@ -50,6 +51,10 @@ const Home: React.FC = () => {
 
       <Box justifyItems={"center"} mt={10}>
         <BarangRekomendasi />
+      </Box>
+
+      <Box justifyItems={"center"} mt={10}>
+        <ReviewScroll />
       </Box>
     </VStack>
   );

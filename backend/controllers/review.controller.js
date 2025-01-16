@@ -22,21 +22,21 @@ export const getReviews = async (req, res) => {
 };
 
 export const createReview = async (req, res) => {
-  const { productId, userId, rating, comment } = req.body;
+  const { user, product, rating, comment, image } = req.body;
 
-  if (!productId || !userId || !rating || !comment) {
+  if (!user || !product || !rating || !comment) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required" });
   }
 
-  const newReview = new Review({ productId, userId, rating, comment });
+  const newReview = new Review({ user, product, rating, comment, image });
 
   try {
     await newReview.save();
     return res.status(201).json({ success: true, review: newReview });
   } catch (error) {
-    console.log("Error:", error);
+    console.error("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
