@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, Box } from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 import { Avatar } from '../ui/avatar';
 import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
 import { Link, useNavigate } from 'react-router-dom';
+import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -86,7 +87,6 @@ function Navbar2() {
         Alamat
       </Button>
 
-
       <Spacer />
 
       <HStack>
@@ -133,7 +133,25 @@ function Navbar2() {
           </>
         )}
         {isAuthenticated && user ? (
-          <Avatar name={user.name} colorPalette={pickPalette(user.name)} />
+          <PopoverRoot>
+            <PopoverTrigger asChild>
+              <Avatar name={user.name} colorPalette={pickPalette(user.name)} />
+            </PopoverTrigger>
+            <PopoverContent
+              bg="white"
+              borderRadius="md"
+              boxShadow="lg"
+            >
+              <PopoverArrow />
+              <PopoverBody>
+                <VStack>
+                  <Text mb="4">{user.name}</Text>
+                  <Button onClick={() => navigate("/profile")}>Profile</Button>
+                  <Button onClick={() => useAuthStore.getState().logout()}>Logout</Button>
+                </VStack>
+              </PopoverBody>
+            </PopoverContent>
+          </PopoverRoot>
         ) : (
           <Button onClick={() => navigate('/login')} colorScheme="blue">
             Login
