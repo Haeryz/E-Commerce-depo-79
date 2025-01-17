@@ -14,31 +14,31 @@ function SidebarAlamat() {
                         INFORMASI ALAMAT
                     </Text>
                 </HStack>
-                <VStack mt={10} align={"start"} gapY={3}>
-                    <Field label="Alamat lengkap" maxW={"100%"} bgSize={"xl"}>
+                <VStack mt={10} align={"start"} gapY={3} w={"40%"}>
+                    <Field label="Alamat lengkap" maxW={"100%"}>
                         <Input placeholder='Jalan, No, RT/RW (deskripsi)' />
                     </Field>
-                    <Field label="Nomor Telefon" maxW={"40%"} >
+                    <Field label="Nomor Telefon">
                         <NativeSelectRoot>
                             <NativeSelectField items={["Pria", "Perempuan"]} />
                         </NativeSelectRoot>
                     </Field>
-                    <Field label="Nomor Telefon" maxW={"40%"} >
+                    <Field label="Nomor Telefon">
                         <NativeSelectRoot>
                             <NativeSelectField items={["Pria", "Perempuan"]} />
                         </NativeSelectRoot>
                     </Field>
-                    <Field label="Nomor Telefon" maxW={"40%"} >
+                    <Field label="Nomor Telefon" >
                         <NativeSelectRoot>
                             <NativeSelectField items={["Pria", "Perempuan"]} />
                         </NativeSelectRoot>
                     </Field>
-                    <Field label="Nomor Telefon" maxW={"40%"} >
+                    <Field label="Nomor Telefon" >
                         <NativeSelectRoot>
                             <NativeSelectField items={["Pria", "Perempuan"]} />
                         </NativeSelectRoot>
                     </Field>
-                    <Field label="Alamat lengkap" maxW={"40%"} >
+                    <Field label="Alamat lengkap">
                         <Input placeholder='Jalan, No, RT/RW (deskripsi)' />
                     </Field>
                 </VStack>
