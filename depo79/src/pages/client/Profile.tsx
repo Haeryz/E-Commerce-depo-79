@@ -1,8 +1,12 @@
+import { Box } from '@chakra-ui/react'
 import React from 'react'
+import ProfileSidebar from '../../components/profile/ProfileSidebar'
 
 function Profile() {
   return (
-    <div>Profile</div>
+    <Box pr={10} pl={10}>
+      <ProfileSidebar />
+    </Box>
   )
 }
 

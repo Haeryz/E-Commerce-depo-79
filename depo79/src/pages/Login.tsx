@@ -5,9 +5,9 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Field } from "../components/ui/field";
 import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { Link, useNavigate } from "react-router-dom"; 
 import { useColorModeValue } from "../components/ui/color-mode";
-import Turnstile, { useTurnstile } from "react-turnstile";
+import Turnstile from "react-turnstile";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -30,7 +30,6 @@ const Login: React.FC = () => {
         }
 
         try {
-            // Call the loginUser action from the store
             await loginUser(email, password, turnstileToken); // Send Turnstile token
 
             navigate("/");
