@@ -29,13 +29,9 @@ function Navbar2() {
   const colorPalette = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
 
   const pickPalette = (name: string) => {
-    if (typeof name !== 'string' || !name) {
-      return 'gray'; // Default color if the name is invalid
-    }
     const index = name.charCodeAt(0) % colorPalette.length;
     return colorPalette[index];
   };
-  
 
   return (
     <HStack
@@ -137,9 +133,11 @@ function Navbar2() {
           </>
         )}
         {isAuthenticated && user ? (
-          <PopoverRoot>
+          <PopoverRoot >
             <PopoverTrigger asChild>
-              <Avatar name={user.name} colorPalette={pickPalette(user.name)} />
+              <Button>
+                {user.name} 
+              </Button>
             </PopoverTrigger>
             <PopoverContent
               bg="white"
@@ -149,8 +147,8 @@ function Navbar2() {
               <PopoverArrow />
               <PopoverBody>
                 <VStack>
-                  <Text mb="4">{user.name}</Text>
-                  <Button onClick={() => navigate("/profile")}>Profile</Button>
+                  <Text mb="0">{user.name}</Text>
+                  <Button onClick={() => navigate("/profile")}>Setting</Button>
                   <Button onClick={() => useAuthStore.getState().logout()}>Logout</Button>
                 </VStack>
               </PopoverBody>
