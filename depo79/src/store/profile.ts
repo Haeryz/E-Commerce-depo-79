@@ -68,4 +68,50 @@ export const useProfileStore = create<ProfileState>((set) => ({
             set({ loading: false });
         }
     },
+
+    createProfile: async (profile: Profile) => {
+        try {
+            const response = await fetch("/api/profile", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(profile),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to create profile");
+            }
+            const data = await response.json();
+            if (data.success) {
+                set({ profile: data.profile });
+            } else {
+                set({ error: data.message });
+            }
+        } catch (error: any) {
+            set({ error: error.message });
+        }
+    },
+
+    updateProfile: async (profile: Profile) => {
+        try {
+            const response = await fetch("/api/profile", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(profile),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to update profile");
+            }
+            const data = await response.json();
+            if (data.success) {
+                set({ profile: data.profile });
+            } else {
+                set({ error: data.message });
+            }
+        } catch (error: any) {
+            set({ error: error.message });
+        }
+    }
 }));
