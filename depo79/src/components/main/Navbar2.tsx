@@ -136,7 +136,7 @@ function Navbar2() {
           <PopoverRoot >
             <PopoverTrigger asChild>
               <Button>
-                {user.name} 
+                {user.name.charAt(0)} 
               </Button>
             </PopoverTrigger>
             <PopoverContent
