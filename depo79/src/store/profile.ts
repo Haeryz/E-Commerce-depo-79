@@ -73,7 +73,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         set({ loading: true, error: null });
 
         try {
-            const response = await fetch("/api/profiles", {  // Adjusted API endpoint for multiple profiles
+            const response = await fetch("/api/profile", {  // Adjusted API endpoint for multiple profiles
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
