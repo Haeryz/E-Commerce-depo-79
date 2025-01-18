@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
@@ -24,13 +24,6 @@ function Navbar2() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  const colorPalette = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
-
-  const pickPalette = (name: string) => {
-    const index = name.charCodeAt(0) % colorPalette.length;
-    return colorPalette[index];
-  };
 
   return (
     <HStack
