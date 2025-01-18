@@ -1,11 +1,25 @@
 import { create } from "zustand";
 import { useAuthStore } from "./auth";
 
+interface Alamat {
+    _id: string;
+    user: string;
+    provinsi: string;
+    kota: string;
+    kecamatan: string;
+    kelurahan: string;
+    kodepos: number;
+    detail: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+
 interface Profile {
     _id: string;
     nama: string;
     nomorhp: string;
-    alamat: string;
+    alamat: Alamat;
     jeniskelamin: string;
 }
 
