@@ -18,6 +18,7 @@ import Test from './pages/test';
 import SidebarProfile from './pages/client/profilesidebar/SidebarProfile';
 import SidebarAlamat from './pages/client/profilesidebar/SidebarAlamat';
 import ProtectedRoute from './pages/ProtectedRoute';
+import DetailBarang from './pages/client/DetailBarang';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -27,10 +28,12 @@ function App() {
     <Box bg={bgColor} color={textColor} minHeight="100vh">
       <Navbar2 />
       <Routes>
+        {/* unprotected route */}
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/list-barang" element={<ListBarang />} />
+        <Route path="/detail-barang" element={<DetailBarang />} />
 
         {/* Protected Route user harus login */}
         <Route
