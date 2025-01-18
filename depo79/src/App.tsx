@@ -17,6 +17,7 @@ import Navbar2 from './components/main/Navbar2';
 import Test from './pages/test';
 import SidebarProfile from './pages/client/profilesidebar/SidebarProfile';
 import SidebarAlamat from './pages/client/profilesidebar/SidebarAlamat';
+import ProtectedRoute from './pages/ProtectedRoute';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -36,13 +37,16 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/status-pengiriman" element={<StatusPengiriman />} />
         <Route path="/ulasan" element={<Ulasan />} />
-
-        <Route path="/profile" element={<Profile />}>
-          <Route index element={<SidebarProfile />} />
-          <Route path="profile-sidebar" element={<SidebarProfile />} />
-          <Route path="alamat-sidebar" element={<SidebarAlamat />} />
-        </Route>
-
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute element={<Profile />}>
+              <Route index element={<SidebarProfile />} />
+              <Route path="profile-sidebar" element={<SidebarProfile />} />
+              <Route path="alamat-sidebar" element={<SidebarAlamat />} />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/test" element={<Test />} />
       </Routes>
       <Footer />
