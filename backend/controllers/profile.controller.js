@@ -6,13 +6,10 @@ export const getProfile = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      console.error("No token provided");
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded ID:", decoded.id); // Log user ID
-
     const userId = decoded.id;
     const profile = await Profile.findOne({ User: userId })
       .populate("User") // Populate user correctly
@@ -27,7 +24,6 @@ export const getProfile = async (req, res) => {
 
     return res.status(200).json({ success: true, profile });
   } catch (error) {
-    console.error("Error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };

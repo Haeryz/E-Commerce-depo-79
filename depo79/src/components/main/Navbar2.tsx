@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
-import { Avatar } from '../ui/avatar';
 import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
 import { Link, useNavigate } from 'react-router-dom';
@@ -136,7 +135,7 @@ function Navbar2() {
           <PopoverRoot >
             <PopoverTrigger asChild>
               <Button>
-                {user.name.charAt(0)} 
+                {user.name.charAt(0)}
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -148,8 +147,11 @@ function Navbar2() {
               <PopoverBody>
                 <VStack>
                   <Text mb="0">{user.name}</Text>
-                  <Button onClick={() => navigate("/profile")}>Setting</Button>
-                  <Button onClick={() => useAuthStore.getState().logout()}>Logout</Button>
+                  <Button onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
+                  <Button onClick={async () => {
+                    await useAuthStore.getState().logout();
+                    navigate("/");
+                  }}>Logout</Button>
                 </VStack>
               </PopoverBody>
             </PopoverContent>

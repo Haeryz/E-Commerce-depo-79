@@ -39,48 +39,37 @@ function App() {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute element={<Profile />}>
-              <Route index element={<SidebarProfile />} />
-              <Route path="profile-sidebar" element={<SidebarProfile />} />
-              <Route path="alamat-sidebar" element={<SidebarAlamat />} />
-            </ProtectedRoute>
+            <ProtectedRoute element={Profile} /> // Render Profile as the protected component
           }
-        />
+        >
+          {/* Now, handle child routes separately inside Profile */}
+          <Route path="profile-sidebar" element={<SidebarProfile />} />
+          <Route path="alamat-sidebar" element={<SidebarAlamat />} />
+        </Route>
+
         <Route
           path='/cart'
-          element={
-            <ProtectedRoute element={<Cart />} />
-          }
+          element={<ProtectedRoute element={Cart} />}
         />
         <Route
           path='/checkout'
-          element={
-            <ProtectedRoute element={<Checkout />} />
-          }
+          element={<ProtectedRoute element={Checkout} />}
         />
         <Route
           path='/chat'
-          element={
-            <ProtectedRoute element={<Chat />} />
-          }
+          element={<ProtectedRoute element={Chat} />}
         />
         <Route
           path='/payment'
-          element={
-            <ProtectedRoute element={<Payment />} />
-          }
+          element={<ProtectedRoute element={Payment} />}
         />
         <Route
           path='/status-pengiriman'
-          element={
-            <ProtectedRoute element={<StatusPengiriman />} />
-          }
+          element={<ProtectedRoute element={StatusPengiriman} />}
         />
         <Route
           path='/ulasan'
-          element={
-            <ProtectedRoute element={<Ulasan />} />
-          }
+          element={<ProtectedRoute element={Ulasan} />}
         />
 
         {/* Test route untuk testing component */}
