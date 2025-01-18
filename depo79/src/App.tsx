@@ -30,13 +30,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/checkout" element={<Checkout />} />
         <Route path="/list-barang" element={<ListBarang />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/status-pengiriman" element={<StatusPengiriman />} />
-        <Route path="/ulasan" element={<Ulasan />} />
+
+        {/* Protected Route user harus login */}
         <Route
           path="/profile"
           element={
@@ -47,6 +43,44 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path='/cart'
+          element={
+            <ProtectedRoute element={<Cart />} />
+          }
+        />
+        <Route
+          path='/checkout'
+          element={
+            <ProtectedRoute element={<Checkout />} />
+          }
+        />
+        <Route
+          path='/chat'
+          element={
+            <ProtectedRoute element={<Chat />} />
+          }
+        />
+        <Route
+          path='/payment'
+          element={
+            <ProtectedRoute element={<Payment />} />
+          }
+        />
+        <Route
+          path='/status-pengiriman'
+          element={
+            <ProtectedRoute element={<StatusPengiriman />} />
+          }
+        />
+        <Route
+          path='/ulasan'
+          element={
+            <ProtectedRoute element={<Ulasan />} />
+          }
+        />
+
+        {/* Test route untuk testing component */}
         <Route path="/test" element={<Test />} />
       </Routes>
       <Footer />
