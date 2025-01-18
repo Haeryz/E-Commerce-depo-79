@@ -4,8 +4,13 @@ import { LuMapPin } from "react-icons/lu";
 import { Avatar } from '../../../components/ui/avatar';
 import { Field } from '../../../components/ui/field';
 import { NativeSelectField, NativeSelectRoot } from '../../../components/ui/native-select';
+import { useAuthStore } from '../../../store/auth';
+import { useProfileStore } from '../../../store/profile';
 
 function SidebarProfile() {
+    const email = useAuthStore((state) => state.user);
+    const profile =useProfileStore((state) => state.profile);
+
     return (
         <Box>
             <VStack align={"start"}>
@@ -28,14 +33,11 @@ function SidebarProfile() {
                 </HStack>
             </VStack>
             <VStack mt={10} align={"start"} gapY={5}>
-                <Field label="Email" maxW={"40%"} invalid errorText="Invalid email">
-                    <Input placeholder='me@example.com' />
-                </Field>
-                <Field label="Password" maxW={"40%"} >
-                    <Input placeholder='me@example.com' />
+                <Field label="Email" maxW={"40%"} >
+                    <Input placeholder='me@example.com' value={email?.email} readOnly={true} />
                 </Field>
                 <Field label="Nomor Telefon" maxW={"40%"} >
-                    <Input placeholder='me@example.com' />
+                    <Input placeholder='+628123456789' value={profile?.nomorhp} readOnly={true}/>
                 </Field>
                 <Field label="Jenis Kelamin" maxW={"40%"} >
                     <NativeSelectRoot>
