@@ -1,27 +1,34 @@
 import mongoose from "mongoose";
-import Profile from "../models/profile.model.js"; // Assuming the model is named 'profile.model.js'
+import Profile from "../models/profile.model.js";
+import jwt from "jsonwebtoken"; // Assuming the model is named 'profile.model.js'
 
 export const getProfile = async (req, res) => {
   try {
-    if (req.params.id) {
-      const profile = await Profile.findById(req.params.id)
-        .populate("User") // Populating User reference
-        .populate("alamat"); // Populating Alamat reference
-      if (!profile) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Profile not found" });
-      }
-      return res.status(200).json({ success: true, profile });
-    } else {
-      const profiles = await Profile.find()
-        .populate("User") // Populating User reference
-        .populate("alamat"); // Populating Alamat reference
-      return res.status(200).json({ success: true, profiles }); // Added "return" for consistency
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      console.error("No token provided");
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded ID:", decoded.id); // Log user ID
+
+    const userId = decoded.id;
+    const profile = await Profile.findOne({ User: userId })
+      .populate("User") // Populate user correctly
+      .populate("alamat"); // Populate alamat if needed
+
+    if (!profile) {
+      console.error("Profile not found");
+      return res
+        .status(404)
+        .json({ success: false, message: "Profile not found" });
+    }
+
+    return res.status(200).json({ success: true, profile });
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message }); // Added "return" for consistency
+    console.error("Error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -29,12 +36,10 @@ export const createProfile = async (req, res) => {
   const { User, nama, nomorhp, alamat, jeniskelamin } = req.body;
 
   if (!User || !nama || !nomorhp || !alamat || !jeniskelamin) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "All required fields must be provided",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "All required fields must be provided",
+    });
   }
 
   const newProfile = new Profile({ User, nama, nomorhp, alamat, jeniskelamin });
