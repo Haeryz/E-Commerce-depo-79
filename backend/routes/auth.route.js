@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/verivy-otp", verifyOtpAndRegister)
+router.post("/verify-otp", verifyOtpAndRegister)
 
 export default router;

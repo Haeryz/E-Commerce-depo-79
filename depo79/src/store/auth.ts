@@ -19,7 +19,8 @@ interface AuthState {
         email: string,
         password: string,
         role: "customer" | "admin"
-    ) => Promise<void>;
+    ) => Promise<{ otpRequired: boolean; email: string }>; // Update return type
+    verifyOtp: (email: string, otp: string) => Promise<{ success: boolean; error?: string }>;
     loginUser: (email: string, password: string, turnstileToken: string) => Promise<void>;
 }
 
@@ -27,36 +28,27 @@ export const useAuthStore = create<AuthState>((set) => {
     const tokenFromCookies = Cookies.get("authToken");
     const userFromCookies = Cookies.get("user");
 
-    console.log("Refreshing page...");
-    console.log("Token from cookies:", tokenFromCookies);
-    console.log("User from cookies:", userFromCookies);
-
     return {
         user: userFromCookies ? JSON.parse(userFromCookies) : null, // Improved error handling
         token: tokenFromCookies || null,
         isAuthenticated: !!tokenFromCookies,
         setUser: (user) => {
-            console.log("Setting user:", user);
             Cookies.set("user", JSON.stringify(user), { expires: 1 });
             set({ user, isAuthenticated: true });
         },
         setToken: (token) => {
-            console.log("Setting token:", token);
             Cookies.set("authToken", token, { expires: 1 });
             set({ token, isAuthenticated: true });
         },
-
         logout: () => {
-            console.log("Logging out...");
             Cookies.remove("authToken");
             Cookies.remove("user");
             set({ user: null, token: null, isAuthenticated: false });
         },
 
         registerUser: async (name, email, password, role) => {
-            console.log("Registering user:", { name, email, role });
             try {
-                const response = await fetch("api/auth/register", {
+                const response = await fetch("/api/auth/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -64,65 +56,63 @@ export const useAuthStore = create<AuthState>((set) => {
                     body: JSON.stringify({ name, email, password, role }),
                 });
 
-                if (!response.ok) {
-                    console.error("Error registering user:", response);
-                    alert("Error registering user");
-                    return;
+                if (response.ok) {
+                    // Return an object indicating OTP is required
+                    return { otpRequired: true, email };
+                } else {
+                    throw new Error("Error during registration");
                 }
+            } catch (error) {
+                console.error("Error registering user:", error);
+                throw new Error("An error occurred during registration.");
+            }
+        },
 
-                const loginResponse = await fetch("api/auth/login", {
+        verifyOtp: async (email, otp) => {
+            try {
+                const otpResponse = await fetch("/api/auth/verify-otp", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({ email, otp }),
                 });
 
-                const loginData = await loginResponse.json();
+                const otpData = await otpResponse.json();
 
-                if (loginResponse.ok) {
-                    console.log("Login successful, user data:", loginData);
-                    set({ user: { name, email, role }, isAuthenticated: true });
-                    set({ token: loginData.token });
-                    Cookies.set("authToken", loginData.token, { expires: 1 });
-                    Cookies.set("user", JSON.stringify({ name, email, role }), { expires: 1 }); // Ensure user data is also set correctly
-                    alert("User registered and logged in successfully");
+                if (otpResponse.ok) {
+                    return { success: true };
                 } else {
-                    console.error("Error logging in after registration:", loginData);
-                    alert("Error logging in after registration");
+                    return { success: false, error: otpData.error };
                 }
             } catch (error) {
-                console.error("Error during registration:", error);
-                alert("An error occurred while registering.");
+                console.error("OTP verification failed:", error);
+                return { success: false, error: "An error occurred during OTP verification." };
             }
         },
 
         loginUser: async (email, password, turnstileToken) => {
-            console.log("Logging in user:", { email, password });
             try {
                 const response = await fetch("api/auth/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ email, password, turnstileToken }), // Include turnstileToken in the request
+                    body: JSON.stringify({ email, password, turnstileToken }),
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    console.log("Login successful, user data:", data);
                     set({ user: data.user, isAuthenticated: true });
                     set({ token: data.token });
                     Cookies.set("authToken", data.token, { expires: 1 });
-                    Cookies.set("user", JSON.stringify(data.user), { expires: 1 }); // Store user data in cookies correctly
+                    Cookies.set("user", JSON.stringify(data.user), { expires: 1 });
                     alert("Login successful");
                 } else {
-                    console.error("Invalid credentials:", data);
                     alert("Invalid credentials");
                 }
             } catch (error) {
-                console.error("Error during login:", error);
                 alert("An error occurred while logging in.");
             }
         },
