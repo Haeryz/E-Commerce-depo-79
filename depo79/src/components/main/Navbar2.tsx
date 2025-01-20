@@ -140,7 +140,7 @@ function Navbar2() {
               <PopoverBody>
                 <VStack>
                   <Text mb="0">{user.name}</Text>
-                  <Button onClick={() => navigate("/profile")}>Setting</Button>
+                  <Button onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
                   <Button onClick={() => useAuthStore.getState().logout()}>Logout</Button>
                 </VStack>
               </PopoverBody>
