@@ -5,8 +5,8 @@ import { useProductStore } from "../../store/product";
 import { useParams } from 'react-router-dom'; // Assuming you're using react-router
 import { GiWeight } from "react-icons/gi";
 import { RiDiscountPercentFill } from "react-icons/ri";
-import { FaCartShopping, FaStar } from "react-icons/fa6";
 import { useBeratStore } from '../../store/berat';
+import { LuCarTaxiFront } from 'react-icons/lu';
 
 function DetailBarang() {
     const { id } = useParams(); // Get the product ID from the route
@@ -52,72 +52,57 @@ function DetailBarang() {
         : `${productDetail.berat.value} ${productDetail.berat.unit}`;
 
     return (
-        <Box>
-            <VStack align={"start"} ml={10} mt={3} mb={3}>
-                <HStack gapX={30}>
-                    <VStack align={"start"}>
-                        <Text fontWeight={"bold"} fontSize={"4xl"}>{productDetail.nama}</Text>
-                        <HStack>
-                            <Rating readOnly defaultValue={4} colorPalette={'yellow'} />
-                            <Text fontWeight={'bold'}>
-                                (4.5)
-                            </Text>
-                            <Text fontWeight={'normal'}>
-                                225
-                            </Text>
-                            <Text>reviews</Text>
-                            <Text fontWeight={'normal'}>
-                                2090
-                            </Text>
-                            <Text>Terjual</Text>
-                        </HStack>
-                        <Box>
-                            <Text fontWeight={'bold'} fontSize={'xl'}>
-                                Rp. {productDetail.harga_jual.toLocaleString()}
-                            </Text>
-                        </Box>
-                        <Box bg="bg" shadow="md" borderRadius="md" pl={120} pr={120}>
-                            <VStack>
-                                <HStack>
-                                    <RiDiscountPercentFill />
-                                    <Text fontWeight={'normal'} pt={5} pb={5}>
-                                        Diskon: {productDetail.diskon}%
-                                    </Text>
-                                </HStack>
-                                <HStack>
-                                    <FaCartShopping />
-                                    <Text fontWeight={'normal'} pt={5} pb={5}>
-                                        Stok: {productDetail.stok}
-                                    </Text>
-                                </HStack>
-                                <HStack>
-                                    <GiWeight />
-                                    <Text fontWeight={'normal'} pt={5} pb={5}>
-                                        Berat: {beratName}
-                                    </Text>
-                                </HStack>
-                            </VStack>
-                        </Box>
-                        <Button borderRadius={15} alignSelf={'center'} mb={3}>
-                            Tambah Ke Keranjang
-                        </Button>
-                        <Button alignSelf={'center'} bg="bg" shadow="md" borderRadius="md" pl={87} pr={87} color={'black'} pb={16} pt={16} mt={5}>
-                            <FaStar />
-                            Lihat Semua Rating
-                        </Button>
-                    </VStack>
-                    <VStack align={'center'} bg="bg" shadow="md" mr={2} borderRadius={15}>
-                        <Image
-                            src={productDetail.image || '/placeholder-image.png'}
-                            alt='main image'
-                            aspectRatio={4 / 3}
-                            width={"50%"}
-                            mt={10}
-                            borderRadius={10}
-                        />
-                    </VStack>
-                </HStack>
-            </VStack>
+        <Box p={5} mr={10} ml={10}>
+            <HStack align="start">
+                {/* Left Section */}
+                <VStack align="start" w="50%">
+                    <Text fontWeight="bold" fontSize="2xl">{productDetail.nama}</Text>
+                    <HStack >
+                        <Rating readOnly defaultValue={4.0} colorPalette="yellow" />
+                        <Text fontWeight="bold">{productDetail.rating || 4.0}</Text>
+                        <Text>({productDetail.reviews || 232} Reviews)</Text>
+                        <Text>{productDetail.sold || 2093} Sold</Text>
+                    </HStack>
+                    <Text fontWeight="bold" fontSize="xl">Rp. {productDetail.harga_jual.toLocaleString()}</Text>
+
+                    {/* Product Info */}
+                    <Box borderWidth="1px" borderRadius="lg" p={4} w="full" bg="gray.50">
+                        <VStack align="start" >
+                            <HStack>
+                                <GiWeight />
+                                <Text>Weight: {beratName}</Text>
+                            </HStack>
+                            <HStack>
+                                <RiDiscountPercentFill />
+                                <Text>Discount: {productDetail.diskon || 'No Discount'}</Text>
+                            </HStack>
+                            <HStack>
+                                <LuCarTaxiFront />
+                                <Text>Stock: {productDetail.stok || 0}</Text>
+                            </HStack>
+                        </VStack>
+                    </Box>
+
+                    {/* Add to Cart Button */}
+                    <Button colorScheme="teal" borderRadius="full" w="full">
+                        Tambahkan Ke Keranjang
+                    </Button>
+                </VStack>
+
+                {/* Right Section */}
+                <Box flex="1">
+                    <Image
+                        src={productDetail.image || '/placeholder-image.png'}
+                        alt={productDetail.nama}
+                        borderRadius="lg"
+                        shadow="md"
+                        w="full"
+                        h="auto"
+                        objectFit="cover"
+                        aspectRatio={3/2}
+                    />
+                </Box>
+            </HStack>
         </Box>
     );
 }
