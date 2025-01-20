@@ -113,7 +113,7 @@ export const useAuthStore = create<AuthState>((set) => {
                     alert("Invalid credentials");
                 }
             } catch (error) {
-                alert("An error occurred while logging in.");
+                alert("An error occurred during login.: " + error);
             }
         },
     };
