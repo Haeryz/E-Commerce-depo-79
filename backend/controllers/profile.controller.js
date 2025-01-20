@@ -30,20 +30,22 @@ export const getProfile = async (req, res) => {
 
 export const getAllProfiles = async (req, res) => {
   try {
-    const profiles = await Profile.find()
-      .populate("User") // Populate user if needed
-      .populate("alamat"); // Populate alamat if needed
+      const profiles = await Profile.find().select('_id nama'); // Include '_id' and 'nama'
 
-    if (!profiles.length) {
-      console.error("No profiles found");
-      return res.status(404).json({ success: false, message: "No profiles found" });
-    }
+      if (!profiles.length) {
+          return res.status(404).json({ success: false, message: "No profiles found" });
+      }
 
-    return res.status(200).json({ success: true, profiles });
+      return res.status(200).json({
+          success: true,
+          profiles: profiles.map(profile => ({ _id: profile._id, nama: profile.nama }))
+      });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Server error" });
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 export const createProfile = async (req, res) => {
   const { User, nama, nomorhp, alamat, jeniskelamin } = req.body;

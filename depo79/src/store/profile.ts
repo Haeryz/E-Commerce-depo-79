@@ -69,7 +69,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
                 console.log("Error fetching profile:", data.message);
                 set({ error: data.message });
             }
-        } catch (error: any) {
+        } catch (error: string) {
             console.log("Error during profile fetch:", error.message);
             set({ error: error.message });
         } finally {
@@ -79,26 +79,27 @@ export const useProfileStore = create<ProfileState>((set) => ({
 
     fetchProfileReviews: async () => {
         set({ loading: true, error: null });
-
+    
         try {
-            // Fetch all profiles without JWT
-            const response = await fetch("/api/profile", {  // New endpoint that does not require JWT
+            const response = await fetch("/api/profile", {
                 method: "GET",
             });
-
+    
             if (!response.ok) throw new Error("Failed to fetch profiles");
-
+    
             const data = await response.json();
             if (data.success) {
-                const profiles = data.profiles.reduce(
-                    (map: Record<string, Profile>, profile: Profile) => {
-                        map[profile._id] = profile;
+                // Map profiles by '_id'
+                const profileMap = data.profiles.reduce(
+                    (map: Record<string, { nama: string }>, profile: { _id: string; nama: string }) => {
+                        map[profile._id] = { nama: profile.nama };
                         return map;
                     },
                     {}
                 );
-                console.log("Fetched profiles:", profiles);
-                set({ profileMap: profiles });
+                console.log("Fetched profile map:", profileMap);
+    
+                set({ profileMap });
             } else {
                 console.log("Error fetching profiles:", data.message);
                 set({ error: data.message });
@@ -110,7 +111,6 @@ export const useProfileStore = create<ProfileState>((set) => ({
             set({ loading: false });
         }
     },
-
     fetchProfiles: async () => {
         const { token } = useAuthStore.getState();
         if (!token) {
