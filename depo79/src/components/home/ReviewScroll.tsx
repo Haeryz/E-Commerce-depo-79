@@ -98,6 +98,63 @@ function ReviewScroll() {
                         );
                     })}
                 </InfiniteSlider>
+                <InfiniteSlider
+                    pauseOnHover
+                    toRight={false}
+                >
+                    {reviews.map((review) => {
+                        const productName = productMap[review.product] || "Unknown Product";
+                        const userName = profileMap[review.user]?.nama || "Anonymous User";
+                        return (
+                            <Box
+                                key={review._id}
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                p={4}
+                                boxShadow="sm"
+                                textAlign="left"
+                                mx={2}
+                                minWidth="280px"
+                                maxWidth="400px"
+                                width="100%"
+                                flexShrink={0}
+                                bg={colorMode === 'light'
+                                    ? 'rgba(255, 255, 255, 0.2)'
+                                    : 'rgba(128, 128, 128, 0.2)'} // Darker background for dark mode
+                                backdropFilter="blur(10px)"
+                                _hover={{
+                                    backdropFilter: "blur(20px)",
+                                }}
+                                mb={5}
+                            >
+                                <VStack align="stretch">
+                                    <Text
+                                        fontWeight="bold"
+                                        fontSize="md"
+                                        textAlign="center"
+                                        color={colorMode === 'light' ? 'black' : 'white'}
+                                    >
+                                        {userName}
+                                    </Text>
+                                    <Text
+                                        fontSize="sm"
+                                        color={colorMode === 'light' ? 'gray.500' : 'gray.300'}
+                                        textAlign="center"
+                                    >
+                                        {productName}
+                                    </Text>
+                                    <Text
+                                        fontSize="sm"
+                                        color={colorMode === 'light' ? 'gray.700' : 'gray.200'}
+                                        textAlign="left"
+                                    >
+                                        {review.comment}
+                                    </Text>
+                                </VStack>
+                            </Box>
+                        );
+                    })}
+                </InfiniteSlider>
             </Box>
         </Box>
     );

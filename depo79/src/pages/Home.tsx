@@ -12,6 +12,7 @@ const Home: React.FC = () => {
       <Box>
         <Image 
         src={Banner}
+        alt="Banner"
         />
       </Box>
 
