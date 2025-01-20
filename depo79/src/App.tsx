@@ -36,7 +36,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/list-barang" element={<ListBarang />} />
-        <Route path="/detail-barang" element={<DetailBarang />} />
+        <Route path="/detail-barang/:id" element={<DetailBarang />} />
         <Route path='/verify-otp' element={<OtpForm />} />
 
         {/* Protected Route user harus login */}
