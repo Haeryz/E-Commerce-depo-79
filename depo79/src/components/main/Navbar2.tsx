@@ -127,24 +127,21 @@ function Navbar2() {
         {isAuthenticated && user ? (
           <PopoverRoot >
             <PopoverTrigger asChild>
-              <Button>
-                {user.name.charAt(0)}
+              <Button borderRadius={40}>
+                {user.name.charAt(0).toUpperCase()}
               </Button>
-            </PopoverTrigger>
+            </PopoverTrigger >
             <PopoverContent
-              bg="white"
               borderRadius="md"
               boxShadow="lg"
+              backgroundColor={colorMode === 'light' ? 'white' : 'gray.700'}
             >
               <PopoverArrow />
               <PopoverBody>
                 <VStack>
                   <Text mb="0">{user.name}</Text>
-                  <Button onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
-                  <Button onClick={async () => {
-                    await useAuthStore.getState().logout();
-                    navigate("/");
-                  }}>Logout</Button>
+                  <Button onClick={() => navigate("/profile")}>Setting</Button>
+                  <Button onClick={() => useAuthStore.getState().logout()}>Logout</Button>
                 </VStack>
               </PopoverBody>
             </PopoverContent>
