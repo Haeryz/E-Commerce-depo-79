@@ -13,18 +13,20 @@ function ProfileSidebar() {
 
     return (
         <VStack align="stretch" minH="70vh">
-            <Text fontWeight="bold" fontSize="xl">
+            <Text fontWeight="bold" fontSize={["md", "xs", "xl"]}>
                 Settings
             </Text>
             <HStack
                 onClick={() => handleSelect("profile-sidebar")}
                 cursor="pointer"
                 color={selected === "profile-sidebar" ? "black" : "gray.500"}
+                fontSize={["sm", "md", "md"]}
             >
-                <IoPersonOutline />
+                <IoPersonOutline size={20} />
                 <Link to="profile-sidebar">
                     <Text
                         fontWeight={selected === "profile-sidebar" ? "bold" : "normal"}
+                        fontSize={["2xs", "xs", "md"]}
                     >
                         Informasi Pribadi
                     </Text>
@@ -34,11 +36,13 @@ function ProfileSidebar() {
                 onClick={() => handleSelect("alamat-sidebar")}
                 cursor="pointer"
                 color={selected === "alamat-sidebar" ? "black" : "gray.500"}
+                fontSize={["2xs", "md", "md"]}
             >
-                <LuMapPin />
+                <LuMapPin size={20} />
                 <Link to="alamat-sidebar">
                     <Text
                         fontWeight={selected === "alamat-sidebar" ? "bold" : "normal"}
+                        fontSize={["2xs", "xs", "md"]}
                     >
                         Informasi Alamat
                     </Text>
