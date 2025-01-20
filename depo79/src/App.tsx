@@ -20,6 +20,7 @@ import SidebarAlamat from './pages/client/profilesidebar/SidebarAlamat';
 import ProtectedRoute from './pages/ProtectedRoute';
 import DetailBarang from './pages/client/DetailBarang';
 import { Toaster } from './components/ui/toaster';
+import OtpForm from './pages/client/OtpForm';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -36,6 +37,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/list-barang" element={<ListBarang />} />
         <Route path="/detail-barang" element={<DetailBarang />} />
+        <Route path='/verify-otp' element={<OtpForm />} />
 
         {/* Protected Route user harus login */}
         <Route
