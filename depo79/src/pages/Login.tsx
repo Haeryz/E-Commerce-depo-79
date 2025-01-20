@@ -5,14 +5,15 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Field } from "../components/ui/field";
 import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { Link, useNavigate } from "react-router-dom"; 
 import { useColorModeValue } from "../components/ui/color-mode";
-import Turnstile, { useTurnstile } from "react-turnstile";
+import Turnstile from "react-turnstile";
+import { toaster } from "../components/ui/toaster";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null); // Store Turnstile token
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     const loginUser = useAuthStore((state) => state.loginUser); // Get the loginUser action
     const navigate = useNavigate(); // Initialize the useNavigate hook
@@ -25,12 +26,11 @@ const Login: React.FC = () => {
         e.preventDefault();
 
         if (!turnstileToken) {
-            alert("Please complete the Turnstile challenge.");
+            toaster.create({ title: "Turnstile token is required", type: "error" });
             return;
         }
 
         try {
-            // Call the loginUser action from the store
             await loginUser(email, password, turnstileToken); // Send Turnstile token
 
             navigate("/");
@@ -95,7 +95,7 @@ const Login: React.FC = () => {
                     <Box display="flex" justifyContent="center" width="100%">
                         <Turnstile
                             sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
-                            onSuccess={(token) => setTurnstileToken(token)} // Save Turnstile token
+                            onSuccess={(token) => setTurnstileToken(token)}
                         />
 
                     </Box>
