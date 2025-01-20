@@ -135,21 +135,23 @@ function Navbar2() {
         {isAuthenticated && user ? (
           <PopoverRoot >
             <PopoverTrigger asChild>
-              <Button>
-                {user.name.charAt(0)} 
+              <Button borderRadius={40}>
+                {user.name.charAt(0).toUpperCase()}
               </Button>
-            </PopoverTrigger>
+            </PopoverTrigger >
             <PopoverContent
-              bg="white"
               borderRadius="md"
               boxShadow="lg"
+              backgroundColor={colorMode === 'light' ? 'white' : 'gray.700'}
             >
               <PopoverArrow />
               <PopoverBody>
                 <VStack>
                   <Text mb="0">{user.name}</Text>
-                  <Button onClick={() => navigate("/profile")}>Setting</Button>
-                  <Button onClick={() => useAuthStore.getState().logout()}>Logout</Button>
+                  <Button pl={10} pr={10} onClick={() => navigate("/profile")}>Setting</Button>
+                  <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
+                  <Button onClick={() => navigate("/profile")}>Review History</Button>
+                  <Button color={colorMode === 'light' ? 'white' : 'black'} backgroundColor={colorMode === 'light' ? 'red' : 'pink'} onClick={() => useAuthStore.getState().logout()}>Logout</Button>
                 </VStack>
               </PopoverBody>
             </PopoverContent>
