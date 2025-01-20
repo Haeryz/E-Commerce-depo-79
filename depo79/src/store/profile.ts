@@ -30,6 +30,7 @@ interface ProfileState {
     error: string | null;
     fetchProfile: () => Promise<void>;
     fetchProfiles: () => Promise<void>;
+    fetchProfileReviews: () => Promise<void>;
     createProfile: (profile: Profile) => Promise<void>;
     updateProfile: (profile: Profile) => Promise<void>;
 }
@@ -51,7 +52,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         set({ loading: true, error: null });
 
         try {
-            const response = await fetch("/api/profile", {
+            const response = await fetch("/api/profile/account", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -76,6 +77,40 @@ export const useProfileStore = create<ProfileState>((set) => ({
         }
     },
 
+    fetchProfileReviews: async () => {
+        set({ loading: true, error: null });
+
+        try {
+            // Fetch all profiles without JWT
+            const response = await fetch("/api/profile", {  // New endpoint that does not require JWT
+                method: "GET",
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch profiles");
+
+            const data = await response.json();
+            if (data.success) {
+                const profiles = data.profiles.reduce(
+                    (map: Record<string, Profile>, profile: Profile) => {
+                        map[profile._id] = profile;
+                        return map;
+                    },
+                    {}
+                );
+                console.log("Fetched profiles:", profiles);
+                set({ profileMap: profiles });
+            } else {
+                console.log("Error fetching profiles:", data.message);
+                set({ error: data.message });
+            }
+        } catch (error: any) {
+            console.log("Error during profiles fetch:", error.message);
+            set({ error: error.message });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
     fetchProfiles: async () => {
         const { token } = useAuthStore.getState();
         if (!token) {
@@ -87,7 +122,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         set({ loading: true, error: null });
 
         try {
-            const response = await fetch("/api/profile", {  // Adjusted API endpoint for multiple profiles
+            const response = await fetch("/api/profile/account", {  // Adjusted API endpoint for multiple profiles
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -128,7 +163,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         }
 
         try {
-            const response = await fetch("/api/profile", {
+            const response = await fetch("/api/profile/account", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -162,7 +197,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         }
 
         try {
-            const response = await fetch(`/api/profile/${profile._id}`, {
+            const response = await fetch(`/api/profile/account/${profile._id}`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,
