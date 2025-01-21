@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack } from '@chakra-ui/react';
-import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box } from '@chakra-ui/react';
+import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat, MdMenu } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 
 import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
 import { Link, useNavigate } from 'react-router-dom';
 import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
+import { DrawerActionTrigger, DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerFooter, DrawerHeader, DrawerRoot, DrawerTitle, DrawerTrigger } from '../ui/drawer';
+import Chat from '../../pages/client/Chat';
+
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -14,6 +17,7 @@ function Navbar2() {
   const navigate = useNavigate();
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +29,43 @@ function Navbar2() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const MobileDrawerContent = () => (
+    <VStack align="stretch" gap={4}>
+      <Button variant="ghost">Diskon</Button>
+      <Button variant="ghost">Alamat</Button>
+      <Field>
+        <Input placeholder="Search" />
+      </Field>
+      {isAuthenticated && (
+        <>
+          <Button variant="ghost"><MdChat /> Chat</Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/cart')}
+          >
+            <MdOutlineShoppingCart />
+            Cart
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("/profile/profile-sidebar")}>
+            Settings
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("/profile")}>
+            Buy History
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("/profile")}>
+            Review History
+          </Button>
+          <Button
+            colorScheme="red"
+            onClick={() => useAuthStore.getState().logout()}
+          >
+            Logout
+          </Button>
+        </>
+      )}
+    </VStack>
+  );
 
   return (
     <HStack
@@ -38,7 +79,7 @@ function Navbar2() {
       boxShadow={isScrolled ? 'md' : 'none'}
       transition="background-color 0.3s ease, box-shadow 0.3s ease"
     >
-      <HStack>
+      <HStack gap={4}>
         <Link to="/">
           <Image
             src="https://bit.ly/naruto-sage"
@@ -49,40 +90,43 @@ function Navbar2() {
           />
         </Link>
       </HStack>
-      <Button
-        textStyle=""
-        w={16}
-        h={11}
-        background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
-        color={colorMode === 'light' ? 'black' : 'white'}
-        border={isScrolled ? 'none' : 'none'}
-        borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
-        _hover={{
-          background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
-        }}
-        transition="background-color 0.3s ease, border-color 0.3s ease"
-      >
-        Diskon
-      </Button>
-      <Button
-        textStyle=""
-        w={16}
-        h={11}
-        background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
-        color={colorMode === 'light' ? 'black' : 'white'}
-        border={isScrolled ? 'none' : 'none'}
-        borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
-        _hover={{
-          background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
-        }}
-        transition="background-color 0.3s ease, border-color 0.3s ease"
-      >
-        Alamat
-      </Button>
+      <Box display={{ base: 'none', md: 'flex' }}>
+        <Button
+          textStyle=""
+          w={16}
+          h={11}
+          background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
+          color={colorMode === 'light' ? 'black' : 'white'}
+          border={isScrolled ? 'none' : 'none'}
+          borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
+          _hover={{
+            background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
+          }}
+          transition="background-color 0.3s ease, border-color 0.3s ease"
+        >
+          Diskon
+        </Button>
+        <Button
+          textStyle=""
+          w={16}
+          h={11}
+          background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
+          color={colorMode === 'light' ? 'black' : 'white'}
+          border={isScrolled ? 'none' : 'none'}
+          borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
+          _hover={{
+            background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
+          }}
+          transition="background-color 0.3s ease, border-color 0.3s ease"
+        >
+          Alamat
+        </Button>
+      </Box>
+
 
       <Spacer />
 
-      <HStack>
+      <HStack display={{ base: 'none', md: 'flex' }}>
         <Field
           w={'xs'}
           borderRadius="15px"
@@ -107,22 +151,31 @@ function Navbar2() {
         </IconButton>
         {isAuthenticated && (
           <>
-            <IconButton
-              aria-label="Chat"
-              variant="ghost"
-              size="lg"
-              colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-            >
-              <MdChat />
-            </IconButton>
-            <IconButton
-              aria-label="Shopping Cart"
-              variant="ghost"
-              size="lg"
-              colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-            >
-              <MdOutlineShoppingCart />
-            </IconButton>
+            <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+              <DrawerBackdrop />
+              <DrawerTrigger asChild>
+                <Button
+                  aria-label="Chat"
+                  variant="ghost"
+                  size="lg"
+                  colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
+                >
+                  <MdChat />
+                </Button>
+              </DrawerTrigger>
+              <Chat></Chat>
+            </DrawerRoot>
+            <Link to="/cart">
+
+              <IconButton
+                aria-label="Shopping Cart"
+                variant="ghost"
+                size="lg"
+                colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
+              >
+                <MdOutlineShoppingCart />
+              </IconButton>
+            </Link>
           </>
         )}
         {isAuthenticated && user ? (
@@ -155,6 +208,35 @@ function Navbar2() {
           </Button>
         )}
       </HStack>
+
+      {/* Mobile Menu Button */}
+      <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+        <DrawerBackdrop />
+        <DrawerTrigger asChild>
+          <IconButton
+            display={{ base: 'flex', md: 'none' }}
+            aria-label="Open menu"
+            variant="ghost"
+          >
+            <MdMenu />
+          </IconButton>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Drawer Title</DrawerTitle>
+          </DrawerHeader>
+          <DrawerBody>
+            <MobileDrawerContent />
+          </DrawerBody>
+          <DrawerFooter>
+            <DrawerActionTrigger asChild>
+              <Button>Close</Button>
+            </DrawerActionTrigger>
+          </DrawerFooter>
+          <DrawerCloseTrigger />
+        </DrawerContent>
+      </DrawerRoot>
+
     </HStack>
   );
 }
