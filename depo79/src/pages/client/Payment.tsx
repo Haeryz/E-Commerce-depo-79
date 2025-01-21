@@ -1,4 +1,4 @@
-import { Box, CheckboxGroup, Flex, HStack, Input, Separator, Text, Textarea, VStack, Collapsible, SimpleGrid, Float } from '@chakra-ui/react'
+import { Box, CheckboxGroup, Flex, HStack, Input, Separator, Text, Textarea, VStack, Collapsible, SimpleGrid, Stack } from '@chakra-ui/react'
 import React from 'react'
 import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Button } from '../../components/ui/button'
@@ -11,8 +11,8 @@ function Payment() {
   ]
 
   return (
-    <VStack p={10} align={'strech'}>
-      <BreadcrumbRoot fontWeight={'bold'} ml={10} mb={5} alignSelf={'flex-start'}>
+    <VStack p={[4, 6, 10]} align={'stretch'}>
+      <BreadcrumbRoot fontWeight={'bold'} ml={[4, 6, 10]} mb={5} alignSelf={'flex-start'}>
         <BreadcrumbLink href='#'>
           cart
         </BreadcrumbLink>
@@ -24,30 +24,51 @@ function Payment() {
         </BreadcrumbLink>
       </BreadcrumbRoot>
 
-      <HStack justifyContent={'space-between'} w={'full'} px={10}>
-        <Box bg="bg" shadow="md" borderRadius="md" width="70%" mb={5} boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)" >
-          <VStack align={'start'} m={5}>
+      <Stack 
+        direction={['column', 'column', 'row']} 
+        spacing={[4, 6, 10]}
+        w={'full'} 
+        px={[4, 6, 10]}
+      >
+        <Box bg="bg" shadow="md" borderRadius="md" width={['100%', '100%', '70%']} mb={5} boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)">
+          <VStack align={'start'} m={[3, 4, 5]}>
             <Text fontWeight={'md'} fontSize={15}>
               Pembayaran
             </Text>
-            <HStack justifyContent="space-between" gapX={4} width="100%">
-              <Collapsible.Root>
-                <Collapsible.Trigger>
-                  <CheckboxGroup defaultValue={["next"]} w={'100%'} justifyContent={'space-between'}>
-                    <HStack w={'100%'} justifyContent={'space-between'}>
-                    {items.map((item) => (
-                        <CheckboxCard w={'500px'}
+            <Stack 
+              direction={['column', 'column', 'row']} 
+              w={'100%'} 
+              spacing={[3, 4]}
+            >
+              <Collapsible.Root w={'100%'}>
+                <Collapsible.Trigger w={'100%'}>
+                  <CheckboxGroup defaultValue={["next"]} w={'100%'}>
+                    <Stack 
+                      direction={['column', 'column', 'row']} 
+                      w={'100%'} 
+                      spacing={[3, 4]}
+                      justifyContent={'space-between'}
+                    >
+                      {items.map((item) => (
+                        <CheckboxCard 
+                          w={['100%', '100%', '500px']}
                           label={item.title}
                           description={item.description}
                           key={item.value}
                           value={item.value}
                         />
                       ))}
-                    </HStack>
+                    </Stack>
                   </CheckboxGroup>
                 </Collapsible.Trigger>
-                <Collapsible.Content>
-                  <Box padding="4" borderWidth="1px" mt={3}>
+                <Collapsible.Content w={'100%'}>
+                  <Box 
+                    padding={[3, 4]} 
+                    borderWidth="1px" 
+                    mt={3}
+                    w={'100%'}
+                    fontSize={['sm', 'md']}
+                  >
                     Lorem Ipsum is simply dummy text of the printing and typesetting
                     industry. Lorem Ipsum has been the industry's standard dummy text ever
                     since the 1500s, when an unknown printer took a galley of type and
@@ -55,11 +76,17 @@ function Payment() {
                   </Box>
                 </Collapsible.Content>
               </Collapsible.Root>
-            </HStack>
+            </Stack>
           </VStack>
         </Box>
 
-        <Box bg="bg" shadow="md" borderRadius="md" width="30%" alignSelf={'flex-start'}>
+        <Box 
+          bg="bg" 
+          shadow="md" 
+          borderRadius="md" 
+          width={['100%', '100%', '30%']} 
+          alignSelf={'flex-start'}
+        >
           <VStack>
             <HStack justifyContent={'space-between'} w={'full'} mt={5}>
               <Text ml={5} fontWeight={"Bold"} color={'gray.500'}>
@@ -91,7 +118,7 @@ function Payment() {
             </Button>
           </VStack>
         </Box>
-      </HStack>
+      </Stack>
     </VStack>
   )
 }

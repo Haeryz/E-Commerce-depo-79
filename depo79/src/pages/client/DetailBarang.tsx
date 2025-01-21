@@ -1,6 +1,5 @@
 import { Box, Button, HStack, Image, Text, VStack, Spinner } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
-import { Rating } from '../../components/ui/rating';
 import { useProductStore } from "../../store/product";
 import { useParams } from 'react-router-dom';
 import { GiWeight } from "react-icons/gi";
