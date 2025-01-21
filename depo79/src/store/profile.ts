@@ -197,7 +197,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         }
 
         try {
-            const response = await fetch(`/api/profile/account/${profile._id}`, {
+            const response = await fetch(`/api/profile/${profile._id}`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,
