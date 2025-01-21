@@ -9,12 +9,11 @@ import { useColorMode } from '../ui/color-mode'
 
 const MobileDrawer = () => {
     const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
-    const { user, isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
+    const { isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
     const navigate = useNavigate();
 
     const [isScrolled, setIsScrolled] = useState(false);
     const [open, setOpen] = useState(false);
-    const isMobile = useBreakpointValue({ base: true, md: false });
 
     useEffect(() => {
         const handleScroll = () => {
