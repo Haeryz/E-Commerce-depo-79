@@ -9,13 +9,13 @@ import { LuCarTaxiFront} from "react-icons/lu";
 import { EmptyState } from '../../components/ui/empty-state';
 import { MdOutlineReviews } from 'react-icons/md';
 import { useProfileStore } from '../../store/profile';
+import { Rating } from '../../components/ui/rating';
 
 function DetailBarang() {
     const { id } = useParams();
     const { productDetail, loading: productLoading, error: productError, fetchProductById } = useProductStore();
     const { beratMap, loading: beratLoading, error: beratError, fetchBerat } = useBeratStore();
     const { profileMap, fetchProfileReviews } = useProfileStore();
-
     useEffect(() => {
         if (id) {
             fetchProductById(id);
@@ -23,7 +23,6 @@ function DetailBarang() {
             fetchProfileReviews();
         }
     }, [id, fetchProductById, fetchBerat, fetchProfileReviews]);
-
     // Loading state for both product and berat
     if (productLoading || beratLoading) {
         return (
@@ -33,7 +32,6 @@ function DetailBarang() {
             </Box>
         );
     }
-
     // Error handling
     if (productError || beratError) {
         return (
@@ -42,7 +40,6 @@ function DetailBarang() {
             </Box>
         );
     }
-
     // If no product is found
     if (!productDetail) {
         return (
@@ -51,13 +48,10 @@ function DetailBarang() {
             </Box>
         );
     }
-
     const beratName = beratMap[productDetail.berat.unit]
         ? `${productDetail.berat.value} ${beratMap[productDetail.berat.unit]}`
         : `${productDetail.berat.value} ${productDetail.berat.unit}`;
-
     return (
-
         <Box p={5} mr={5} ml={5}>
             <VStack>
                 <HStack align="start" w={'100%'}>
@@ -66,7 +60,6 @@ function DetailBarang() {
                         <Text fontWeight="bold" fontSize="2xl">{productDetail.nama}</Text>
                         <Text>{productDetail.terjual || 0} Sold</Text>
                         <Text fontWeight="bold" fontSize="xl">Rp. {productDetail.harga_jual.toLocaleString()}</Text>
-
                         {/* Product Info */}
                         <Box borderWidth="1px" borderRadius="lg" p={4} w="full" bg="gray.50">
                             <VStack align="start" >
@@ -84,7 +77,6 @@ function DetailBarang() {
                                 </HStack>
                             </VStack>
                         </Box>
-
                         {/* Add to Cart Button */}
                         <Button colorScheme="teal" borderRadius="full" w="full">
                             Tambahkan Ke Keranjang
@@ -93,7 +85,6 @@ function DetailBarang() {
                             Beli Sekarang
                         </Button>
                     </VStack>
-
                     {/* Right Section */}
                     <Box flex="1">
                         <Image
@@ -116,7 +107,7 @@ function DetailBarang() {
                                 <Box key={review._id} p={3} borderWidth="1px" borderRadius="md" w="full">
                                     <Text>By User: {profileMap[review.user._id]?.nama || review.user._id}</Text>
                                     <Image src={review.image} alt="Review Image" w="100px" h="100px" objectFit="cover" borderRadius="md" my={2} />
-                                    <Text fontWeight="bold">Rating: {review.rating}</Text>
+                                    <Rating readOnly defaultValue={review.rating} size="sm" />
                                     <Text>Comment: {review.comment}</Text>
                                 </Box>
                             ))}
@@ -131,7 +122,6 @@ function DetailBarang() {
                 </Box>
             </VStack>
         </Box>
-
     );
 }
 
