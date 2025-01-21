@@ -8,18 +8,21 @@ import { useBeratStore } from '../../store/berat';
 import { LuCarTaxiFront} from "react-icons/lu";
 import { EmptyState } from '../../components/ui/empty-state';
 import { MdOutlineReviews } from 'react-icons/md';
+import { useProfileStore } from '../../store/profile';
 
 function DetailBarang() {
     const { id } = useParams();
     const { productDetail, loading: productLoading, error: productError, fetchProductById } = useProductStore();
     const { beratMap, loading: beratLoading, error: beratError, fetchBerat } = useBeratStore();
+    const { profileMap, fetchProfileReviews } = useProfileStore();
 
     useEffect(() => {
         if (id) {
             fetchProductById(id);
             fetchBerat();
+            fetchProfileReviews();
         }
-    }, [id, fetchProductById, fetchBerat]);
+    }, [id, fetchProductById, fetchBerat, fetchProfileReviews]);
 
     // Loading state for both product and berat
     if (productLoading || beratLoading) {
@@ -111,7 +114,7 @@ function DetailBarang() {
                         <VStack align="start" m={5}>
                             {productDetail.reviews.map((review) => (
                                 <Box key={review._id} p={3} borderWidth="1px" borderRadius="md" w="full">
-                                    <Text>By User: {review.user._id}</Text>
+                                    <Text>By User: {profileMap[review.user._id]?.nama || review.user._id}</Text>
                                     <Image src={review.image} alt="Review Image" w="100px" h="100px" objectFit="cover" borderRadius="md" my={2} />
                                     <Text fontWeight="bold">Rating: {review.rating}</Text>
                                     <Text>Comment: {review.comment}</Text>
