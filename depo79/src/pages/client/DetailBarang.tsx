@@ -106,14 +106,25 @@ function DetailBarang() {
                     </Box>
                 </HStack>
                 <Box w={'100%'} bg="bg" shadow="md" borderRadius="md" mb={5} boxShadow="0px 2px 10px 2px rgba(0, 0, 0, 0.1)" mt={5}>
-                    <Text ml={5} mt={5}>
-                        Lihat Semua Review
-                    </Text>
-                    <EmptyState
-                        icon={<MdOutlineReviews />}
-                        title="There is no review available"
-                        description="Explore our products and add items to your cart"
-                    />
+                    <Text ml={5} mt={5}>Lihat Semua Review</Text>
+                    {productDetail.reviews?.length ? (
+                        <VStack align="start" m={5}>
+                            {productDetail.reviews.map((review) => (
+                                <Box key={review._id} p={3} borderWidth="1px" borderRadius="md" w="full">
+                                    <Text>By User: {review.user._id}</Text>
+                                    <Image src={review.image} alt="Review Image" w="100px" h="100px" objectFit="cover" borderRadius="md" my={2} />
+                                    <Text fontWeight="bold">Rating: {review.rating}</Text>
+                                    <Text>Comment: {review.comment}</Text>
+                                </Box>
+                            ))}
+                        </VStack>
+                    ) : (
+                        <EmptyState
+                            icon={<MdOutlineReviews />}
+                            title="There is no review available"
+                            description="Explore our products and add items to your cart"
+                        />
+                    )}
                 </Box>
             </VStack>
         </Box>
