@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
@@ -25,13 +25,6 @@ function Navbar2() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  const colorPalette = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
-
-  const pickPalette = (name: string) => {
-    const index = name.charCodeAt(0) % colorPalette.length;
-    return colorPalette[index];
-  };
 
   return (
     <HStack
@@ -148,7 +141,7 @@ function Navbar2() {
               <PopoverBody>
                 <VStack>
                   <Text mb="0">{user.name}</Text>
-                  <Button pl={10} pr={10} onClick={() => navigate("/profile")}>Setting</Button>
+                  <Button pl={10} pr={10} onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
                   <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
                   <Button onClick={() => navigate("/profile")}>Review History</Button>
                   <Button color={colorMode === 'light' ? 'white' : 'black'} backgroundColor={colorMode === 'light' ? 'red' : 'pink'} onClick={() => useAuthStore.getState().logout()}>Logout</Button>
