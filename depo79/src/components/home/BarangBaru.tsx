@@ -14,9 +14,9 @@ function BarangBaru() {
     const itemsPerPage = 6; // Define items per page
 
     useEffect(() => {
-        fetchProducts();
+        fetchProducts(currentPage, itemsPerPage);
         fetchBerat();
-    }, [fetchProducts, fetchBerat]);
+    }, [fetchProducts, fetchBerat, currentPage, itemsPerPage]);
 
     const isLoading = productLoading || beratLoading;
     const isError = productError || beratError;

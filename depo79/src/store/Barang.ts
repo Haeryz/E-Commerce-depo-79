@@ -17,29 +17,46 @@ interface Product {
     image: string;
 }
 
+interface Pagination {
+    total: number;
+    page: number;
+    totalPages: number;
+    limit: number;
+}
+
 interface ProductState {
     products: Product[];
+    pagination: Pagination;
     loading: boolean;
     error: string | null;
-    fetchProducts: () => Promise<void>;
+    fetchProducts: (page: number, limit: number) => Promise<void>;
 }
 
 export const useProductStore = create<ProductState>((set) => ({
     products: [],
+    pagination: {
+        total: 0,
+        page: 1,
+        totalPages: 1,
+        limit: 10,
+    },
     loading: false,
     error: null,
 
-    fetchProducts: async () => {
+    fetchProducts: async (page = 1, limit = 10) => {
         set({ loading: true, error: null });
 
         try {
-            const response = await fetch("api/product"); // Update the URL as needed
+            const response = await fetch(`api/product?page=${page}&limit=${limit}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch products");
             }
             const data = await response.json();
             if (data.success) {
-                set({ products: data.products });
+                set({
+                    products: data.products,
+                    pagination: data.pagination,
+                });
             } else {
                 set({ error: data.message });
             }
