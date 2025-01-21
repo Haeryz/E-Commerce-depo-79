@@ -7,6 +7,8 @@ import { Tooltip } from '../../../components/ui/tooltip';
 import { MdEdit } from 'react-icons/md';
 import { useAuthStore } from '../../../store/auth';
 import { useProfileStore } from '../../../store/profile';
+import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../../../components/ui/dialog';
+import { Button } from '../../../components/ui/button';
 
 function SidebarProfile() {
     const email = useAuthStore((state) => state.user);
@@ -50,15 +52,36 @@ function SidebarProfile() {
                     <Text fontWeight={"bold"} fontSize={["lg", "xl", "2xl"]}> {/* Responsive font sizes */}
                         {profile?.nama || defaultProfile.nama}
                     </Text>
-                    <Tooltip content={"Edit"}>
-                        <IconButton
-                            aria-label="Edit Profile"
-                            rounded="full"
-                            size={["sm", "md"]}
-                        >
-                            <MdEdit />
-                        </IconButton>
-                    </Tooltip>
+                    <DialogRoot role="dialog">
+                        <Tooltip content="Edit">
+                            <DialogTrigger asChild>
+                                <IconButton
+                                    aria-label="Edit Profile"
+                                    rounded="full"
+                                    size={["sm", "md"]}
+                                >
+                                    <MdEdit />
+                                </IconButton>
+                            </DialogTrigger>
+                        </Tooltip>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Edit Profile</DialogTitle>
+                            </DialogHeader>
+                            <DialogBody>
+                                <Field label="Name">
+                                    <Input placeholder="Rusdi" />
+                                </Field>
+                            </DialogBody>
+                            <DialogFooter>
+                                <DialogActionTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogActionTrigger>
+                                <Button colorPalette="red.500">Delete</Button>
+                            </DialogFooter>
+                            <DialogCloseTrigger />
+                        </DialogContent>
+                    </DialogRoot>
                     <Tooltip content={"Create"}>
                         <IconButton
                             aria-label="Create Profile"
