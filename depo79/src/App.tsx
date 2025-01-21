@@ -35,7 +35,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/list-barang" element={<ListBarang />} />
+        <Route path="/search" element={<ListBarang />} />
         <Route path="/detail-barang/:id" element={<DetailBarang />} />
         <Route path='/verify-otp' element={<OtpForm />} />
 
