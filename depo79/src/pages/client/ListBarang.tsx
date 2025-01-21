@@ -46,18 +46,20 @@ function ListBarang() {
               </Stack>
             ))
           : filteredProducts.map((product) => (
-              <Link to={`/detail-barang/${product._id}`} key={product._id}>
-                <Box
-                  maxW="sm"
-                  overflow="hidden"
-                  borderRadius="md"
-                  boxShadow="xl"
-                  _hover={{
-                    transform: "scale(1.05)", // Slightly enlarge the card
-                    boxShadow: "lg", // Optional: add shadow effect
-                  }}
-                  transition="transform 0.2s ease, box-shadow 0.2s ease"
-                >
+              <Box
+                maxW="sm"
+                overflow="hidden"
+                borderRadius="md"
+                boxShadow="xl"
+                key={product._id}
+                _hover={{
+                  transform: "scale(1.05)", // Slightly enlarge the card
+                  boxShadow: "lg", // Optional: add shadow effect
+                }}
+                transition="transform 0.2s ease, box-shadow 0.2s ease"
+              >
+                {/* Make the card clickable for product detail */}
+                <Link to={`/detail-barang/${product._id}`}>
                   <Box position="relative" height="200px" width="100%" overflow="hidden">
                     <img
                       src={product.image}
@@ -76,12 +78,17 @@ function ListBarang() {
                     </Text>
                     <Text mt={2} fontWeight="medium" fontSize="lg">${product.harga_jual}</Text>
                   </Box>
-                  <Box p={4} display="flex" gap={2}>
+                </Link>
+                {/* Keep the buttons outside the Link to make them independently clickable */}
+                <Box p={4} display="flex" gap={2}>
+                  <Link to={`/beli-barang/${product._id}`}>
                     <Button variant="solid">Beli</Button>
-                    <Button variant="ghost">Tambahkan ke Keranjang</Button>
-                  </Box>
+                  </Link>
+                  <Link to={`/keranjang`}>
+                    <Button variant="ghost">🛒 Tambahkan ke Keranjang</Button>
+                  </Link>
                 </Box>
-              </Link>
+              </Box>
             ))}
       </SimpleGrid>
     </Box>

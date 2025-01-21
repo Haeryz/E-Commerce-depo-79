@@ -2,14 +2,14 @@ import { Box, Button, HStack, Image, Text, VStack, Spinner } from '@chakra-ui/re
 import React, { useEffect } from 'react';
 import { Rating } from '../../components/ui/rating';
 import { useProductStore } from "../../store/product";
-import { useParams } from 'react-router-dom'; // Assuming you're using react-router
+import { useParams } from 'react-router-dom';
 import { GiWeight } from "react-icons/gi";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { useBeratStore } from '../../store/berat';
-import { LuCarTaxiFront } from 'react-icons/lu';
+import { LuCarTaxiFront } from "react-icons/lu";
 
 function DetailBarang() {
-    const { id } = useParams(); // Get the product ID from the route
+    const { id } = useParams();
     const { productDetail, loading: productLoading, error: productError, fetchProductById } = useProductStore();
     const { beratMap, loading: beratLoading, error: beratError, fetchBerat } = useBeratStore();
 
@@ -20,7 +20,7 @@ function DetailBarang() {
         }
     }, [id, fetchProductById, fetchBerat]);
 
-    // Combined loading state
+    // Loading state for both product and berat
     if (productLoading || beratLoading) {
         return (
             <Box textAlign="center" mt={10}>
@@ -30,7 +30,7 @@ function DetailBarang() {
         );
     }
 
-    // Combined error handling
+    // Error handling
     if (productError || beratError) {
         return (
             <Box textAlign="center" mt={10}>
@@ -39,6 +39,7 @@ function DetailBarang() {
         );
     }
 
+    // If no product is found
     if (!productDetail) {
         return (
             <Box textAlign="center" mt={10}>

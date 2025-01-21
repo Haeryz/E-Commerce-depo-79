@@ -28,6 +28,26 @@ export const getProducts = async (req, res) => {
   }
 };
 
+export const getProductById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "Product not found" });
+  }
+
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({ success: true, product });
+  } catch (error) {
+    console.log("Error:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const createProduct = async (req, res) => {
   const {
     nama,
