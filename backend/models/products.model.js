@@ -18,6 +18,12 @@ const productSchema = new mongoose.Schema({
         default: 0,
         required: true,
     },
+    terjual: {
+        type: Number,
+        default: 0,
+        required: true,
+        min: [0, 'Sold items cannot be negative']
+    },
     diskon: {
         type: Number,
         required: true,

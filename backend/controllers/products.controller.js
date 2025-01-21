@@ -60,43 +60,28 @@ export const createProduct = async (req, res) => {
     keterangan,
     kategori,
     image,
+    terjual = 0,
   } = req.body;
 
-  if (
-    !nama ||
-    !harga_jual ||
-    !harga_beli ||
-    !stok ||
-    !diskon ||
-    !berat ||
-    !kategori ||
-    !image
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: "All required fields must be provided",
-    });
-  }
-
-  const newProduct = new Product({
-    nama,
-    harga_jual,
-    harga_beli,
-    stok,
-    diskon,
-    berat,
-    letak_rak,
-    keterangan,
-    kategori,
-    image,
-  });
-
   try {
+    const newProduct = new Product({
+      nama,
+      harga_jual,
+      harga_beli,
+      stok,
+      diskon,
+      berat,
+      letak_rak,
+      keterangan,
+      kategori,
+      image,
+      terjual,
+    });
+
     await newProduct.save();
-    return res.status(201).json({ success: true, product: newProduct });
+    res.status(201).json(newProduct);
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    res.status(409).json({ message: error.message });
   }
 };
 
@@ -113,6 +98,7 @@ export const updateProduct = async (req, res) => {
     keterangan,
     kategori,
     image,
+    terjual,  // Added terjual field
   } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -132,6 +118,7 @@ export const updateProduct = async (req, res) => {
     keterangan,
     kategori,
     image,
+    terjual,  // Added terjual field
     _id: id,
   };
 
