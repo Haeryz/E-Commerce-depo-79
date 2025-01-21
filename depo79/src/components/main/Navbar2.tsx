@@ -7,6 +7,9 @@ import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
 import { Link, useNavigate } from 'react-router-dom';
 import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
+import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
+import Chat from '../../pages/client/Chat';
+
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -14,6 +17,7 @@ function Navbar2() {
   const navigate = useNavigate();
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,14 +111,22 @@ function Navbar2() {
         </IconButton>
         {isAuthenticated && (
           <>
-            <IconButton
-              aria-label="Chat"
-              variant="ghost"
-              size="lg"
-              colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-            >
-              <MdChat />
-            </IconButton>
+            <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+              <DrawerBackdrop />
+              <DrawerTrigger asChild>
+                <Button
+                  aria-label="Chat"
+                  variant="ghost"
+                  size="lg"
+                  colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
+                >
+                  <MdChat />
+                </Button>
+              </DrawerTrigger>
+              <Chat></Chat>
+            </DrawerRoot>
+            <Link to="/cart">
+
             <IconButton
               aria-label="Shopping Cart"
               variant="ghost"
@@ -123,6 +135,7 @@ function Navbar2() {
             >
               <MdOutlineShoppingCart />
             </IconButton>
+            </Link>
           </>
         )}
         {isAuthenticated && user ? (
