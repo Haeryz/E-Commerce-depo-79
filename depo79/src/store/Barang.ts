@@ -65,8 +65,8 @@ export const useProductStore = create<ProductState>((set) => ({
             } else {
                 set({ error: data.message });
             }
-        } catch (error: any) {
-            set({ error: error.message });
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
         } finally {
             set({ loading: false });
         }
@@ -94,9 +94,9 @@ export const useProductStore = create<ProductState>((set) => ({
                 set({ error: data.message });
                 console.log('Error setting product:', data.message); // Log any error messages
             }
-        } catch (error: any) {
-            set({ error: error.message });
-            console.log('Error during API call:', error.message); // Log error during API call
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+            console.log('Error during API call:', error instanceof Error ? error.message : 'An unknown error occurred'); // Log error during API call
         } finally {
             set({ loading: false });
         }

@@ -69,9 +69,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
                 console.log("Error fetching profile:", data.message);
                 set({ error: data.message });
             }
-        } catch (error: string) {
-            console.log("Error during profile fetch:", error.message);
-            set({ error: error.message });
+        } catch (error: unknown) {
+            console.log("Error during profile fetch:", error instanceof Error ? error.message : String(error));
+            set({ error: error instanceof Error ? error.message : String(error) });
         } finally {
             set({ loading: false });
         }
@@ -104,9 +104,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
                 console.log("Error fetching profiles:", data.message);
                 set({ error: data.message });
             }
-        } catch (error: any) {
-            console.log("Error during profiles fetch:", error.message);
-            set({ error: error.message });
+        } catch (error: unknown) {
+            console.log("Error during profiles fetch:", error instanceof Error ? error.message : String(error));
+            set({ error: error instanceof Error ? error.message : String(error) });
         } finally {
             set({ loading: false });
         }
@@ -146,9 +146,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
                 console.log("Error fetching profiles:", data.message);
                 set({ error: data.message });
             }
-        } catch (error: any) {
-            console.log("Error during profiles fetch:", error.message);
-            set({ error: error.message });
+        } catch (error: unknown) {
+            console.log("Error during profiles fetch:", error instanceof Error ? error.message : String(error));
+            set({ error: error instanceof Error ? error.message : String(error) });
         } finally {
             set({ loading: false });
         }
@@ -182,9 +182,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
                 console.log("Error creating profile:", data.message);
                 set({ error: data.message });
             }
-        } catch (error: any) {
-            console.log("Error during profile creation:", error.message);
-            set({ error: error.message });
+        } catch (error: unknown) {
+            console.log("Error during profile creation:", error instanceof Error ? error.message : String(error));
+            set({ error: error instanceof Error ? error.message : String(error) });
         }
     },
 
@@ -216,9 +216,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
                 console.log("Error updating profile:", data.message);
                 set({ error: data.message });
             }
-        } catch (error: any) {
-            console.log("Error during profile update:", error.message);
-            set({ error: error.message });
+        } catch (error: unknown) {
+            console.log("Error during profile update:", error instanceof Error ? error.message : String(error));
+            set({ error: error instanceof Error ? error.message : String(error) });
         }
     },
 }));

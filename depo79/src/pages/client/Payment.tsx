@@ -1,8 +1,8 @@
-import { Box, CheckboxGroup, Flex, HStack, Input, Separator, Text, Textarea, VStack, Collapsible, SimpleGrid, Stack } from '@chakra-ui/react'
+import { Box, CheckboxGroup, HStack, Separator, Text, VStack, Collapsible, Stack } from '@chakra-ui/react'
 import React from 'react'
 import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Button } from '../../components/ui/button'
-import { CheckboxCard, CheckboxCardIndicator } from '../../components/ui/checkbox-card'
+import { CheckboxCard } from '../../components/ui/checkbox-card'
 
 function Payment() {
   const items = [
@@ -26,7 +26,7 @@ function Payment() {
 
       <Stack 
         direction={['column', 'column', 'row']} 
-        spacing={[4, 6, 10]}
+        gap={[4, 6, 10]}
         w={'full'} 
         px={[4, 6, 10]}
       >
@@ -38,7 +38,7 @@ function Payment() {
             <Stack 
               direction={['column', 'column', 'row']} 
               w={'100%'} 
-              spacing={[3, 4]}
+              gap={[3, 4]}
             >
               <Collapsible.Root w={'100%'}>
                 <Collapsible.Trigger w={'100%'}>
@@ -46,7 +46,7 @@ function Payment() {
                     <Stack 
                       direction={['column', 'column', 'row']} 
                       w={'100%'} 
-                      spacing={[3, 4]}
+                      gap={[3, 4]}
                       justifyContent={'space-between'}
                     >
                       {items.map((item) => (

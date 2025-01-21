@@ -32,10 +32,11 @@ export const useReviewStore = create<ReviewStore>((set) => ({
         try {
             const response = await axios.get("api/review");
             set({ reviews: response.data.reviews, loading: false });
-        } catch (error: any) {
+        } catch (error: Error | unknown) {
+            const axiosError = error as { response?: { data?: { message?: string } } };
             set({
                 loading: false,
-                error: error.response?.data?.message || "Failed to fetch reviews",
+                error: axiosError.response?.data?.message || "Failed to fetch reviews",
             });
         }
     },
@@ -47,10 +48,11 @@ export const useReviewStore = create<ReviewStore>((set) => ({
             const response = await axios.get(`api/review/${id}`);
             set({ loading: false });
             return response.data.review;
-        } catch (error: any) {
+        } catch (error: Error | unknown) {
+            const axiosError = error as { response?: { data?: { message?: string } } };
             set({
                 loading: false,
-                error: error.response?.data?.message || "Failed to fetch the review",
+                error: axiosError.response?.data?.message || "Failed to fetch the review",
             });
             return null;
         }

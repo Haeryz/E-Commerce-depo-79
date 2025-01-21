@@ -38,8 +38,8 @@ export const useBeratStore = create<BeratState>((set) => ({
             } else {
                 set({ error: data.message });
             }
-        } catch (error: any) {
-            set({ error: error.message });
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
         } finally {
             set({ loading: false });
         }
