@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, useBreakpointValue } from '@chakra-ui/react';
-import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat, MdMenu } from 'react-icons/md';
+import { useEffect, useState, FormEvent } from 'react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box } from '@chakra-ui/react';
+import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 
 import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
 import { Link, useNavigate } from 'react-router-dom';
 import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
-import { DrawerActionTrigger, DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerFooter, DrawerHeader, DrawerRoot, DrawerTitle, DrawerTrigger } from '../ui/drawer';
+import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
 
@@ -19,6 +19,14 @@ function Navbar2() {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,21 +94,25 @@ function Navbar2() {
           Alamat
         </Button>
       </Box>
-      <Field
-           maxW={{ base: 'full', sm: '200px', md: '4xs' }}
-           borderRadius="15px"
-           outline={'1px solid black'}
-           border="none"
-           _focus={{ outline: '1px solid black', borderRadius: '50px' }}
-           order={{ base: 3, sm: 'initial' }}
-           flexGrow={{ base: 1, sm: 0 }}
+      <form onSubmit={handleSearch}>
+        <Field
+          maxW={{ base: 'full', sm: '200px', md: '4xs' }}
+          borderRadius="15px"
+          outline={'1px solid black'}
+          border="none"
+          _focus={{ outline: '1px solid black', borderRadius: '50px' }}
+          order={{ base: 3, sm: 'initial' }}
+          flexGrow={{ base: 1, sm: 0 }}
         >
           <Input
             placeholder="Search"
             border="none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             _focus={{ outline: 'none', boxShadow: 'none' }}
           />
-      </Field>
+        </Field>
+      </form>
 
       <Spacer />
 
@@ -175,7 +187,7 @@ function Navbar2() {
       </HStack>
 
       {/* Mobile Menu Button */}
-      <MobileDrawer/>
+      <MobileDrawer />
     </HStack>
   );
 }

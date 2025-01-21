@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useProductStore } from "../../store/Barang";
 import { Box, SimpleGrid, Text, Stack, HStack, Button, IconButton } from "@chakra-ui/react";
 import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2";
@@ -6,7 +7,9 @@ import { Link } from "react-router-dom";
 import { Skeleton, SkeletonText } from "../../components/ui/skeleton";
 
 function ListBarang() {
+  const [searchParams] = useSearchParams();
   const { products, loading: productLoading, error: productError, fetchProducts } = useProductStore();
+  const searchQuery = searchParams.get('q') || '';
 
   useEffect(() => {
     fetchProducts(1, 10); // Fetch the first 10 products
@@ -17,10 +20,12 @@ function ListBarang() {
 
   if (isError) return <Box>Error: {productError}</Box>;
 
-  // Filter products based on the search query ("semen" in this case)
-  const filteredProducts = products.filter((product) =>
-    product.nama.toLowerCase().includes("semen") // Filtering for "semen"
-  );
+  // Filter products based on the search query from URL
+  const filteredProducts = searchQuery
+    ? products.filter((product) =>
+        product.nama.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : products;
 
   return (
     <Box p={5}>
