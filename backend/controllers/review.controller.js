@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Review from "../models/review.model.js";
+import Product from "../models/products.model.js";
 
 export const getReviews = async (req, res) => {
   try {
@@ -30,11 +31,25 @@ export const createReview = async (req, res) => {
       .json({ success: false, message: "All fields are required" });
   }
 
-  const newReview = new Review({ user, product, rating, comment, image });
-
   try {
-    await newReview.save();
-    return res.status(201).json({ success: true, review: newReview });
+    const newReview = new Review({ user, product, rating, comment, image });
+    const savedReview = await newReview.save();
+
+    // Update product's reviews array using $addToSet to avoid duplicates
+    await Product.findByIdAndUpdate(
+      product,
+      { 
+        $addToSet: { reviews: savedReview._id } 
+      },
+      { new: true, runValidators: true }
+    );
+
+    // Get the updated review with populated fields
+    const populatedReview = await Review.findById(savedReview._id)
+      .populate('user', 'name email')
+      .populate('product', 'nama');
+
+    return res.status(201).json({ success: true, review: populatedReview });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ success: false, message: error.message });

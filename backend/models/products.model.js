@@ -58,7 +58,11 @@ const productSchema = new mongoose.Schema({
     image: {
         type: String,
         required: true,
-    }
+    },
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Review'
+    }]
 }, { timestamps: true }); 
 
 const Product = mongoose.model("Product", productSchema);

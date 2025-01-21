@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Product from "../models/products.model.js";
+import Review from "../models/review.model.js";  // Add this import
 
 export const getProducts = async (req, res) => {
   const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
@@ -36,12 +37,24 @@ export const getProductById = async (req, res) => {
   }
 
   try {
-    const product = await Product.findById(id);
+    // Get reviews for this product
+    const reviews = await Review.find({ product: id })
+      .populate('user', 'name email');
+
+    // Get product and manually set the reviews
+    const product = await Product.findById(id).lean();
+    
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    return res.status(200).json({ success: true, product });
+    // Assign the reviews to the product
+    product.reviews = reviews;
+
+    return res.status(200).json({ 
+      success: true, 
+      product
+    });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });

@@ -6,6 +6,7 @@ interface Product {
     harga_jual: number;
     harga_beli: number;
     stok: number;
+    terjual?: number;
     diskon: number;
     berat: {
         value: number;

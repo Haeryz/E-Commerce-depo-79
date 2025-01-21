@@ -58,12 +58,7 @@ function DetailBarang() {
                 {/* Left Section */}
                 <VStack align="start" w="50%">
                     <Text fontWeight="bold" fontSize="2xl">{productDetail.nama}</Text>
-                    <HStack >
-                        <Rating readOnly defaultValue={4.0} colorPalette="yellow" />
-                        <Text fontWeight="bold">{productDetail.rating || 4.0}</Text>
-                        <Text>({productDetail.reviews || 232} Reviews)</Text>
-                        <Text>{productDetail.sold || 2093} Sold</Text>
-                    </HStack>
+                    <Text>{productDetail.terjual || 0} Sold</Text>
                     <Text fontWeight="bold" fontSize="xl">Rp. {productDetail.harga_jual.toLocaleString()}</Text>
 
                     {/* Product Info */}
