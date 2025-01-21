@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box } from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, useBreakpointValue } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat, MdMenu } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 
@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
 import { DrawerActionTrigger, DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerFooter, DrawerHeader, DrawerRoot, DrawerTitle, DrawerTrigger } from '../ui/drawer';
 import Chat from '../../pages/client/Chat';
+import MobileDrawer from '../mobile/MobileDrawer';
 
 
 function Navbar2() {
@@ -29,43 +30,6 @@ function Navbar2() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  const MobileDrawerContent = () => (
-    <VStack align="stretch" gap={4}>
-      <Button variant="ghost">Diskon</Button>
-      <Button variant="ghost">Alamat</Button>
-      <Field>
-        <Input placeholder="Search" />
-      </Field>
-      {isAuthenticated && (
-        <>
-          <Button variant="ghost"><MdChat /> Chat</Button>
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/cart')}
-          >
-            <MdOutlineShoppingCart />
-            Cart
-          </Button>
-          <Button variant="ghost" onClick={() => navigate("/profile/profile-sidebar")}>
-            Settings
-          </Button>
-          <Button variant="ghost" onClick={() => navigate("/profile")}>
-            Buy History
-          </Button>
-          <Button variant="ghost" onClick={() => navigate("/profile")}>
-            Review History
-          </Button>
-          <Button
-            colorScheme="red"
-            onClick={() => useAuthStore.getState().logout()}
-          >
-            Logout
-          </Button>
-        </>
-      )}
-    </VStack>
-  );
 
   return (
     <HStack
@@ -122,24 +86,25 @@ function Navbar2() {
           Alamat
         </Button>
       </Box>
-
-
-      <Spacer />
-
-      <HStack display={{ base: 'none', md: 'flex' }}>
-        <Field
-          w={'xs'}
-          borderRadius="15px"
-          outline={'1px solid black'}
-          border="none"
-          _focus={{ outline: '1px solid black', borderRadius: '50px' }}
+      <Field
+           maxW={{ base: 'full', sm: '200px', md: '4xs' }}
+           borderRadius="15px"
+           outline={'1px solid black'}
+           border="none"
+           _focus={{ outline: '1px solid black', borderRadius: '50px' }}
+           order={{ base: 3, sm: 'initial' }}
+           flexGrow={{ base: 1, sm: 0 }}
         >
           <Input
             placeholder="Search"
             border="none"
             _focus={{ outline: 'none', boxShadow: 'none' }}
           />
-        </Field>
+      </Field>
+
+      <Spacer />
+
+      <HStack display={{ base: 'none', md: 'flex' }} >
         <IconButton
           aria-label="Toggle theme"
           variant="ghost"
@@ -210,33 +175,7 @@ function Navbar2() {
       </HStack>
 
       {/* Mobile Menu Button */}
-      <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
-        <DrawerBackdrop />
-        <DrawerTrigger asChild>
-          <IconButton
-            display={{ base: 'flex', md: 'none' }}
-            aria-label="Open menu"
-            variant="ghost"
-          >
-            <MdMenu />
-          </IconButton>
-        </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Drawer Title</DrawerTitle>
-          </DrawerHeader>
-          <DrawerBody>
-            <MobileDrawerContent />
-          </DrawerBody>
-          <DrawerFooter>
-            <DrawerActionTrigger asChild>
-              <Button>Close</Button>
-            </DrawerActionTrigger>
-          </DrawerFooter>
-          <DrawerCloseTrigger />
-        </DrawerContent>
-      </DrawerRoot>
-
+      <MobileDrawer/>
     </HStack>
   );
 }
