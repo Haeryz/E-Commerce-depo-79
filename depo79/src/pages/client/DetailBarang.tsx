@@ -5,11 +5,12 @@ import { useParams } from 'react-router-dom';
 import { GiWeight } from "react-icons/gi";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { useBeratStore } from '../../store/berat';
-import { LuCarTaxiFront} from "react-icons/lu";
+import { LuCarTaxiFront } from "react-icons/lu";
 import { EmptyState } from '../../components/ui/empty-state';
 import { MdOutlineReviews } from 'react-icons/md';
 import { useProfileStore } from '../../store/profile';
 import { Rating } from '../../components/ui/rating';
+import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 
 function DetailBarang() {
     const { id } = useParams();
@@ -78,13 +79,55 @@ function DetailBarang() {
                             </VStack>
                         </Box>
                         {/* Add to Cart Button */}
-                        <Button colorScheme="teal" borderRadius="full" w="full">
-                            Tambahkan Ke Keranjang
-                        </Button>
-                        <Button colorScheme="teal" borderRadius="full" w="full">
-                            Beli Sekarang
-                        </Button>
+                        <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
+                            <DialogTrigger asChild>
+                                <Button colorScheme="teal" borderRadius="full" w="full">
+                                    Tambahkan Ke Keranjang
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Dialog Title</DialogTitle>
+                                </DialogHeader>
+                                <DialogBody>
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                                        do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                    </p>
+                                </DialogBody>
+                                <DialogFooter>
+                                    <DialogActionTrigger asChild>
+                                        <Button variant="outline">Cancel</Button>
+                                    </DialogActionTrigger>
+                                    <Button>Save</Button>
+                                </DialogFooter>
+                                <DialogCloseTrigger />
+                            </DialogContent>
+                        </DialogRoot>
+                        <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
+                            <DialogTrigger asChild>
+                                <Button colorScheme="teal" borderRadius="full" w="full">
+                                    Beli Sekarang
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Dialog Title</DialogTitle>
+                                </DialogHeader>
+                                <DialogBody>
+
+                                </DialogBody>
+                                <DialogFooter>
+                                    <DialogActionTrigger asChild>
+                                        <Button variant="outline">Cancel</Button>
+                                    </DialogActionTrigger>
+                                    <Button>Save</Button>
+                                </DialogFooter>
+                                <DialogCloseTrigger />
+                            </DialogContent>
+                        </DialogRoot>
                     </VStack>
+
                     {/* Right Section */}
                     <Box flex="1">
                         <Image
