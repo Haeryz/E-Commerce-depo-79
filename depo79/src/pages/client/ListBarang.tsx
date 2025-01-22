@@ -92,7 +92,7 @@ function ListBarang() {
                 </Link>
                 <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
                   <DialogTrigger asChild>
-                    <Button variant="ghost">🛒 Tambahkan ke Keranjang</Button>
+                    <Button variant="ghost" fontSize={{base: 'xs', md: 'xl'}} >🛒 Tambahkan ke Keranjang</Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
