@@ -13,7 +13,7 @@ interface AuthState {
     isAuthenticated: boolean;
     setUser: (user: User) => void;
     setToken: (token: string) => void;
-    logout: () => void;
+    logout: (callback?: () => void) => void;
     registerUser: (
         name: string,
         email: string,
@@ -40,10 +40,11 @@ export const useAuthStore = create<AuthState>((set) => {
             Cookies.set("authToken", token, { expires: 1 });
             set({ token, isAuthenticated: true });
         },
-        logout: () => {
+        logout: (callback?: () => void) => {
             Cookies.remove("authToken");
             Cookies.remove("user");
             set({ user: null, token: null, isAuthenticated: false });
+            if (callback) callback();
         },
 
         registerUser: async (name, email, password, role) => {
