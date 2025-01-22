@@ -82,11 +82,9 @@ const Login: React.FC = () => {
                             borderRadius="30px"
                             padding="8px 16px"
                             backgroundColor={inputBgColor}
-                            sx={{
-                                '::selection': {
-                                    backgroundColor: '#2563eb',
-                                    color: 'white'
-                                }
+                            _selection={{
+                                backgroundColor: '#2563eb',
+                                color: 'white'
                             }}
                         />
                     </Field>

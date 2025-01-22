@@ -11,12 +11,14 @@ import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { useCartStore } from "../../store/cart"; // Add this import at the top with other imports
 
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
   const { user, isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
   const navigate = useNavigate();
+  const cartItemsCount = useCartStore((state) => state.items.length); // Add this near other hooks
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -162,8 +164,7 @@ function Navbar2() {
               </DrawerTrigger>
               <Chat></Chat>
             </DrawerRoot>
-            <Link to="/cart">
-
+            <Link to="/cart" position="relative">
               <IconButton
                 aria-label="Shopping Cart"
                 variant="ghost"
@@ -172,6 +173,25 @@ function Navbar2() {
               >
                 <MdOutlineShoppingCart />
               </IconButton>
+              {cartItemsCount > 0 && (
+                <Box
+                  position="absolute"
+                  top="-2px"
+                  right="-2px"
+                  px={2}
+                  py={1}
+                  fontSize="xs"
+                  fontWeight="bold"
+                  lineHeight="none"
+                  color="white"
+                  bg="red.500"
+                  borderRadius="full"
+                  minWidth={5}
+                  textAlign="center"
+                >
+                  {cartItemsCount}
+                </Box>
+              )}
             </Link>
           </>
         )}
