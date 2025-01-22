@@ -48,23 +48,40 @@ export const getAllProfiles = async (req, res) => {
 
 
 export const createProfile = async (req, res) => {
-  const { User, nama, nomorhp, alamat, jeniskelamin } = req.body;
-
-  if (!User || !nama || !nomorhp || !alamat || !jeniskelamin) {
-    return res.status(400).json({
-      success: false,
-      message: "All required fields must be provided",
-    });
-  }
-
-  const newProfile = new Profile({ User, nama, nomorhp, alamat, jeniskelamin });
-
   try {
+    const { nama, nomorhp, jeniskelamin } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: "No token provided" });
+    }
+
+    // Decode token to get user ID
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    if (!nama || !nomorhp || !jeniskelamin) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, phone number, and gender are required fields",
+      });
+    }
+
+    const newProfile = new Profile({
+      User: userId, // Use the ID from token
+      nama,
+      nomorhp,
+      jeniskelamin,
+    });
+
     await newProfile.save();
     return res.status(201).json({ success: true, profile: newProfile });
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error creating profile:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message || "Error creating profile" 
+    });
   }
 };
 
