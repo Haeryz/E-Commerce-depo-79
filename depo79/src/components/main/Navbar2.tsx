@@ -10,6 +10,7 @@ import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger 
 import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../ui/dialog';
 
 
 function Navbar2() {
@@ -78,21 +79,36 @@ function Navbar2() {
         >
           Diskon
         </Button>
-        <Button
-          textStyle=""
-          w={16}
-          h={11}
-          background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
-          color={colorMode === 'light' ? 'black' : 'white'}
-          border={isScrolled ? 'none' : 'none'}
-          borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
-          _hover={{
-            background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
-          }}
-          transition="background-color 0.3s ease, border-color 0.3s ease"
-        >
-          Alamat
-        </Button>
+        <DialogRoot size="cover" placement="center" motionPreset="slide-in-bottom">
+          <DialogTrigger asChild>
+            <Button
+              textStyle=""
+              w={16}
+              h={11}
+              background={isScrolled ? (colorMode === 'light' ? 'white' : 'gray.800') : 'transparent'}
+              color={colorMode === 'light' ? 'black' : 'white'}
+              border={isScrolled ? 'none' : 'none'}
+              borderColor={isScrolled ? (colorMode === 'light' ? 'blackAlpha.300' : 'whiteAlpha.300') : 'transparent'}
+              _hover={{
+                background: isScrolled ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent',
+              }}
+              transition="background-color 0.3s ease, border-color 0.3s ease"
+            >
+              Alamat
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Dialog Title</DialogTitle>
+              <DialogCloseTrigger />
+            </DialogHeader>
+            <DialogBody>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </DialogBody>
+          </DialogContent>
+        </DialogRoot>
+
       </Box>
       <form onSubmit={handleSearch}>
         <Field
