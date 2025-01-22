@@ -10,13 +10,17 @@ import reviewRoutes from "./routes/review.route.js";
 import alamatRoutes from "./routes/alamat.route.js";
 import profileRoutes from "./routes/profile.route.js";
 import cartRoutes from "./routes/cart.route.js";
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 
-//routes
+// Add cors middleware if needed
+app.use(cors());
 app.use(express.json());
+
+//routes
 app.use("/api/Berat", Beratroutes);
 app.use("/api/kategori", Kategoriroutes);
 app.use("/api/product", Productroutes);
@@ -29,6 +33,16 @@ app.use("/api/cart", cartRoutes);
 
 app.get("/depo79DB", (req, res) => {    
     res.send("Hello World!");
+});
+
+// Add global error handler middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    success: false, 
+    message: 'Something broke!',
+    error: err.message 
+  });
 });
 
 app.listen(5000, () => {

@@ -109,6 +109,45 @@ export const removeFromCart = async (req, res) => {
   }
 };
 
+export const updateCart = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { quantity } = req.body;
+
+    // Get profile
+    const profile = await Profile.findOne({ User: req.user.id });
+    if (!profile) {
+      return res.status(404).json({ success: false, message: "Profile not found" });
+    }
+
+    let cart = await Cart.findOne({ user: profile._id });
+    if (!cart) {
+      return res.status(404).json({ success: false, message: "Cart not found" });
+    }
+
+    // Find the item in cart
+    const itemIndex = cart.items.findIndex(
+      item => item.product.toString() === productId
+    );
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ success: false, message: "Product not found in cart" });
+    }
+
+    // Update quantity
+    cart.items[itemIndex].quantity = quantity;
+
+    // Recalculate total
+    cart.total = await calculateTotal(cart.items);
+    await cart.save();
+
+    const populatedCart = await Cart.findById(cart._id).populate("items.product");
+    res.json({ success: true, cart: populatedCart });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const calculateTotal = async (items) => {
   let total = 0;
   for (const item of items) {
