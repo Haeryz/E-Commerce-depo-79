@@ -9,6 +9,7 @@ import protectedRoutes from "./routes/protected.route.js";
 import reviewRoutes from "./routes/review.route.js";
 import alamatRoutes from "./routes/alamat.route.js";
 import profileRoutes from "./routes/profile.route.js";
+import cartRoutes from "./routes/cart.route.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/api/protected", protectedRoutes);
 app.use("/api/review", reviewRoutes);
 app.use("/api/alamat", alamatRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/cart", cartRoutes);
 
 app.get("/depo79DB", (req, res) => {    
     res.send("Hello World!");
