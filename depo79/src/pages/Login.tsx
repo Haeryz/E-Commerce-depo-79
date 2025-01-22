@@ -62,11 +62,15 @@ const Login: React.FC = () => {
                     <Field label="Email">
                         <Input
                             value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value.replace(/\s/g, ''))}
                             placeholder="Enter Email"
                             borderRadius="30px"
                             padding="8px 16px"
                             backgroundColor={inputBgColor}
+                            _selection={{
+                                backgroundColor: '#2563eb',
+                                color: 'white'
+                            }}
                         />
                     </Field>
 
@@ -78,6 +82,12 @@ const Login: React.FC = () => {
                             borderRadius="30px"
                             padding="8px 16px"
                             backgroundColor={inputBgColor}
+                            sx={{
+                                '::selection': {
+                                    backgroundColor: '#2563eb',
+                                    color: 'white'
+                                }
+                            }}
                         />
                     </Field>
 

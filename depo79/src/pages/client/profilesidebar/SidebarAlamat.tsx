@@ -2,19 +2,21 @@ import { Box, HStack, Input, Text, VStack } from '@chakra-ui/react'
 import React, { useEffect } from 'react'
 import { LuMapPin } from 'react-icons/lu'
 import { Field } from '../../../components/ui/field'
-import { useProfileStore } from '../../../store/profile'
+import { useAlamatStore } from '../../../store/alamat'
 
 function SidebarAlamat() {
-    const { profile, fetchProfile } = useProfileStore();
+    const { alamat, loading, fetchAlamat } = useAlamatStore();
 
     useEffect(() => {
-        fetchProfile();
-    }, [fetchProfile]);
+        fetchAlamat();
+    }, [fetchAlamat]);
 
-    const alamat = profile?.alamat;
+    if (loading) {
+        return <Text>Loading alamat...</Text>;
+    }
 
     if (!alamat) {
-        return <Text>Loading alamat...</Text>;
+        return <Text>No address found.</Text>;
     }
 
     return (

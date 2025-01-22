@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, HStack, IconButton, Text, Spacer, VStack, Separator, Image, Input, Stack } from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, VStack, Separator, Image, Input, Stack } from '@chakra-ui/react';
 import { MdOutlineDarkMode } from 'react-icons/md';
 import { FaRegCopyright } from "react-icons/fa";
 import { useColorMode } from '../ui/color-mode';
@@ -57,6 +57,10 @@ function Footer() {
                 placeholder="Your Email"
                 border="none"
                 _focus={{ outline: 'none', boxShadow: 'none' }}
+                _selection={{
+                  backgroundColor: '#2563eb',
+                  color: 'white'
+              }}
               />
             </Field>
             <Button

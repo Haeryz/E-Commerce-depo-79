@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Box, HStack, Separator, Text, VStack, Stack, Collapsible } from '@chakra-ui/react';
+import { useState } from 'react';
+import { Box, HStack, Separator, Text, VStack, Stack, Collapsible, Image } from '@chakra-ui/react';
 import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb';
 import { Button } from '../../components/ui/button';
 import { CheckboxCard } from '../../components/ui/checkbox-card';
+import BCA from '../../assets/bca-bank-central-asia-logo-svgrepo-com.svg';
+import { FileUploadDropzone, FileUploadList, FileUploadRoot } from '../../components/ui/file-upload';
 
 
 const Payment = () => {
@@ -57,10 +59,49 @@ const Payment = () => {
 
                 {selectedPayment === 'transfer' && (
                   <Box padding={[3, 4]} borderWidth="1px" mt={3} w="100%" fontSize={['sm', 'md']}>
-                    Lorem
+                    <HStack align="stretch" gap={6} w="full" minH="300px">
+                      {/* Left side - Bank Transfer Info */}
+                      <VStack align="center" flex="1" h="full">
+                        <Text fontWeight="bold" fontSize="lg">Transfer Bank</Text>
+                        <Box 
+                          p={6} 
+                          borderWidth="1px" 
+                          borderRadius="md" 
+                          w="full"
+                          bg="gray.50"
+                          flex="1"
+                          display="flex"
+                          flexDirection="column"
+                          justifyContent="center"
+                        >
+                          <VStack align="start" gap={4} w="full">
+                            <Image src={BCA} alt="BCA" w="80px" h="80px" />
+                            <Box>
+                              <Text color="gray.600" mb={1}>Nomor Rekening</Text>
+                              <Text fontWeight="bold" fontSize="xl">36600404511</Text>
+                              <Text color="gray.600" mt={1}>a.n Heti Agustina Wulandari</Text>
+                            </Box>
+                          </VStack>
+                        </Box>
+                      </VStack>
+
+                      {/* Right side - File Upload */}
+                      <VStack flex="1" h="full">
+                        <Text fontWeight="bold" fontSize="lg">Upload Bukti</Text>
+                        <Box flex="1" w="full">
+                          <FileUploadRoot h="full" maxW="full" alignItems="stretch" maxFiles={10}>
+                            <FileUploadDropzone
+                              label="Drag and drop here to upload"
+                              description=".png, .jpg up to 5MB"
+                            />
+                            <FileUploadList />
+                          </FileUploadRoot>
+                        </Box>
+                      </VStack>
+                    </HStack>
                   </Box>
                 )}
-                
+
                 {selectedPayment === 'cod' && (
                   <Box padding={[3, 4]} borderWidth="1px" mt={3} w="100%" fontSize={['sm', 'md']}>
                     Ipsum

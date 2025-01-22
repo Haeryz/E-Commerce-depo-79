@@ -1,25 +1,18 @@
 import { create } from "zustand";
 import { useAuthStore } from "./auth";
-
-interface Alamat {
-    _id: string;
-    user: string;
-    provinsi: string;
-    kota: string;
-    kecamatan: string;
-    kelurahan: string;
-    kodepos: number;
-    detail: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-}
+import { Alamat } from "./alamat";
 
 interface Profile {
     _id: string;
     nama: string;
     nomorhp: string;
     alamat: Alamat;
+    jeniskelamin: string;
+}
+
+interface CreateProfileData {
+    nama: string;
+    nomorhp: string;
     jeniskelamin: string;
 }
 
@@ -31,7 +24,7 @@ interface ProfileState {
     fetchProfile: () => Promise<void>;
     fetchProfiles: () => Promise<void>;
     fetchProfileReviews: () => Promise<void>;
-    createProfile: (profile: Profile) => Promise<void>;
+    createProfile: (profileData: CreateProfileData) => Promise<void>;
     updateProfile: (profile: Profile) => Promise<void>;
 }
 
@@ -154,7 +147,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         }
     },
 
-    createProfile: async (profile: Profile) => {
+    createProfile: async (profileData: CreateProfileData) => {
         const { token } = useAuthStore.getState();
         if (!token) {
             console.log("User not authenticated");
@@ -163,13 +156,13 @@ export const useProfileStore = create<ProfileState>((set) => ({
         }
 
         try {
-            const response = await fetch("/api/profile/account", {
+            const response = await fetch("/api/profile", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(profile),
+                body: JSON.stringify(profileData), // Send only the profile data without User field
             });
 
             if (!response.ok) throw new Error("Failed to create profile");

@@ -18,7 +18,7 @@ const profileSchema = new mongoose.Schema(
     alamat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Alamat",
-      required: true,
+      required: false,
     },
     jeniskelamin: {
       type: String,

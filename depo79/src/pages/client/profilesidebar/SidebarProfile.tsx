@@ -4,7 +4,7 @@ import { LuMapPin } from "react-icons/lu";
 import { Avatar } from '../../../components/ui/avatar';
 import { Field } from '../../../components/ui/field';
 import { Tooltip } from '../../../components/ui/tooltip';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdPersonAdd } from 'react-icons/md';  // Add MdPersonAdd import
 import { useAuthStore } from '../../../store/auth';
 import { useProfileStore } from '../../../store/profile';
 import {
@@ -19,11 +19,17 @@ function SidebarProfile() {
     const profile = useProfileStore((state) => state.profile);
     const fetchProfile = useProfileStore((state) => state.fetchProfile);
     const updateProfile = useProfileStore((state) => state.updateProfile);
+    const createProfile = useProfileStore((state) => state.createProfile); // Add this line
 
     // Local state for form inputs
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [gender, setGender] = useState('');
+
+    // Add new state for create form
+    const [newName, setNewName] = useState('');
+    const [newPhone, setNewPhone] = useState('');
+    const [newGender, setNewGender] = useState('');
 
     // Fetch the user profile on component mount
     useEffect(() => {
@@ -35,6 +41,13 @@ function SidebarProfile() {
         setName(profile?.nama || '');
         setPhone(profile?.nomorhp || '');
         setGender(profile?.jeniskelamin || '');
+    };
+
+    // Reset create form fields
+    const handleCreateDialogOpen = () => {
+        setNewName('');
+        setNewPhone('');
+        setNewGender('');
     };
 
     // Submit updated data
@@ -52,6 +65,22 @@ function SidebarProfile() {
             fetchProfile(); // Refresh the profile data
         } catch (error) {
             console.error("Error updating profile:", error);
+        }
+    };
+
+    // Handle create profile submission
+    const handleCreate = async () => {
+        const newProfile = {
+            nama: newName,
+            nomorhp: newPhone,
+            jeniskelamin: newGender,
+        };
+
+        try {
+            await createProfile(newProfile);
+            fetchProfile(); // Refresh the profile data
+        } catch (error) {
+            console.error("Error creating profile:", error);
         }
     };
 
@@ -125,6 +154,58 @@ function SidebarProfile() {
                                 </DialogActionTrigger>
                                 <Button colorPalette="blue" onClick={handleUpdate}>
                                     Save Changes
+                                </Button>
+                            </DialogFooter>
+                            <DialogCloseTrigger />
+                        </DialogContent>
+                    </DialogRoot>
+
+                    {/* Create Profile Dialog */}
+                    <DialogRoot role="dialog">
+                        <Tooltip content="Create Profile">
+                            <DialogTrigger asChild onChange={handleCreateDialogOpen}>
+                                <IconButton
+                                    aria-label="Create Profile"
+                                    rounded="full"
+                                    size={["sm", "md"]}
+                                >
+                                    <MdPersonAdd />
+                                </IconButton>
+                            </DialogTrigger>
+                        </Tooltip>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Create Profile</DialogTitle>
+                            </DialogHeader>
+                            <DialogBody>
+                                <Field label="Name">
+                                    <Input
+                                        placeholder="Enter your name"
+                                        value={newName}
+                                        onChange={(e) => setNewName(e.target.value)}
+                                    />
+                                </Field>
+                                <Field label="Phone Number" mt={4}>
+                                    <Input
+                                        placeholder="Enter your phone number"
+                                        value={newPhone}
+                                        onChange={(e) => setNewPhone(e.target.value)}
+                                    />
+                                </Field>
+                                <Field label="Gender" mt={4}>
+                                    <Input
+                                        placeholder="Enter your gender"
+                                        value={newGender}
+                                        onChange={(e) => setNewGender(e.target.value)}
+                                    />
+                                </Field>
+                            </DialogBody>
+                            <DialogFooter>
+                                <DialogActionTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogActionTrigger>
+                                <Button colorPalette="blue" onClick={handleCreate}>
+                                    Create Profile
                                 </Button>
                             </DialogFooter>
                             <DialogCloseTrigger />

@@ -126,6 +126,10 @@ function Navbar2() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             _focus={{ outline: 'none', boxShadow: 'none' }}
+            _selection={{
+              backgroundColor: '#2563eb',
+              color: 'white'
+          }}
           />
         </Field>
       </form>
@@ -190,7 +194,13 @@ function Navbar2() {
                   <Button pl={10} pr={10} onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
                   <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
                   <Button onClick={() => navigate("/profile")}>Review History</Button>
-                  <Button color={colorMode === 'light' ? 'white' : 'black'} backgroundColor={colorMode === 'light' ? 'red' : 'pink'} onClick={() => useAuthStore.getState().logout()}>Logout</Button>
+                  <Button 
+                    color={colorMode === 'light' ? 'white' : 'black'} 
+                    backgroundColor={colorMode === 'light' ? 'red' : 'pink'} 
+                    onClick={() => useAuthStore.getState().logout(() => navigate("/"))}
+                  >
+                    Logout
+                  </Button>
                 </VStack>
               </PopoverBody>
             </PopoverContent>

@@ -11,12 +11,12 @@ import alamatRoutes from "./routes/alamat.route.js";
 import profileRoutes from "./routes/profile.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import cors from 'cors';
+import checkoutRoute from "./routes/checkout.route.js";
 
 dotenv.config();
 
 const app = express();
 
-// Add cors middleware if needed
 app.use(cors());
 app.use(express.json());
 
@@ -30,6 +30,8 @@ app.use("/api/review", reviewRoutes);
 app.use("/api/alamat", alamatRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/checkout", checkoutRoute);
+
 
 app.get("/depo79DB", (req, res) => {    
     res.send("Hello World!");
