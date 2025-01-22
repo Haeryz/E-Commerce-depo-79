@@ -164,35 +164,37 @@ function Navbar2() {
               </DrawerTrigger>
               <Chat></Chat>
             </DrawerRoot>
-            <Link to="/cart" position="relative">
-              <IconButton
-                aria-label="Shopping Cart"
-                variant="ghost"
-                size="lg"
-                colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-              >
-                <MdOutlineShoppingCart />
-              </IconButton>
-              {cartItemsCount > 0 && (
-                <Box
-                  position="absolute"
-                  top="-2px"
-                  right="-2px"
-                  px={2}
-                  py={1}
-                  fontSize="xs"
-                  fontWeight="bold"
-                  lineHeight="none"
-                  color="white"
-                  bg="red.500"
-                  borderRadius="full"
-                  minWidth={5}
-                  textAlign="center"
+            <Box position="relative" display="inline-block">
+              <Link to="/cart">
+                <IconButton
+                  aria-label="Shopping Cart"
+                  variant="ghost"
+                  size="lg"
+                  colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
                 >
-                  {cartItemsCount}
-                </Box>
-              )}
-            </Link>
+                  <MdOutlineShoppingCart />
+                </IconButton>
+                {cartItemsCount > 0 && (
+                  <Box
+                    position="absolute"
+                    top="-1"
+                    right="-1"
+                    px={1.5}
+                    py={0.5}
+                    fontSize="10px"
+                    fontWeight="bold"
+                    lineHeight="none"
+                    color="white"
+                    bg="red.500"
+                    borderRadius="full"
+                    minWidth={4}
+                    textAlign="center"
+                  >
+                    {cartItemsCount}
+                  </Box>
+                )}
+              </Link>
+            </Box>
           </>
         )}
         {isAuthenticated && user ? (
