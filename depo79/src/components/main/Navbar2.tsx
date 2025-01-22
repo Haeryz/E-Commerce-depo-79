@@ -12,7 +12,7 @@ import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { useCartStore } from "../../store/cart"; // Add this import at the top with other imports
-
+import LogoCompany from "../../assets/LogoCompany.png"
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -57,11 +57,8 @@ function Navbar2() {
       <HStack gap={4}>
         <Link to="/">
           <Image
-            src="https://bit.ly/naruto-sage"
-            boxSize="45px"
-            borderRadius="full"
-            fit="cover"
-            alt="Naruto Uzumaki"
+            src={LogoCompany}
+            w={'24'}
           />
         </Link>
       </HStack>
