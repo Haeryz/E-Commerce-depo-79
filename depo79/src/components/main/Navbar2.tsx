@@ -126,6 +126,10 @@ function Navbar2() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             _focus={{ outline: 'none', boxShadow: 'none' }}
+            _selection={{
+              backgroundColor: '#2563eb',
+              color: 'white'
+          }}
           />
         </Field>
       </form>
