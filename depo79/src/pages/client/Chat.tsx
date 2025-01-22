@@ -40,7 +40,7 @@ function Chat() {
             _focus={{ outline: 'none', boxShadow: 'none' }}
           />
         </Field>
-        <Button borderRadius={15}>Save</Button>
+        <Button borderRadius={15}>Send</Button>
       </DrawerFooter>
       <DrawerCloseTrigger />
     </DrawerContent>

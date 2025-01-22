@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerHeader, DrawerRoot, DrawerTitle, DrawerTrigger } from '../ui/drawer'
-import { IconButton, Text, useBreakpointValue, VStack } from '@chakra-ui/react'
+import { IconButton, Input, Text, useBreakpointValue, VStack } from '@chakra-ui/react'
 import { MdChat, MdMenu, MdOutlineDarkMode, MdOutlineShoppingCart } from 'react-icons/md'
 import { Button } from '../ui/button'
 import { useAuthStore } from '../../store/auth'
 import { useNavigate } from 'react-router-dom'
 import { useColorMode } from '../ui/color-mode'
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTrigger } from '../ui/dialog'
+import { Field } from '../ui/field'
 
 const MobileDrawer = () => {
     const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
     const { isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
+    const { user } = useAuthStore((state) => state); // Access user and authentication state
     const navigate = useNavigate();
 
     const [isScrolled, setIsScrolled] = useState(false);
@@ -59,7 +62,45 @@ const MobileDrawer = () => {
                         </IconButton>
                         {isAuthenticated && (
                             <>
-                                <Button variant="ghost"><MdChat /> Chat</Button>
+                                <DialogRoot size={'full'}>
+                                    <DialogTrigger w={'100%'} asChild>
+                                        <Button variant="ghost" w={'100%'}><MdChat /> Chat</Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            {user ? ( // Check if user exists
+                                                <Button borderRadius={40}>
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </Button>
+                                            ) : (
+                                                <Button borderRadius={40}>Guest</Button> // Fallback for unauthenticated state
+                                            )}
+                                        </DialogHeader>
+                                        <DialogBody>
+                                            <p>
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                                                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                            </p>
+                                        </DialogBody>
+                                        <DialogFooter>
+                                            <Field
+                                                w={'100%'}
+                                                borderRadius="15px"
+                                                outline={'1px solid white'}
+                                                border="none"
+                                                _focus={{ outline: '1px solid black', borderRadius: '50px' }}
+                                            >
+                                                <Input
+                                                    placeholder="Ketik Disini"
+                                                    border="none"
+                                                    _focus={{ outline: 'none', boxShadow: 'none' }}
+                                                />
+                                            </Field>
+                                            <Button borderRadius={15}>Send</Button>
+                                        </DialogFooter>
+                                        <DialogCloseTrigger />
+                                    </DialogContent>
+                                </DialogRoot>
                                 <Button
                                     variant="ghost"
                                     onClick={() => navigate('/cart')}
