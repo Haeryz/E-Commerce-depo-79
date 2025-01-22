@@ -16,9 +16,9 @@ const Payment = () => {
   return (
     <VStack p={[4, 6, 10]} align="stretch">
       <BreadcrumbRoot fontWeight="bold" ml={[4, 6, 10]} mb={5} alignSelf="flex-start">
-        <BreadcrumbLink href="#">cart</BreadcrumbLink>
-        <BreadcrumbCurrentLink>checkout</BreadcrumbCurrentLink>
-        <BreadcrumbLink href="#">payment</BreadcrumbLink>
+        <BreadcrumbLink href="/cart">cart</BreadcrumbLink>
+        <BreadcrumbLink href="/checkout">checkout</BreadcrumbLink>
+        <BreadcrumbCurrentLink>payment</BreadcrumbCurrentLink>
       </BreadcrumbRoot>
 
       <Stack direction={['column', 'column', 'row']} gap={[4, 6, 10]} w="full" px={[4, 6, 10]}>
