@@ -4,10 +4,12 @@ import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../com
 import { Box, Button, HStack, IconButton, Image, Separator, Spinner, Text, VStack } from '@chakra-ui/react'
 import { Checkbox } from '../../components/ui/checkbox'
 import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
+import { LuShoppingCart } from "react-icons/lu";
 import { motion } from 'framer-motion'
+import { EmptyState } from "../../components/ui/empty-state"
 
 function Cart() {
-    const { items, total, loading, error, fetchCart, updateCartItem, removeFromCart } = useCartStore();
+    const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem } = useCartStore();
     const [updatingItems, setUpdatingItems] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
@@ -15,30 +17,27 @@ function Cart() {
     }, [fetchCart]);
 
     const handleQuantityChange = async (productId: string, quantity: number) => {
-        try {
-            // Set loading state for specific item
-            setUpdatingItems(prev => ({ ...prev, [productId]: true }));
-            
-            // Optimistically update the UI
-            const updatedItems = items.map(item => 
-                item.product._id === productId 
-                    ? { ...item, quantity } 
-                    : item
-            );
-            useCartStore.setState({ items: updatedItems });
-
-            // Make API call
-            await updateCartItem(productId, quantity);
-        } catch (error) {
-            // Revert on error
-            await fetchCart();
-        } finally {
-            setUpdatingItems(prev => ({ ...prev, [productId]: false }));
-        }
+        setUpdatingItems(prev => ({ ...prev, [productId]: true }));
+        
+        // Immediately update the UI
+        updateLocalQuantity(productId, quantity);
+        
+        // Sync with server in the background
+        await syncWithServer(productId, quantity);
+        
+        setUpdatingItems(prev => ({ ...prev, [productId]: false }));
     };
 
     const handleRemoveItem = async (productId: string) => {
-        await removeFromCart(productId);
+        // Optimistically update UI
+        removeLocalItem(productId);
+        
+        // Sync with server in background
+        try {
+            await removeFromCart(productId);
+        } catch (error) {
+            console.error('Failed to remove item', error);
+        }
     };
 
     if (loading) {
@@ -54,6 +53,18 @@ function Cart() {
         return (
             <Box textAlign="center" mt={10} color="red.500">
                 <Text>{error}</Text>
+            </Box>
+        );
+    }
+
+    if (items.length === 0) {
+        return (
+            <Box p={8}>
+                <EmptyState
+                    icon={<LuShoppingCart size={50} />}
+                    title="Your cart is empty"
+                    description="Explore our products and add items to your cart"
+                />
             </Box>
         );
     }
@@ -140,7 +151,11 @@ function Cart() {
                                 <motion.div 
                                     whileHover={{ scale: 1.02 }} 
                                     transition={{ duration: 0.2 }}
-                                    style={{ width: '100%', opacity: updatingItems[item.product._id] ? 0.7 : 1 }}
+                                    style={{ 
+                                        width: '100%', 
+                                        opacity: updatingItems[item.product._id] ? 0.7 : 1,
+                                        transition: 'opacity 0.2s'
+                                    }}
                                 >
                                     <Box p={{ base: 3, md: 4 }} borderRadius={{ base: 'lg', md: 'xl' }} border="1px" borderColor="gray.100" _hover={{ bg: 'gray.50' }}>
                                         <HStack justifyContent={'space-between'} w={'full'} flexDir={{ base: 'column', sm: 'row' }} gap={{ base: 3, md: 4 }}>
@@ -165,7 +180,7 @@ function Cart() {
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            disabled={item.quantity <= 1 || updatingItems[item.product._id]}
+                                                            disabled={item.quantity <= 1}
                                                         >
                                                             <FaMinus />
                                                         </IconButton>
@@ -178,7 +193,7 @@ function Cart() {
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            disabled={item.quantity >= item.product.stok || updatingItems[item.product._id]}
+                                                            disabled={item.quantity >= item.product.stok}
                                                         >
                                                             <FaPlus />
                                                         </IconButton>
@@ -254,7 +269,7 @@ function Cart() {
                             fontSize={{ base: 'sm', md: 'md' }}
                             colorScheme="blue"
                             borderRadius="xl"
-                            loading={loading} // Changed from isLoading to loading
+                            _loading={loading}
                             _hover={{
                                 transform: 'translateY(-2px)',
                                 shadow: 'lg',
