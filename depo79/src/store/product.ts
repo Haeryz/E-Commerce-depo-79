@@ -24,6 +24,7 @@ interface ProductState {
     error: string | null;
     fetchProducts: () => Promise<void>;
     fetchProductById: (id: string) => Promise<void>;
+    fetchProductReviewsPaginated: (id: string, page: number, limit: number) => Promise<void>;
 }
 
 export const useProductStore = create<ProductState>((set) => ({
@@ -68,6 +69,24 @@ export const useProductStore = create<ProductState>((set) => ({
             if (!response.ok) {
                 throw new Error("Failed to fetch product details");
             }
+            const data = await response.json();
+            if (data.success) {
+                set({ productDetail: data.product });
+            } else {
+                set({ error: data.message });
+            }
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    fetchProductReviewsPaginated: async (id: string, page: number, limit: number) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch(`/api/product/${id}?page=${page}&limit=${limit}`);
+            if (!response.ok) throw new Error("Failed to fetch paginated reviews");
             const data = await response.json();
             if (data.success) {
                 set({ productDetail: data.product });
