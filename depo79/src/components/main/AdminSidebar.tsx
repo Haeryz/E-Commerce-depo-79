@@ -53,25 +53,26 @@ const AdminSidebar = () => {
         borderRadius={8} 
         boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
       >
-        <VStack gap={5} align="stretch" height="100%">
+        <VStack gap={5} align="stretch" height="100%" w={'100%'}>
           <Image src={Logo} alt="Admin" />
           <VStack gap={4} align="stretch" flex={1}>
             {navItems.map((item, index) => (
               <NavItem key={index} icon={item.icon} text={item.text} path={item.path} />
             ))}
           </VStack>
-          <VStack gap={4} align="stretch" mt="auto">
-            <HStack gap={3}>
+          <VStack gap={4} align="stretch" mt="auto" w={'100%'}>
+            <HStack gap={3} w={'100%'}>
               <IconButton 
                 aria-label="Toggle Color Mode" 
                 variant="ghost"
                 color={colorMode === 'light' ? 'gray.600' : 'gray.200'}
                 onClick={toggleColorMode}
                 _hover={{ bg: colorMode === 'light' ? 'gray.200' : 'gray.600' }}
+                w={'100%'}
               >
                 {colorMode === 'light' ? <LuMoon size={20} /> : <LuSun size={20} />}
+                {colorMode === 'light' ? <Text>Dark Mode</Text> : <Text>Light Mode</Text>}
               </IconButton>
-              <Text>Dark Mode</Text>
             </HStack>
             <HStack gap={3}>
               <IconButton 
@@ -79,10 +80,11 @@ const AdminSidebar = () => {
                 variant="ghost"
                 color={colorMode === 'light' ? 'gray.600' : 'gray.200'}
                 _hover={{ bg: colorMode === 'light' ? 'gray.200' : 'gray.600' }}
+                w={'100%'}
               >
                 <LogOutIcon />
+                Log Out
               </IconButton>
-              <Text color={colorMode === 'light' ? 'gray.600' : 'gray.200'}>Logout</Text>
             </HStack>
           </VStack>
         </VStack>
