@@ -5,6 +5,7 @@ import { FaRegCopyright } from "react-icons/fa";
 import { useColorMode } from '../ui/color-mode';
 import { Link } from 'react-router-dom';
 import { Field } from '../ui/field';
+import LogoCompany from "../../assets/LogoCompany.png"
 
 function Footer() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -30,14 +31,11 @@ function Footer() {
           w={['full', 'full', '400px']}
         >
           <Link to="/">
-            <Image
-              src="https://bit.ly/naruto-sage"
-              boxSize={['40px', '45px']}
-              borderRadius="full"
-              fit="cover"
-              alt="Naruto Uzumaki"
-            />
-          </Link>
+          <Image
+            src={LogoCompany}
+            w={'24'}
+          />
+        </Link>
           <Text fontSize={['sm', 'md']}>
             Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk semua item
           </Text>
