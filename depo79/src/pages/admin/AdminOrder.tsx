@@ -1,4 +1,4 @@
-import { Box, createListCollection, HStack, Input, Separator, Text, VStack } from '@chakra-ui/react'
+import { Box, createListCollection, HStack, Input, Separator, Table, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
@@ -43,6 +43,22 @@ const AdminOrder = () => {
           </HStack>
 
           <Separator />
+
+          <HStack>
+            <Table.Root>
+              <Table.Header>
+                          <Table.Row>
+                            <Table.ColumnHeader>Order</Table.ColumnHeader>
+                            <Table.ColumnHeader>Customer</Table.ColumnHeader>
+                            <Table.ColumnHeader>Type</Table.ColumnHeader>
+                            <Table.ColumnHeader>Status</Table.ColumnHeader>
+                            <Table.ColumnHeader>Product</Table.ColumnHeader>
+                            <Table.ColumnHeader>Total</Table.ColumnHeader>
+                            <Table.ColumnHeader>Date</Table.ColumnHeader>
+                          </Table.Row>
+                        </Table.Header>
+            </Table.Root>
+          </HStack>
         </VStack>
       </Box>
       <Box
