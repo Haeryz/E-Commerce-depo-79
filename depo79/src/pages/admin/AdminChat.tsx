@@ -1,8 +1,11 @@
 import { Box, HStack, Input, Text, VStack, IconButton } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { Avatar } from '../../components/ui/avatar'
 import { FiSend, FiPaperclip } from 'react-icons/fi'
+import { io } from 'socket.io-client'
+
+const socket = io('http://localhost:3000');
 
 const AdminChat = () => {
   const { colorMode } = useColorMode()
@@ -12,6 +15,52 @@ const AdminChat = () => {
     const index = name.charCodeAt(0) % colorPalette.length
     return colorPalette[index]
   }
+
+  interface ChatMessage {
+    room: string;
+    content: string;
+    sender: string;
+    timestamp: Date;
+  }
+
+  const [activeRoom, setActiveRoom] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
+  const [message, setMessage] = useState('');
+  const [rooms, setRooms] = useState<string[]>([]);  // List of active chat rooms
+
+  useEffect(() => {
+    // Listen for new connections
+    socket.on('user_connected', (roomId) => {
+      setRooms(prev => [...prev, roomId]);
+    });
+
+    // Listen for messages
+    socket.on('receive_message', (data) => {
+      setMessages(prev => ({
+        ...prev,
+        [data.room]: [...(prev[data.room] || []), data]
+      }));
+    });
+
+    return () => {
+      socket.off('user_connected');
+      socket.off('receive_message');
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (message.trim() && activeRoom) {
+      const messageData = {
+        room: activeRoom,
+        content: message,
+        sender: 'admin',
+        timestamp: new Date()
+      };
+
+      socket.emit('send_message', messageData);
+      setMessage('');
+    }
+  };
 
   return (
     <Box display="flex" height="100vh" w="85%" p={4}>
@@ -47,21 +96,20 @@ const AdminChat = () => {
               w="100%"
               gap={0}
             >
-              <HStack
-                p={4}
-                w="100%"
-                _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.700' }}
-                cursor="pointer"
-                transition="all 0.2s"
-              >
-                <Avatar name="Shane Nelson" colorPalette={pickPalette("Shane Nelson")} />
-                <VStack align="start" gap={1}>
-                  <Text fontWeight="medium">Aingmacan</Text>
-                  <Text fontSize="sm" color={colorMode === 'light' ? 'gray.600' : 'gray.400'}>
-                    Last message here...
-                  </Text>
-                </VStack>
-              </HStack>
+              {rooms.map(roomId => (
+                <HStack
+                  key={roomId}
+                  p={4}
+                  w="100%"
+                  bg={activeRoom === roomId ? (colorMode === 'light' ? 'gray.100' : 'gray.700') : 'transparent'}
+                  _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.700' }}
+                  cursor="pointer"
+                  onClick={() => setActiveRoom(roomId)}
+                >
+                  <Avatar name={roomId} colorPalette={pickPalette(roomId)} />
+                  <Text fontWeight="medium">User {roomId}</Text>
+                </HStack>
+              ))}
             </VStack>
           </VStack>
 
@@ -82,34 +130,27 @@ const AdminChat = () => {
             </Box>
 
             <VStack w="100%" h="calc(100% - 140px)" p={4} overflowY="auto" gap={4}>
-              <HStack w="100%" justify="flex-start">
-                <VStack align="start" maxW="70%">
-                  <Box
-                    bg={colorMode === 'light' ? 'gray.200' : 'gray.700'}
-                    px={4}
-                    py={2}
-                    borderRadius="2xl"
-                  >
-                    <Text>Hi, how can I help you today?</Text>
-                  </Box>
-                  <Text fontSize="xs" color="gray.500" pl={2}>09:41</Text>
-                </VStack>
-              </HStack>
-
-              <HStack w="100%" justify="flex-end">
-                <VStack align="end" maxW="70%">
-                  <Box
-                    bg={colorMode === 'light' ? 'blue.500' : 'blue.600'}
-                    px={4}
-                    py={2}
-                    borderRadius="2xl"
-                    color="white"
-                  >
-                    <Text>I have a question about my order</Text>
-                  </Box>
-                  <Text fontSize="xs" color="gray.500" pr={2}>09:42</Text>
-                </VStack>
-              </HStack>
+              {activeRoom && messages[activeRoom]?.map((msg, index) => (
+                <HStack key={index} w="100%" justify={msg.sender === 'admin' ? 'flex-end' : 'flex-start'}>
+                  <VStack align={msg.sender === 'admin' ? 'end' : 'start'} maxW="70%">
+                    <Box
+                      bg={msg.sender === 'admin' ?
+                        (colorMode === 'light' ? 'blue.500' : 'blue.600') :
+                        (colorMode === 'light' ? 'gray.200' : 'gray.700')
+                      }
+                      px={4}
+                      py={2}
+                      borderRadius="2xl"
+                      color={msg.sender === 'admin' ? 'white' : 'inherit'}
+                    >
+                      <Text>{msg.content}</Text>
+                    </Box>
+                    <Text fontSize="xs" color="gray.500" px={2}>
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                    </Text>
+                  </VStack>
+                </HStack>
+              ))}
             </VStack>
 
             <Box
@@ -129,17 +170,15 @@ const AdminChat = () => {
                   <FiPaperclip />
                 </IconButton>
                 <Input
-                  placeholder="iMessage"
-                  bg={colorMode === 'light' ? 'gray.100' : 'gray.700'}
-                  borderRadius="full"
-                  border="none"
-                  _focus={{ boxShadow: 'none' }}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Type a message..."
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                 />
                 <IconButton
                   aria-label="Send message"
                   colorScheme="blue"
-                  borderRadius="full"
-                  size="md"
+                  onClick={sendMessage}
                 >
                   <FiSend />
                 </IconButton>
