@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import Home from './pages/Home';
 import Footer from './components/main/Footer';
 import Register from './pages/Register';
@@ -32,7 +32,7 @@ function App() {
       <Toaster />
       <Routes>
         {/* Admin Routes */}
-        <Route path="/admin/*" element={<AdminLayout />} />
+        <Route path="/admin/*" element={<AdminLayout><Outlet /></AdminLayout>} />
 
         {/* Client Routes */}
         <Route
