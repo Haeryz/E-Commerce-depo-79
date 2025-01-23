@@ -18,6 +18,7 @@ interface Product {
 }
 
 interface ProductState {
+    products: Product[];
     productMap: Record<string, string>;
     productDetail: Product | null;
     loading: boolean;
@@ -25,13 +26,17 @@ interface ProductState {
     fetchProducts: () => Promise<void>;
     fetchProductById: (id: string) => Promise<void>;
     fetchProductReviewsPaginated: (id: string, page: number, limit: number) => Promise<void>;
+    adminProducts: Product[];  // Add this line
+    fetchAdminProducts: () => Promise<void>;  // Add this line
 }
 
 export const useProductStore = create<ProductState>((set) => ({
+    products: [],
     productMap: {},
     productDetail: null,
     loading: false,
     error: null,
+    adminProducts: [],  // Add this line
 
     fetchProducts: async () => {
         set({ loading: true, error: null });
@@ -43,14 +48,16 @@ export const useProductStore = create<ProductState>((set) => ({
             }
             const data = await response.json();
             if (data.success) {
-                const productMap = data.products.reduce(
-                    (acc: Record<string, string>, product: Product) => {
-                        acc[product._id] = product.nama;
-                        return acc;
-                    },
-                    {}
-                );
-                set({ productMap });
+                set({ 
+                    products: data.products,
+                    productMap: data.products.reduce(
+                        (acc: Record<string, string>, product: Product) => {
+                            acc[product._id] = product.nama;
+                            return acc;
+                        },
+                        {}
+                    )
+                });
             } else {
                 set({ error: data.message });
             }
@@ -90,6 +97,33 @@ export const useProductStore = create<ProductState>((set) => ({
             const data = await response.json();
             if (data.success) {
                 set({ productDetail: data.product });
+            } else {
+                set({ error: data.message });
+            }
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    fetchAdminProducts: async () => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch("/api/product", {
+                credentials: 'include', // Include credentials for admin authentication
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error("Failed to fetch admin product data");
+            }
+            
+            const data = await response.json();
+            if (data.success) {
+                set({ adminProducts: data.products });
             } else {
                 set({ error: data.message });
             }
