@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Box,
   HStack,
@@ -8,14 +10,38 @@ import {
   Separator,
   VStack,
   Fieldset,
+  createListCollection,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useProductStore } from "../../store/product";
-import { useBeratStore } from "../../store/berat";  // Add this import
-import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { useBeratStore } from "../../store/berat";
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
 import { Field } from "../../components/ui/field";
 import { NativeSelectField, NativeSelectRoot } from "../../components/ui/native-select";
-import { FileUploadDropzone, FileUploadList, FileUploadRoot } from "../../components/ui/file-upload";
+import {
+  FileUploadDropzone,
+  FileUploadList,
+  FileUploadRoot,
+} from "../../components/ui/file-upload";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "../../components/ui/select";
+import CustomDatePicker from "../../components/main/CustomDatePicker";
 
 const AdminProduct = () => {
   const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts } = useProductStore();
@@ -23,7 +49,7 @@ const AdminProduct = () => {
 
   useEffect(() => {
     fetchAdminProducts();
-    fetchBerat();  // Add this line
+    fetchBerat();
   }, [fetchAdminProducts, fetchBerat]);
 
   if (productsLoading || beratLoading) return <Box p={5}>Loading...</Box>;
@@ -35,37 +61,32 @@ const AdminProduct = () => {
         {/* Search and Filter Section */}
         <HStack gap={4} p={5} borderBottom="1px" borderColor="gray.200" bg="white" flexWrap="wrap">
           <HStack w="full" gap={2}>
-            <Input
-              placeholder="Cari Barang"
-              borderRadius={"md"}
-              w="90%"
-            />
-            <Button
-              colorScheme="blackAlpha"
-              bg="black"
-              color="white"
-              w="10%"
-            >
+            <Input placeholder="Cari Barang" borderRadius={"md"} w="90%" />
+            <Button colorScheme="blackAlpha" bg="black" color="white" w="10%">
               Cari
             </Button>
           </HStack>
           <HStack mt={5} gap={2}>
-            <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
-              Status
-            </Button>
-            <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
-              Date
-            </Button>
-            <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
-              Total
-            </Button>
+            <SelectRoot collection={frameworks} size="sm" width="100px">
+              <SelectTrigger>
+                <SelectValueText placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {frameworks.items.map((movie) => (
+                  <SelectItem item={movie} key={movie.value}>
+                    {movie.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectRoot>
+            <CustomDatePicker />
           </HStack>
         </HStack>
 
-        <Separator variant={"solid"} size={"lg"} mb={5} mt={5} borderColor={"gray.800"} />
+        <Separator variant={"solid"} size={"lg"} mb={5} mt={5} ml={5} borderColor={"gray.800"} />
 
         {/* Table Section */}
-        <Table.Root variant="line" >
+        <Table.Root variant="line">
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>Kode</Table.ColumnHeader>
@@ -101,50 +122,44 @@ const AdminProduct = () => {
                           <DialogTitle>Edit Barang</DialogTitle>
                         </DialogHeader>
                         <DialogBody>
-                          <VStack>
-                            <Field>
-                              <Fieldset.Root size="lg" maxW="md">
-                                <Fieldset.Content>
-                                  <Field label="Nama">
-                                    <Input name="nama" />
-                                  </Field>
-                                  <HStack gapX={5}>
-                                    <Field label="Harga jual">
-                                      <Input name="Harga jual" type="Number" />
-                                    </Field>
-                                    <Field label="Harga Beli">
-                                      <Input name="Harga Beli" type="Number" />
-                                    </Field>
-                                  </HStack>
-                                  <Field label="Stok">
-                                    <Input name="Stok" type="Number" />
-                                  </Field>
-                                  <HStack gapX={5}>
-                                    <Field label="Diskon">
-                                      <Input name="Diskon" type="Number" />
-                                    </Field>
-                                    <Field label="Berat">
-                                      <Input name="Berat" type="Number" />
-                                    </Field>
-                                    <Field label="Satuan berat">
-                                      <NativeSelectRoot>
-                                        <NativeSelectField
-                                          name="Satuan berat"
-                                          items={Object.entries(beratMap).map(([id, name]) => name)}
-                                        />
-                                      </NativeSelectRoot>
-                                    </Field>
-                                  </HStack>
-                                  <FileUploadRoot maxW="xl" alignItems="stretch" maxFiles={10}>
-                                    <FileUploadDropzone
-                                      label="Drag and drop here to upload"
-                                      description=".png, .jpg up to 5MB"
-                                    />
-                                    <FileUploadList />
-                                  </FileUploadRoot>
-                                </Fieldset.Content>
-                              </Fieldset.Root>
+                          <VStack gap={6}>
+                            <Field label="Nama">
+                              <Input name="nama" />
                             </Field>
+                            <HStack gap={6}>
+                              <Field label="Harga jual">
+                                <Input name="Harga jual" type="Number" />
+                              </Field>
+                              <Field label="Harga Beli">
+                                <Input name="Harga Beli" type="Number" />
+                              </Field>
+                            </HStack>
+                            <Field label="Stok">
+                              <Input name="Stok" type="Number" />
+                            </Field>
+                            <HStack gap={6}>
+                              <Field label="Diskon">
+                                <Input name="Diskon" type="Number" />
+                              </Field>
+                              <Field label="Berat">
+                                <Input name="Berat" type="Number" />
+                              </Field>
+                              <Field label="Satuan berat">
+                                <NativeSelectRoot>
+                                  <NativeSelectField
+                                    name="Satuan berat"
+                                    items={Object.values(beratMap)}
+                                  />
+                                </NativeSelectRoot>
+                              </Field>
+                            </HStack>
+                            <FileUploadRoot maxW="xl" alignItems="stretch">
+                              <FileUploadDropzone
+                                label="Upload product images"
+                                description="PNG or JPG, up to 5MB per file"
+                              />
+                              <FileUploadList />
+                            </FileUploadRoot>
                           </VStack>
                         </DialogBody>
                         <DialogFooter>
@@ -166,9 +181,10 @@ const AdminProduct = () => {
           </Table.Body>
           <Table.Footer>
             <Table.Row>
-              <Table.Cell colSpan={8} textAlign="center">                <Text fontSize="sm" color="gray.500">
-                End of Results
-              </Text>
+              <Table.Cell colSpan={8} textAlign="center">
+                <Text fontSize="sm" color="gray.500">
+                  End of Results
+                </Text>
               </Table.Cell>
             </Table.Row>
           </Table.Footer>
@@ -197,5 +213,14 @@ const AdminProduct = () => {
     </Box>
   );
 };
+
+const frameworks = createListCollection({
+  items: [
+    { label: "React.js", value: "react" },
+    { label: "Vue.js", value: "vue" },
+    { label: "Angular", value: "angular" },
+    { label: "Svelte", value: "svelte" },
+  ],
+});
 
 export default AdminProduct;
