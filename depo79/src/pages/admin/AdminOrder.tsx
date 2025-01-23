@@ -118,10 +118,10 @@ const AdminOrder = () => {
             Bayar
           </Button>
           <HStack w={'100%'}>
-            <Button w={'49%'}>
+            <Button w={'49%'} bg={'red'}>
               Rauls
             </Button>
-            <Button w={'49%'}>
+            <Button w={'49%'} bg={'green'}>
               asdjahsd
             </Button>
           </HStack>
