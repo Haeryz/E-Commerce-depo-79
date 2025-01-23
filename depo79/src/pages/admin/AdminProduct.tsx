@@ -5,15 +5,21 @@ import {
   Button,
   Text,
   Table,
-  Separator
+  Separator,
+  VStack,
+  Fieldset,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useProductStore } from "../../store/product";
 import { useBeratStore } from "../../store/berat";  // Add this import
+import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { Field } from "../../components/ui/field";
+import { NativeSelectField, NativeSelectRoot } from "../../components/ui/native-select";
+import { FileUploadDropzone, FileUploadList, FileUploadRoot } from "../../components/ui/file-upload";
 
 const AdminProduct = () => {
   const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts } = useProductStore();
-  const { beratMap, loading: beratLoading, fetchBerat } = useBeratStore();  // Add this line
+  const { beratMap, loading: beratLoading, fetchBerat } = useBeratStore();
 
   useEffect(() => {
     fetchAdminProducts();
@@ -29,14 +35,14 @@ const AdminProduct = () => {
         {/* Search and Filter Section */}
         <HStack gap={4} p={5} borderBottom="1px" borderColor="gray.200" bg="white" flexWrap="wrap">
           <HStack w="full" gap={2}>
-            <Input 
-              placeholder="Cari Barang" 
+            <Input
+              placeholder="Cari Barang"
               borderRadius={"md"}
               w="90%"
             />
-            <Button 
-              colorScheme="blackAlpha" 
-              bg="black" 
+            <Button
+              colorScheme="blackAlpha"
+              bg="black"
               color="white"
               w="10%"
             >
@@ -51,12 +57,12 @@ const AdminProduct = () => {
               Date
             </Button>
             <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
-              Total 
+              Total
             </Button>
           </HStack>
         </HStack>
 
-        <Separator variant={"solid"} size={"lg"} mb={5} mt={5} borderColor={"gray.800"}/>
+        <Separator variant={"solid"} size={"lg"} mb={5} mt={5} borderColor={"gray.800"} />
 
         {/* Table Section */}
         <Table.Root variant="line" >
@@ -83,9 +89,77 @@ const AdminProduct = () => {
                 <Table.Cell>{product.diskon}%</Table.Cell>
                 <Table.Cell>{product.berat.value} {beratMap[product.berat.unit]}</Table.Cell>
                 <Table.Cell>
-                  <Button size="sm" colorScheme="gray">
-                    Edit
-                  </Button>
+                  <HStack gap={2}>
+                    <DialogRoot>
+                      <DialogTrigger asChild>
+                        <Button size="sm" colorScheme="gray">
+                          Edit
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Edit Barang</DialogTitle>
+                        </DialogHeader>
+                        <DialogBody>
+                          <VStack>
+                            <Field>
+                              <Fieldset.Root size="lg" maxW="md">
+                                <Fieldset.Content>
+                                  <Field label="Nama">
+                                    <Input name="nama" />
+                                  </Field>
+                                  <HStack gapX={5}>
+                                    <Field label="Harga jual">
+                                      <Input name="Harga jual" type="Number" />
+                                    </Field>
+                                    <Field label="Harga Beli">
+                                      <Input name="Harga Beli" type="Number" />
+                                    </Field>
+                                  </HStack>
+                                  <Field label="Stok">
+                                    <Input name="Stok" type="Number" />
+                                  </Field>
+                                  <HStack gapX={5}>
+                                    <Field label="Diskon">
+                                      <Input name="Diskon" type="Number" />
+                                    </Field>
+                                    <Field label="Berat">
+                                      <Input name="Berat" type="Number" />
+                                    </Field>
+                                    <Field label="Satuan berat">
+                                      <NativeSelectRoot>
+                                        <NativeSelectField
+                                          name="Satuan berat"
+                                          items={Object.entries(beratMap).map(([id, name]) => name)}
+                                        />
+                                      </NativeSelectRoot>
+                                    </Field>
+                                  </HStack>
+                                  <FileUploadRoot maxW="xl" alignItems="stretch" maxFiles={10}>
+                                    <FileUploadDropzone
+                                      label="Drag and drop here to upload"
+                                      description=".png, .jpg up to 5MB"
+                                    />
+                                    <FileUploadList />
+                                  </FileUploadRoot>
+                                </Fieldset.Content>
+                              </Fieldset.Root>
+                            </Field>
+                          </VStack>
+                        </DialogBody>
+                        <DialogFooter>
+                          <DialogActionTrigger asChild>
+                            <Button variant={'outline'}>Batalkan</Button>
+                          </DialogActionTrigger>
+                          <Button>Simpan</Button>
+                        </DialogFooter>
+                        <DialogCloseTrigger />
+                      </DialogContent>
+                    </DialogRoot>
+                    <Button size="sm" colorScheme="red" bg="red.500">
+                      Hapus
+                    </Button>
+                  </HStack>
                 </Table.Cell>
               </Table.Row>
             ))}
@@ -93,8 +167,8 @@ const AdminProduct = () => {
           <Table.Footer>
             <Table.Row>
               <Table.Cell colSpan={8} textAlign="center">                <Text fontSize="sm" color="gray.500">
-                  End of Results
-                </Text>
+                End of Results
+              </Text>
               </Table.Cell>
             </Table.Row>
           </Table.Footer>
