@@ -179,7 +179,7 @@ function Navbar2() {
             maxH="300px"
             overflowY="auto"
           >
-            <VStack align="stretch" spacing={0}>
+            <VStack align="stretch" gap={0}>
               {suggestions.map((suggestion, index) => (
                 <Box
                   key={index}

@@ -12,10 +12,16 @@ import profileRoutes from "./routes/profile.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import cors from 'cors';
 import checkoutRoute from "./routes/checkout.route.js";
+import { createServer } from 'http';
+import { initSocket } from './services/socket.service.js';
 
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+
+// Initialize socket.io
+initSocket(httpServer);
 
 app.use(cors());
 app.use(express.json());
@@ -47,7 +53,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(5000, () => {
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
     connectDB();
-    console.log("server started at http://localhost:5000");
-})
+    console.log(`Server running on port ${PORT}`);
+});
