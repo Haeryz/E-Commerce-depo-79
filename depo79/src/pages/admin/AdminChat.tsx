@@ -2,7 +2,7 @@ import { Box, HStack, Input, Text, VStack, IconButton } from '@chakra-ui/react'
 import React from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { Avatar } from '../../components/ui/avatar'
-import { FiSend } from 'react-icons/fi'
+import { FiSend, FiPaperclip } from 'react-icons/fi'
 
 const AdminChat = () => {
   const { colorMode } = useColorMode()
@@ -25,31 +25,31 @@ const AdminChat = () => {
       >
         <HStack w={'100%'} align="start" h="100%" gap={0}>
           {/* Contacts Section */}
-          <VStack 
-            w={'25%'} 
-            align={'stretch'} 
+          <VStack
+            w={'25%'}
+            align={'stretch'}
             h="100%"
             borderRight="1px solid"
             borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'}
           >
             <Box p={4} borderBottom="1px solid" borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'}>
-              <Input 
-                placeholder="Search" 
-                bg={colorMode === 'light' ? 'gray.100' : 'gray.700'} 
+              <Input
+                placeholder="Search"
+                bg={colorMode === 'light' ? 'gray.100' : 'gray.700'}
                 border="none"
                 borderRadius="full"
                 _focus={{ boxShadow: 'none' }}
               />
             </Box>
-            <VStack 
-              overflowY="auto" 
-              h="calc(100% - 72px)" 
-              w="100%" 
+            <VStack
+              overflowY="auto"
+              h="calc(100% - 72px)"
+              w="100%"
               gap={0}
             >
-              <HStack 
-                p={4} 
-                w="100%" 
+              <HStack
+                p={4}
+                w="100%"
                 _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.700' }}
                 cursor="pointer"
                 transition="all 0.2s"
@@ -72,9 +72,9 @@ const AdminChat = () => {
             h="100%"
             gap={0}
           >
-            <Box 
-              w="100%" 
-              p={4} 
+            <Box
+              w="100%"
+              p={4}
               borderBottom="1px solid"
               borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'}
             >
@@ -112,13 +112,22 @@ const AdminChat = () => {
               </HStack>
             </VStack>
 
-            <Box 
-              w="100%" 
-              p={4} 
+            <Box
+              w="100%"
+              p={4}
               borderTop="1px solid"
               borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'}
             >
               <HStack w="100%" gap={3}>
+                <IconButton
+                  aria-label="Attach file"
+                  variant="ghost"
+                  borderRadius="full"
+                  size="md"
+                  _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.700' }}
+                >
+                  <FiPaperclip />
+                </IconButton>
                 <Input
                   placeholder="iMessage"
                   bg={colorMode === 'light' ? 'gray.100' : 'gray.700'}
