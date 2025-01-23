@@ -4,12 +4,25 @@ import {
   Input,
   Button,
   Text,
-  Table
+  Table,
+  Separator
 } from "@chakra-ui/react";
-
-import React from "react";
+import React, { useEffect } from "react";
+import { useProductStore } from "../../store/product";
+import { useBeratStore } from "../../store/berat";  // Add this import
 
 const AdminProduct = () => {
+  const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts } = useProductStore();
+  const { beratMap, loading: beratLoading, fetchBerat } = useBeratStore();  // Add this line
+
+  useEffect(() => {
+    fetchAdminProducts();
+    fetchBerat();  // Add this line
+  }, [fetchAdminProducts, fetchBerat]);
+
+  if (productsLoading || beratLoading) return <Box p={5}>Loading...</Box>;
+  if (productsError) return <Box p={5}>Error: {productsError}</Box>;
+
   return (
     <Box w={"full"} p={5}>
       <Box borderRadius={"md"} boxShadow={"md"} overflowX="auto" bg="white">
@@ -30,21 +43,23 @@ const AdminProduct = () => {
               Cari
             </Button>
           </HStack>
-          <HStack>
-            <Button colorScheme="blackAlpha" bg="black" color="white">
+          <HStack mt={5} gap={2}>
+            <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
               Status
             </Button>
-            <Button colorScheme="blackAlpha" bg="black" color="white">
+            <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
               Date
             </Button>
-            <Button colorScheme="blackAlpha" bg="black" color="white">
-              Total
+            <Button colorScheme="gray" bg="gray.200" color="black" borderRadius={30}>
+              Total 
             </Button>
           </HStack>
         </HStack>
 
+        <Separator variant={"solid"} size={"lg"} mb={5} mt={5} borderColor={"gray.800"}/>
+
         {/* Table Section */}
-        <Table.Root>
+        <Table.Root variant="line" >
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>Kode</Table.ColumnHeader>
@@ -58,49 +73,22 @@ const AdminProduct = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {/* Example Rows */}
-            <Table.Row>
-              <Table.Cell>#19874</Table.Cell>
-              <Table.Cell>Semen Tiga Warna</Table.Cell>
-              <Table.Cell>Rp. 3.000.000,00</Table.Cell>
-              <Table.Cell>Rp. 300.000,00</Table.Cell>
-              <Table.Cell>20</Table.Cell>
-              <Table.Cell>10%</Table.Cell>
-              <Table.Cell>1 pcs</Table.Cell>
-              <Table.Cell>
-                <Button size="sm" colorScheme="gray">
-                  Edit
-                </Button>
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>#19873</Table.Cell>
-              <Table.Cell>Blyat Cyka</Table.Cell>
-              <Table.Cell>Rp. 30.000.000,00</Table.Cell>
-              <Table.Cell>Rp. 400.000,00</Table.Cell>
-              <Table.Cell>30</Table.Cell>
-              <Table.Cell>0%</Table.Cell>
-              <Table.Cell>20 kg</Table.Cell>
-              <Table.Cell>
-                <Button size="sm" colorScheme="gray">
-                  Edit
-                </Button>
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>#19875</Table.Cell>
-              <Table.Cell>Yeaaahh</Table.Cell>
-              <Table.Cell>Rp. 400.000,00</Table.Cell>
-              <Table.Cell>Rp. 30.000.000,00</Table.Cell>
-              <Table.Cell>40</Table.Cell>
-              <Table.Cell>30%</Table.Cell>
-              <Table.Cell>20 ikat</Table.Cell>
-              <Table.Cell>
-                <Button size="sm" colorScheme="gray">
-                  Edit
-                </Button>
-              </Table.Cell>
-            </Table.Row>
+            {adminProducts.map((product) => (
+              <Table.Row key={product._id}>
+                <Table.Cell>#{product._id}</Table.Cell>
+                <Table.Cell>{product.nama}</Table.Cell>
+                <Table.Cell>Rp. {product.harga_jual.toLocaleString()}</Table.Cell>
+                <Table.Cell>Rp. {product.harga_beli.toLocaleString()}</Table.Cell>
+                <Table.Cell>{product.stok}</Table.Cell>
+                <Table.Cell>{product.diskon}%</Table.Cell>
+                <Table.Cell>{product.berat.value} {beratMap[product.berat.unit]}</Table.Cell>
+                <Table.Cell>
+                  <Button size="sm" colorScheme="gray">
+                    Edit
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ))}
           </Table.Body>
           <Table.Footer>
             <Table.Row>
@@ -114,14 +102,20 @@ const AdminProduct = () => {
       </Box>
 
       {/* Add Button */}
-      <Box position="fixed" bottom={5} right={5}>
+      <Box position="fixed" bottom={8} right={8}>
         <Button
           colorScheme="blackAlpha"
           bg="black"
           color="white"
           borderRadius="full"
-          p={4}
-          fontSize="xl"
+          w="50px"
+          h="50px"
+          boxShadow="lg"
+          _hover={{
+            transform: "scale(1.1)",
+            boxShadow: "xl",
+          }}
+          transition="all 0.2s"
         >
           +
         </Button>
