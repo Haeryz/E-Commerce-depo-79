@@ -1,9 +1,10 @@
-import { Box, createListCollection, HStack, Input, Text, VStack } from '@chakra-ui/react'
+import { Box, createListCollection, HStack, Input, Separator, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
-import DatePicker from "react-datepicker"
 import CustomDatePicker from '../../components/main/CustomDatePicker'
+import { Field } from '../../components/ui/field'
+import { Button } from '../../components/ui/button'
 
 const AdminOrder = () => {
   const { colorMode } = useColorMode()
@@ -22,7 +23,7 @@ const AdminOrder = () => {
           <HStack gap={4} align="stretch" width="100%">
             <SelectRoot collection={frameworks} size="sm" width="100px">
               <SelectTrigger>
-                <SelectValueText  placeholder='Status'/>
+                <SelectValueText placeholder='Status' />
               </SelectTrigger>
               <SelectContent>
                 {frameworks.items.map((movie) => (
@@ -33,7 +34,15 @@ const AdminOrder = () => {
               </SelectContent>
             </SelectRoot>
             <CustomDatePicker />
+            <Field w={'80%'}>
+              <Input placeholder="Nama Customer" />
+            </Field>
+            <Button>
+              Search
+            </Button>
           </HStack>
+
+          <Separator />
         </VStack>
       </Box>
       <Box
@@ -55,10 +64,8 @@ const AdminOrder = () => {
 
 const frameworks = createListCollection({
   items: [
-    { label: "React.js", value: "react" },
-    { label: "Vue.js", value: "vue" },
-    { label: "Angular", value: "angular" },
-    { label: "Svelte", value: "svelte" },
+    { label: "Dibayar", value: "react" },
+    { label: "Belum Dibayar", value: "vue" },
   ],
 })
 
