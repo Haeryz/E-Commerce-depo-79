@@ -22,6 +22,13 @@ import DetailBarang from './pages/client/DetailBarang';
 import { Toaster } from './components/ui/toaster';
 import OtpForm from './pages/client/OtpForm';
 import AdminLayout from './pages/AdminLayout';
+import AdminHome from './pages/admin/AdminHome';
+import AdminProduct from './pages/admin/AdminProduct';
+import AdminOrder from './pages/admin/AdminOrder';
+import AdminReview from './pages/admin/AdminReview';
+import AdminChat from './pages/admin/AdminChat';
+import AdminData from './pages/admin/AdminData';
+import AdminHistory from './pages/admin/AdminHistory';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -32,7 +39,15 @@ function App() {
       <Toaster />
       <Routes>
         {/* Admin Routes */}
-        <Route path="/admin/*" element={<AdminLayout><Outlet /></AdminLayout>} />
+        <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
+          <Route index element={<AdminHome />} />
+          <Route path="product" element={<AdminProduct />} />
+          <Route path="order" element={<AdminOrder />} />
+          <Route path="review" element={<AdminReview />} />
+          <Route path="chat" element={<AdminChat />} />
+          <Route path="data" element={<AdminData />} />
+          <Route path="history" element={<AdminHistory />} />
+        </Route>
 
         {/* Client Routes */}
         <Route

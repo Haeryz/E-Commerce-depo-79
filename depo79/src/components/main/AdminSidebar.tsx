@@ -1,4 +1,5 @@
 import { Box, HStack, IconButton, Image, Text, VStack } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 import React from 'react'
 import Logo from '../../assets/LogoCompany.png'
 import { FaBoxArchive } from "react-icons/fa6"
@@ -10,22 +11,34 @@ import { LogOutIcon } from 'lucide-react'
 import { LuMoon, LuSun } from "react-icons/lu"
 import { useColorMode } from '../ui/color-mode'
 
-const navItems: Array<{ icon: IconType, text: string }> = [
-  { icon: FaHome, text: 'Home' },
-  { icon: FaBoxArchive, text: 'Produk' },
-  { icon: IoReceipt, text: 'Pesanan' },
-  { icon: IoChatbubbles, text: 'Pesan' },
-  { icon: FaHistory, text: 'Riwayat Pembelian' },
-  { icon: BsGraphUp, text: 'Data' },
-  { icon: FaStar, text: 'Review' },
+const navItems: Array<{ icon: IconType, text: string, path: string }> = [
+  { icon: FaHome, text: 'Home', path: '/admin' },
+  { icon: FaBoxArchive, text: 'Produk', path: '/admin/product' },
+  { icon: IoReceipt, text: 'Pesanan', path: '/admin/order' },
+  { icon: IoChatbubbles, text: 'Pesan', path: '/admin/chat' },
+  { icon: FaHistory, text: 'Riwayat Pembelian', path: '/admin/history' },
+  { icon: BsGraphUp, text: 'Data', path: '/admin/data' },
+  { icon: FaStar, text: 'Review', path: '/admin/review' },
 ]
 
-const NavItem = ({ icon: IconComponent, text }: { icon: IconType, text: string }) => (
-  <HStack gap={3} width="full">
-    <IconComponent size={20} />
-    <Text>{text}</Text>
-  </HStack>
-)
+const NavItem = ({ icon: IconComponent, text, path }: { icon: IconType, text: string, path: string }) => {
+  const navigate = useNavigate();
+  
+  return (
+    <HStack 
+      gap={3} 
+      width="full" 
+      cursor="pointer"
+      p={2}
+      borderRadius="md"
+      _hover={{ bg: 'gray.200' }}
+      onClick={() => navigate(path)}
+    >
+      <IconComponent size={20} />
+      <Text>{text}</Text>
+    </HStack>
+  )
+}
 
 const AdminSidebar = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -44,7 +57,7 @@ const AdminSidebar = () => {
           <Image src={Logo} alt="Admin" />
           <VStack gap={4} align="stretch" flex={1}>
             {navItems.map((item, index) => (
-              <NavItem key={index} icon={item.icon} text={item.text} />
+              <NavItem key={index} icon={item.icon} text={item.text} path={item.path} />
             ))}
           </VStack>
           <VStack gap={4} align="stretch" mt="auto">
