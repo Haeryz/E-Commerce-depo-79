@@ -21,6 +21,7 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import DetailBarang from './pages/client/DetailBarang';
 import { Toaster } from './components/ui/toaster';
 import OtpForm from './pages/client/OtpForm';
+import AdminLayout from './pages/AdminLayout';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -28,58 +29,50 @@ function App() {
 
   return (
     <Box bg={bgColor} color={textColor} minHeight="100vh">
-      <Navbar2 />
       <Toaster />
       <Routes>
-        {/* unprotected route */}
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/search" element={<ListBarang />} />
-        <Route path="/detail-barang/:id" element={<DetailBarang />} />
-        <Route path='/verify-otp' element={<OtpForm />} />
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={<AdminLayout />} />
 
-        {/* Protected Route user harus login */}
+        {/* Client Routes */}
         <Route
-          path="/profile"
+          path="/*"
           element={
-            <ProtectedRoute element={Profile} /> // Render Profile as the protected component
+            <>
+              <Navbar2 />
+              <Routes>
+                {/* unprotected route */}
+                <Route path="/" element={<Home />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/search" element={<ListBarang />} />
+                <Route path="/detail-barang/:id" element={<DetailBarang />} />
+                <Route path='/verify-otp' element={<OtpForm />} />
+
+                {/* Protected Route user harus login */}
+                <Route
+                  path="/profile"
+                  element={<ProtectedRoute element={Profile} />}
+                >
+                  <Route path="profile-sidebar" element={<SidebarProfile />} />
+                  <Route path="alamat-sidebar" element={<SidebarAlamat />} />
+                </Route>
+
+                <Route path='/cart' element={<ProtectedRoute element={Cart} />} />
+                <Route path='/checkout' element={<ProtectedRoute element={Checkout} />} />
+                <Route path='/chat' element={<ProtectedRoute element={Chat} />} />
+                <Route path='/payment' element={<ProtectedRoute element={Payment} />} />
+                <Route path='/status-pengiriman' element={<ProtectedRoute element={StatusPengiriman} />} />
+                <Route path='/ulasan' element={<ProtectedRoute element={Ulasan} />} />
+
+                {/* Test route untuk testing component */}
+                <Route path="/test" element={<Test />} />
+              </Routes>
+              <Footer />
+            </>
           }
-        >
-          {/* Now, handle child routes separately inside Profile */}
-          <Route path="profile-sidebar" element={<SidebarProfile />} />
-          <Route path="alamat-sidebar" element={<SidebarAlamat />} />
-        </Route>
-
-        <Route
-          path='/cart'
-          element={<ProtectedRoute element={Cart} />}
         />
-        <Route
-          path='/checkout'
-          element={<ProtectedRoute element={Checkout} />}
-        />
-        <Route
-          path='/chat'
-          element={<ProtectedRoute element={Chat} />}
-        />
-        <Route
-          path='/payment'
-          element={<ProtectedRoute element={Payment} />}
-        />
-        <Route
-          path='/status-pengiriman'
-          element={<ProtectedRoute element={StatusPengiriman} />}
-        />
-        <Route
-          path='/ulasan'
-          element={<ProtectedRoute element={Ulasan} />}
-        />
-
-        {/* Test route untuk testing component */}
-        <Route path="/test" element={<Test />} />
       </Routes>
-      <Footer />
     </Box>
   );
 }
