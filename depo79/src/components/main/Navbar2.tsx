@@ -1,4 +1,4 @@
-import { useEffect, useState, FormEvent } from 'react';
+import { useEffect, useState, FormEvent, useRef } from 'react';
 import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
@@ -13,6 +13,8 @@ import MobileDrawer from '../mobile/MobileDrawer';
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { useCartStore } from "../../store/cart"; // Add this import at the top with other imports
 import LogoCompany from "../../assets/LogoCompany.png"
+import { useSearchStore } from "../../store/search";
+import { useDebounce } from 'use-debounce';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -23,12 +25,39 @@ function Navbar2() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { suggestions, loading, fetchSuggestions } = useSearchStore();
+  const [debouncedSearch] = useDebounce(searchQuery, 300);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      fetchSuggestions(debouncedSearch);
+    }
+  }, [debouncedSearch, fetchSuggestions]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
   };
 
   useEffect(() => {
@@ -109,29 +138,64 @@ function Navbar2() {
         </DialogRoot>
 
       </Box>
-      <form onSubmit={handleSearch}>
-        <Field
-          maxW={{ base: 'full', sm: '200px', md: '4xs' }}
-          borderRadius="15px"
-          outline={'1px solid black'}
-          border="none"
-          _focus={{ outline: '1px solid black', borderRadius: '50px' }}
-          order={{ base: 3, sm: 'initial' }}
-          flexGrow={{ base: 1, sm: 0 }}
-        >
-          <Input
-            placeholder="Search"
+      <Box position="relative" ref={searchRef}>
+        <form onSubmit={handleSearch}>
+          <Field
+            maxW={{ base: 'full', sm: '200px', md: '4xs' }}
+            borderRadius="15px"
+            outline={'1px solid black'}
             border="none"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            _focus={{ outline: 'none', boxShadow: 'none' }}
-            _selection={{
-              backgroundColor: '#2563eb',
-              color: 'white'
-          }}
-          />
-        </Field>
-      </form>
+            _focus={{ outline: '1px solid black', borderRadius: '50px' }}
+            order={{ base: 3, sm: 'initial' }}
+            flexGrow={{ base: 1, sm: 0 }}
+          >
+            <Input
+              placeholder="Search"
+              border="none"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSuggestions(true);
+              }}
+              _focus={{ outline: 'none', boxShadow: 'none' }}
+              _selection={{
+                backgroundColor: '#2563eb',
+                color: 'white'
+              }}
+            />
+          </Field>
+        </form>
+        {showSuggestions && searchQuery && suggestions.length > 0 && (
+          <Box
+            position="absolute"
+            top="100%"
+            left="0"
+            right="0"
+            mt={2}
+            bg={colorMode === 'light' ? 'white' : 'gray.700'}
+            borderRadius="md"
+            boxShadow="lg"
+            zIndex={1000}
+            maxH="300px"
+            overflowY="auto"
+          >
+            <VStack align="stretch" spacing={0}>
+              {suggestions.map((suggestion, index) => (
+                <Box
+                  key={index}
+                  px={4}
+                  py={2}
+                  cursor="pointer"
+                  _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.600' }}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  <Text>{suggestion}</Text>
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+        )}
+      </Box>
 
       <Spacer />
 
