@@ -1,9 +1,65 @@
+import { Box, createListCollection, HStack, Input, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
+import { useColorMode } from '../../components/ui/color-mode'
+import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
+import DatePicker from "react-datepicker"
+import CustomDatePicker from '../../components/main/CustomDatePicker'
 
 const AdminOrder = () => {
+  const { colorMode } = useColorMode()
+
   return (
-    <div>AdminOrder</div>
+    <Box display="flex" height="100vh" p={4} w={'85%'} gap={4}>
+      <Box
+        height="100%"
+        w="75%"
+        p={4}
+        bg={colorMode === 'light' ? 'gray.100' : 'gray.700'}
+        borderRadius={8}
+        boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
+      >
+        <VStack align="stretch" height="100%" w={'100%'}>
+          <HStack gap={4} align="stretch" width="100%">
+            <SelectRoot collection={frameworks} size="sm" width="100px">
+              <SelectTrigger>
+                <SelectValueText  placeholder='Status'/>
+              </SelectTrigger>
+              <SelectContent>
+                {frameworks.items.map((movie) => (
+                  <SelectItem item={movie} key={movie.value}>
+                    {movie.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectRoot>
+            <CustomDatePicker />
+          </HStack>
+        </VStack>
+      </Box>
+      <Box
+        height="100%"
+        w="25%"
+        p={4}
+        bg={colorMode === 'light' ? 'gray.100' : 'gray.700'}
+        borderRadius={8}
+        boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
+      >
+        <VStack align="stretch" height="100%" w={'100%'}>
+          <Text>Admin Order</Text>
+          {/* Add your content here */}
+        </VStack>
+      </Box>
+    </Box>
   )
 }
+
+const frameworks = createListCollection({
+  items: [
+    { label: "React.js", value: "react" },
+    { label: "Vue.js", value: "vue" },
+    { label: "Angular", value: "angular" },
+    { label: "Svelte", value: "svelte" },
+  ],
+})
 
 export default AdminOrder
