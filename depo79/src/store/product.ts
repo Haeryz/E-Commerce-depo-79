@@ -133,4 +133,70 @@ export const useProductStore = create<ProductState>((set) => ({
             set({ loading: false });
         }
     },
+
+    createProduct: async (product: Product) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch("/api/product", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(product),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to create product");
+            }
+            const data = await response.json();
+            if (!data.success) {
+                set({ error: data.message });
+            }
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+        } finally {
+            set({ loading: false });
+        }
+    },
+    updateProduct: async (id: string, product: Product) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch(`/api/product/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(product),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to update product");
+            }
+            const data = await response.json();
+            if (!data.success) {
+                set({ error: data.message });
+            }
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+        } finally {
+            set({ loading: false });
+        }
+    },
+    deleteProduct: async (id: string) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch(`/api/product/${id}`, {
+                method: "DELETE",
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete product");
+            }
+            const data = await response.json();
+            if (!data.success) {
+                set({ error: data.message });
+            }
+        } catch (error: unknown) {
+            set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+        } finally {
+            set({ loading: false });
+        }
+    },
 }));
