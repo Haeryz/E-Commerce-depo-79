@@ -30,6 +30,7 @@ import AdminChat from './pages/admin/AdminChat';
 import AdminData from './pages/admin/AdminData';
 import AdminHistory from './pages/admin/AdminHistory';
 import AdminRoute from './pages/AdminRoute';
+import CheckStatus from './pages/client/CheckStatus';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -84,6 +85,7 @@ function App() {
                 <Route path='/payment' element={<ProtectedRoute element={Payment} />} />
                 <Route path='/status-pengiriman' element={<ProtectedRoute element={StatusPengiriman} />} />
                 <Route path='/ulasan' element={<ProtectedRoute element={Ulasan} />} />
+                <Route path='/status' element={<ProtectedRoute element={CheckStatus} />} />
 
                 {/* Test route untuk testing component */}
                 <Route path="/test" element={<Test />} />

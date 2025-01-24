@@ -1,8 +1,7 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
 import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon } from '@chakra-ui/react';
-import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
+import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
-
 import { Field } from '../ui/field';
 import { useAuthStore } from "../../store/auth"; // Import the auth store
 import { Link, useNavigate } from 'react-router-dom';
@@ -288,6 +287,25 @@ function Navbar2() {
                   <Button pl={10} pr={10} onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
                   <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
                   <Button onClick={() => navigate("/profile")}>Review History</Button>
+                  <DialogRoot>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Open Dialog
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Dialog Title</DialogTitle>
+                      </DialogHeader>
+                      <DialogBody>
+                        <p>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+                      </DialogBody>
+                      <DialogCloseTrigger />
+                    </DialogContent>
+                  </DialogRoot>
                   <Button
                     color={colorMode === 'light' ? 'white' : 'black'}
                     backgroundColor={colorMode === 'light' ? 'red' : 'pink'}
