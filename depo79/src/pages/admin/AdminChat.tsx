@@ -1,5 +1,5 @@
-import { Box, HStack, Input, Text, VStack, IconButton } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import { Box, HStack, Input, Text, VStack, IconButton, Link } from '@chakra-ui/react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { Avatar } from '../../components/ui/avatar'
 import { FiSend, FiPaperclip } from 'react-icons/fi'
@@ -27,6 +27,13 @@ const AdminChat = () => {
     sender: string;
     senderName?: string;  // Add this to store customer name
     timestamp: Date;
+    attachment?: {
+      id: string;
+      name: string;
+      type: string;
+      size: number;
+      url: string;
+    };
   }
 
   const { user } = useAuthStore(); // Add this
@@ -54,57 +61,76 @@ const AdminChat = () => {
     });
   };
 
-  // Join all rooms when component mounts
+  // Add ref for messages container
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Add scroll to bottom function
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Fix the useEffect for socket events
   useEffect(() => {
-    // Register as admin when component mounts
     // Register as admin when component mounts
     socket.emit('join_admin');
     console.log('[ADMIN UI] Emitted join_admin');
+
     // Listen for new connections
-    socket.on('user_connected', (roomId) => {
+    const handleUserConnected = (roomId: string) => {
       console.log('[ADMIN] New user connected to room:', roomId);
       setRooms(prev => {
         if (!prev.includes(roomId)) {
-          // Join the new room immediately
           socket.emit('join_room', roomId);
           return [...prev, roomId];
         }
         return prev;
       });
-    });
+    };
 
     // Listen for messages with improved logging and handling
-    socket.on('receive_message', (data: ChatMessage) => {
+    const handleReceiveMessage = (data: ChatMessage) => {
       console.log('[ADMIN UI] Received message:', data);
       
       setMessages(prev => {
-        // Make sure we're using the correct room ID
         const roomId = data.room;
-        const updatedMessages = {
+        // Check if message already exists to prevent duplicates
+        const existingMessages = prev[roomId] || [];
+        const isDuplicate = existingMessages.some(
+          msg => 
+            msg.content === data.content && 
+            msg.sender === data.sender &&
+            msg.timestamp === data.timestamp
+        );
+
+        if (isDuplicate) {
+          return prev;
+        }
+
+        return {
           ...prev,
           [roomId]: [
-            ...(prev[roomId] || []),
+            ...existingMessages,
             {
               ...data,
               timestamp: new Date(data.timestamp)
             }
           ]
         };
-        console.log('[ADMIN UI] Room messages after update:', {
-          roomId,
-          messagesInRoom: updatedMessages[roomId]
-        });
-        return updatedMessages;
       });
-    });
+    };
+
+    // Add event listeners
+    socket.on('user_connected', handleUserConnected);
+    socket.on('receive_message', handleReceiveMessage);
 
     // Cleanup function
     return () => {
       console.log('[ADMIN] Cleaning up socket listeners');
-      socket.off('user_connected');
-      socket.off('receive_message');
+      socket.off('user_connected', handleUserConnected);
+      socket.off('receive_message', handleReceiveMessage);
     };
-  });
+  }, []); // Empty dependency array is fine now since we're using proper cleanup
 
   // Add useEffect to monitor messages state changes
   useEffect(() => {
@@ -116,6 +142,12 @@ const AdminChat = () => {
     fetchProfileReviews();
   }, [fetchProfileReviews]);
 
+  // Add useEffect to scroll on new messages
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, activeRoom]);
+
+  // Modify the sendMessage function to wait for server response
   const sendMessage = () => {
     if (message.trim() && activeRoom) {
       const messageData = {
@@ -126,20 +158,11 @@ const AdminChat = () => {
         timestamp: new Date()
       };
 
-      console.log('[ADMIN] Sending message:', messageData);
-      console.log('[ADMIN] To room:', activeRoom);
-      
-      socket.emit('send_message', messageData);
+      // Clear the input immediately
       setMessage('');
-
-      // Optimistically add message to state
-      setMessages(prev => ({
-        ...prev,
-        [activeRoom]: [
-          ...(prev[activeRoom] || []),
-          messageData
-        ]
-      }));
+      
+      // Only emit to server, don't update state directly
+      socket.emit('send_message', messageData);
     }
   };
 
@@ -149,6 +172,44 @@ const AdminChat = () => {
     setActiveRoom(roomId);
     // Ensure we're joined to the room
     socket.emit('join_room', roomId);
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !activeRoom) return;
+
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    // Convert file to base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Data = reader.result?.toString().split(',')[1];
+      
+      const messageData = {
+        room: activeRoom,
+        content: `Sent file: ${file.name}`,
+        sender: 'admin',
+        senderName: 'Admin',
+        timestamp: new Date(),
+        file: {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: base64Data
+        }
+      };
+
+      socket.emit('send_message', messageData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAttachmentClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -245,53 +306,73 @@ const AdminChat = () => {
 
             <VStack w="100%" h="calc(100% - 140px)" p={6} overflowY="auto" gap={4}>
               {activeRoom ? (
-                messages[activeRoom]?.map((msg, index) => (
-                  <HStack 
-                    key={`${activeRoom}-${index}`} 
-                    w="100%" 
-                    justify={msg.sender === 'admin' ? 'flex-end' : 'flex-start'}
-                  >
-                    <VStack align={msg.sender === 'admin' ? 'end' : 'start'} maxW="70%">
-                      <Text fontSize="xs" color="gray.500">
-                        {msg.senderName || msg.sender}
-                      </Text>
-                      <Box
-                        position="relative"
-                        bg={msg.sender === 'admin' ?
-                          (colorMode === 'light' ? '#007AFF' : '#0A84FF') :
-                          (colorMode === 'light' ? '#E9E9EB' : '#303030')
-                        }
-                        px={4}
-                        py={2}
-                        borderRadius="2xl"
-                        color={msg.sender === 'admin' ? 'white' : 'inherit'}
-                        _before={{
-                            content: '""',
-                            position: 'absolute',
-                            bottom: '0',
-                            width: '20px',
-                            height: '20px',
-                            backgroundColor: 'inherit',
-                            ...(msg.sender === 'admin'
-                              ? {
-                                  right: '-8px',
-                                  clipPath: 'polygon(0 0, 100% 0, 100% 100%)'
-                                }
-                              : {
-                                  left: '-8px',
-                                  clipPath: 'polygon(0 0, 100% 0, 0 100%)'
-                                }
-                            )
-                        }}
-                      >
-                        <Text>{msg.content}</Text>
-                        <Text fontSize="xs" opacity={0.7}>
-                          {new Date(msg.timestamp).toLocaleTimeString()}
+                <>
+                  {messages[activeRoom]?.map((msg, index) => (
+                    <HStack 
+                      key={`${activeRoom}-${index}`} 
+                      w="100%" 
+                      justify={msg.sender === 'admin' ? 'flex-end' : 'flex-start'}
+                    >
+                      <VStack align={msg.sender === 'admin' ? 'end' : 'start'} maxW="70%">
+                        <Text fontSize="xs" color="gray.500">
+                          {msg.senderName || msg.sender}
                         </Text>
-                      </Box>
-                    </VStack>
-                  </HStack>
-                ))
+                        <Box
+                          position="relative"
+                          bg={msg.sender === 'admin' ?
+                            (colorMode === 'light' ? '#007AFF' : '#0A84FF') :
+                            (colorMode === 'light' ? '#E9E9EB' : '#303030')
+                          }
+                          px={4}
+                          py={2}
+                          borderRadius="2xl"
+                          color={msg.sender === 'admin' ? 'white' : 'inherit'}
+                          _before={{
+                              content: '""',
+                              position: 'absolute',
+                              bottom: '0',
+                              width: '20px',
+                              height: '20px',
+                              backgroundColor: 'inherit',
+                              ...(msg.sender === 'admin'
+                                ? {
+                                    right: '-8px',
+                                    clipPath: 'polygon(0 0, 100% 0, 100% 100%)'
+                                  }
+                                : {
+                                    left: '-8px',
+                                    clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+                                  }
+                              )
+                          }}
+                        >
+                          <Text>{msg.content}</Text>
+                          <Text fontSize="xs" opacity={0.7}>
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                          </Text>
+                        </Box>
+                        {msg.attachment && (
+                          <Link
+                            href={msg.attachment.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            p={2}
+                            bg="gray.100"
+                            borderRadius="md"
+                            _hover={{ bg: 'gray.200' }}
+                          >
+                            <HStack>
+                              <FiPaperclip />
+                              <Text fontSize="sm">{msg.attachment.name}</Text>
+                            </HStack>
+                          </Link>
+                        )}
+                      </VStack>
+                    </HStack>
+                  ))}
+                  {/* Add div ref for auto scroll */}
+                  <div ref={messagesEndRef} />
+                </>
               ) : (
                 <Text color="gray.500">Select a chat to view messages</Text>
               )}
@@ -305,11 +386,19 @@ const AdminChat = () => {
               bg={colorMode === 'light' ? 'gray.50' : 'gray.800'}
             >
               <HStack w="100%" gap={3}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  style={{ display: 'none' }}
+                  accept="image/*,.pdf,.doc,.docx"
+                />
                 <IconButton
                   aria-label="Attach file"
                   variant="ghost"
                   borderRadius="full"
                   color="blue.500"
+                  onClick={handleAttachmentClick}
                   _hover={{ bg: colorMode === 'light' ? 'blue.50' : 'blue.900' }}
                 >
                   <FiPaperclip />

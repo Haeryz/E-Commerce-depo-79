@@ -1,4 +1,7 @@
 import { Server } from 'socket.io';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
+import { v4 as uuidv4 } from 'uuid'; // Add this dependency
 
 let io;
 
@@ -61,35 +64,41 @@ export const initSocket = (server) => {
       });
     });
 
-    socket.on('send_message', (data) => {
+    socket.on('send_message', async (data) => {
       debug('MESSAGE', `Message received`, {
-        room: data.room,
-        sender: data.sender,
-        senderName: data.senderName,
-        content: data.content,
-        isAdmin: adminSockets.has(socket.id)
+        type: data.type,
+        hasAttachment: !!data.file
       });
 
-      const roomMembers = io.sockets.adapter.rooms.get(data.room);
-      debug('MESSAGE_ROOM', `Room members before emit`, {
-        room: data.room,
-        members: Array.from(roomMembers || [])
-      });
+      let messageData = { ...data };
 
-      // Add server timestamp
-      const messageWithTimestamp = {
-        ...data,
-        timestamp: new Date().toISOString(),
-        serverReceived: new Date().toISOString()
-      };
+      // Handle file attachment if present
+      if (data.file) {
+        try {
+          const fileId = uuidv4();
+          const fileExt = data.file.name.split('.').pop();
+          const fileName = `${fileId}.${fileExt}`;
+          const filePath = join(process.cwd(), 'uploads', fileName);
+          
+          // Convert base64 to buffer and save
+          const fileBuffer = Buffer.from(data.file.data, 'base64');
+          await writeFile(filePath, fileBuffer);
 
-      io.in(data.room).emit('receive_message', messageWithTimestamp);
+          // Add file info to message
+          messageData.attachment = {
+            id: fileId,
+            name: data.file.name,
+            type: data.file.type,
+            size: data.file.size,
+            url: `/uploads/${fileName}`
+          };
+          delete messageData.file; // Remove raw file data
+        } catch (error) {
+          debug('ERROR', `File upload failed`, { error });
+        }
+      }
 
-      debug('MESSAGE_SENT', `Message emitted to room`, {
-        room: data.room,
-        recipientCount: roomMembers?.size || 0,
-        recipients: Array.from(roomMembers || [])
-      });
+      io.in(data.room).emit('receive_message', messageData);
     });
 
     socket.on('disconnect', () => {

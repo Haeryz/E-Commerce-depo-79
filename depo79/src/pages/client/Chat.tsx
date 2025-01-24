@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerFooter, DrawerHeader } from '../../components/ui/drawer';
 import { Button } from '../../components/ui/button';
@@ -21,7 +21,8 @@ function Chat() {
   const navigate = useNavigate(); // Add this
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{ room: string; content: string; sender: string; timestamp: Date; }>>([]);
-  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Use profile._id instead of user.id for room identification
   const roomId = profile?._id || 'guest';
 
@@ -63,6 +64,38 @@ function Chat() {
       socket.emit('send_message', messageData);
       setMessage('');
     }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !roomId) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Data = reader.result?.toString().split(',')[1];
+      
+      const messageData = {
+        room: roomId,
+        content: `Sent file: ${file.name}`,
+        sender: roomId,
+        senderName: profile?.nama || 'Guest',
+        timestamp: new Date(),
+        file: {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: base64Data
+        }
+      };
+
+      socket.emit('send_message', messageData);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -112,6 +145,15 @@ function Chat() {
         </Field>
         <Button borderRadius={15} onClick={sendMessage}>
           Send
+        </Button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileSelect}
+        />
+        <Button borderRadius={15} onClick={() => fileInputRef.current?.click()}>
+          Attach File
         </Button>
       </DrawerFooter>
       <DrawerCloseTrigger />
