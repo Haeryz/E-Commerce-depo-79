@@ -110,6 +110,13 @@ export const useAuthStore = create<AuthState>((set) => {
                     Cookies.set("authToken", data.token, { expires: 1 });
                     Cookies.set("user", JSON.stringify(data.user), { expires: 1 });
                     alert("Login successful");
+                    
+                    // Redirect based on user role
+                    if (data.user.role === 'admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/';
+                    }
                 } else {
                     alert("Invalid credentials");
                 }

@@ -29,6 +29,7 @@ import AdminReview from './pages/admin/AdminReview';
 import AdminChat from './pages/admin/AdminChat';
 import AdminData from './pages/admin/AdminData';
 import AdminHistory from './pages/admin/AdminHistory';
+import AdminRoute from './pages/AdminRoute';
 
 function App() {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -38,8 +39,12 @@ function App() {
     <Box bg={bgColor} color={textColor} minHeight="100vh">
       <Toaster />
       <Routes>
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
+        {/* Admin Routes - Protected */}
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminLayout><Outlet /></AdminLayout>
+          </AdminRoute>
+        }>
           <Route index element={<AdminHome />} />
           <Route path="product" element={<AdminProduct />} />
           <Route path="order" element={<AdminOrder />} />

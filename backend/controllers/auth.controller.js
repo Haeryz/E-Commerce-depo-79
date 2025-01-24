@@ -152,10 +152,18 @@ export const loginUser = async (req, res) => {
 };
 
 export const registerAdmin = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { nama, email, password } = req.body;  // Changed from 'name' to 'nama'
 
   try {
-    // Check if admin already exists
+    // Check total number of existing admins
+    const adminCount = await User.countDocuments({ role: 'admin' });
+    if (adminCount >= 3) {
+      return res.status(403).json({
+        success: false,
+        message: "Maximum number of admin accounts (3) has been reached"
+      });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already exists" });
@@ -164,9 +172,9 @@ export const registerAdmin = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create admin user
+    // Create admin user with 'nama' instead of 'name'
     const newAdmin = new User({
-      name,
+      name: nama,  // Use 'nama' as the value for 'name'
       email,
       password: hashedPassword,
       role: 'admin'

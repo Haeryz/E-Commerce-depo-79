@@ -10,6 +10,7 @@ import { IconType } from 'react-icons'
 import { LogOutIcon } from 'lucide-react'
 import { LuMoon, LuSun } from "react-icons/lu"
 import { useColorMode } from '../ui/color-mode'
+import { useAuthStore } from '../../store/auth'
 
 const navItems: Array<{ icon: IconType, text: string, path: string }> = [
   { icon: FaHome, text: 'Home', path: '/admin' },
@@ -42,6 +43,14 @@ const NavItem = ({ icon: IconComponent, text, path }: { icon: IconType, text: st
 
 const AdminSidebar = () => {
   const { colorMode, toggleColorMode } = useColorMode()
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout(() => {
+      navigate('/login');
+    });
+  };
 
   return (
     <Box height="100%" p={4}>
@@ -81,6 +90,7 @@ const AdminSidebar = () => {
                 color={colorMode === 'light' ? 'gray.600' : 'gray.200'}
                 _hover={{ bg: colorMode === 'light' ? 'gray.200' : 'gray.600' }}
                 w={'100%'}
+                onClick={handleLogout}
               >
                 <LogOutIcon />
                 Log Out
