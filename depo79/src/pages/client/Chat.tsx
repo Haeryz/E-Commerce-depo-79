@@ -7,17 +7,30 @@ import { Button } from '../../components/ui/button';
 import { useProfileStore } from '../../store/profile'; // Add this import
 import { Input, VStack, HStack, Box, Text } from '@chakra-ui/react';
 import { Field } from '../../components/ui/field';
+import { useAuthStore } from '../../store/auth'; // Add this import
+import { useNavigate } from 'react-router-dom'; // Add this import
 
 // Change this line:
-const socket = io('http://YOUR_PUBLIC_IP:3000');
+const socket = io('http://localhost:5000', {
+  withCredentials: true
+});
 
 function Chat() {
   const { profile, fetchProfile } = useProfileStore(); // Add profile store
+  const { user } = useAuthStore(); // Add this
+  const navigate = useNavigate(); // Add this
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{ room: string; content: string; sender: string; timestamp: Date; }>>([]);
   
   // Use profile._id instead of user.id for room identification
   const roomId = profile?._id || 'guest';
+
+  // Add role check
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      navigate('/admin/chat');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     // Fetch profile when component mounts
