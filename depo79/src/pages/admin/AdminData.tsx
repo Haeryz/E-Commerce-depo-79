@@ -2,7 +2,6 @@ import React from 'react'
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import { VStack, Box, HStack, Text } from '@chakra-ui/react'
-import CustomDatePicker from '../../components/main/CustomDatePicker'
 import RangeDatePicker from '../../components/main/RangeDatePicker'
 import { useColorMode } from '../../components/ui/color-mode'
 

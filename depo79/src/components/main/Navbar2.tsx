@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box } from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon } from '@chakra-ui/react';
 import { MdOutlineDarkMode, MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 
@@ -15,6 +15,8 @@ import { useCartStore } from "../../store/cart"; // Add this import at the top w
 import LogoCompany from "../../assets/LogoCompany.png"
 import { useSearchStore } from "../../store/search";
 import { useDebounce } from 'use-debounce';
+import { Switch } from '../ui/switch';
+import { FaMoon, FaSun } from 'react-icons/fa';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -25,7 +27,7 @@ function Navbar2() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { suggestions, loading, fetchSuggestions } = useSearchStore();
+  const { suggestions, fetchSuggestions } = useSearchStore();
   const [debouncedSearch] = useDebounce(searchQuery, 300);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -200,15 +202,24 @@ function Navbar2() {
       <Spacer />
 
       <HStack display={{ base: 'none', md: 'flex' }} >
-        <IconButton
-          aria-label="Toggle theme"
-          variant="ghost"
-          size="lg"
+        <Switch
           colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-          onClick={toggleColorMode}
-        >
-          <MdOutlineDarkMode />
-        </IconButton>
+          colorPalette="blue"
+          size="lg"
+          onChange={toggleColorMode}
+          trackLabel={{
+            on: (
+              <Icon color="yellow.400" >
+                <FaSun />
+              </Icon>
+            ),
+            off: (
+              <Icon color="gray.400">
+                <FaMoon />
+              </Icon>
+            ),
+          }}
+        />
         {isAuthenticated && (
           <>
             <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
@@ -277,9 +288,9 @@ function Navbar2() {
                   <Button pl={10} pr={10} onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
                   <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
                   <Button onClick={() => navigate("/profile")}>Review History</Button>
-                  <Button 
-                    color={colorMode === 'light' ? 'white' : 'black'} 
-                    backgroundColor={colorMode === 'light' ? 'red' : 'pink'} 
+                  <Button
+                    color={colorMode === 'light' ? 'white' : 'black'}
+                    backgroundColor={colorMode === 'light' ? 'red' : 'pink'}
                     onClick={() => useAuthStore.getState().logout(() => navigate("/"))}
                   >
                     Logout
