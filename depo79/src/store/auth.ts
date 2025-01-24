@@ -110,6 +110,7 @@ export const useAuthStore = create<AuthState>((set) => {
                     Cookies.set("authToken", data.token, { expires: 1 });
                     Cookies.set("user", JSON.stringify(data.user), { expires: 1 });
                     alert("Login successful");
+                    console.log("User logged in:", data.user);
                 } else {
                     alert("Invalid credentials");
                 }
