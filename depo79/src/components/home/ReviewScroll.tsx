@@ -40,6 +40,14 @@ function ReviewScroll() {
                 maxW="87%"
                 mx="auto"
                 overflow="hidden"
+                css={{
+                    '.infinite-logo-slider': {
+                        transition: 'animation-play-state 0.5s ease-out',
+                        '&:hover': {
+                            animationPlayState: 'paused'
+                        }
+                    }
+                }}
             >
                 <InfiniteSlider
                     pauseOnHover
