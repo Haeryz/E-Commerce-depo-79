@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Chekcout from "../models/checkout.model.js";
+import { uploadImage } from "../services/cloudinary.service.js";
 
 export const getCheckout = async (req, res) => {
   try {
@@ -22,20 +23,47 @@ export const getCheckout = async (req, res) => {
 };
 
 export const createCheckout = async (req, res) => {
-  const { buktiTransfer } = req.body;
-
-  if (!buktiTransfer) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Bukti Transfer is required" });
-  }
-  const newCheckout = new Chekcout({ buktiTransfer });
   try {
+    // Check if file exists in request
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Bukti Transfer image is required" 
+      });
+    }
+
+    // Convert buffer to base64
+    const fileStr = req.file.buffer.toString('base64');
+    const fileUri = `data:${req.file.mimetype};base64,${fileStr}`;
+
+    // Upload to Cloudinary
+    const uploadResult = await uploadImage(fileUri, {
+      folder: 'bukti-transfer',
+    });
+
+    if (!uploadResult.success) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Failed to upload image" 
+      });
+    }
+
+    // Create new checkout with Cloudinary URL
+    const newCheckout = new Chekcout({
+      buktiTransfer: uploadResult.url
+    });
+
     await newCheckout.save();
-    return res.status(201).json({ success: true, checkout: newCheckout });
+    return res.status(201).json({ 
+      success: true, 
+      checkout: newCheckout 
+    });
   } catch (error) {
     console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };
 

@@ -14,6 +14,7 @@ import cors from 'cors';
 import checkoutRoute from "./routes/checkout.route.js";
 import { createServer } from 'http';
 import { initSocket } from './services/socket.service.js';
+import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
 
 dotenv.config();
 
@@ -38,6 +39,12 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoute);
 
+// Add test endpoint for Cloudinary
+app.post('/api/upload-image', async (req, res) => {
+    const { imagePath } = req.body;
+    const result = await uploadImage(imagePath);
+    res.json(result);
+});
 
 app.get("/depo79DB", (req, res) => {    
     res.send("Hello World!");
