@@ -4,8 +4,13 @@ import { useColorMode } from '../../components/ui/color-mode'
 import { Avatar } from '../../components/ui/avatar'
 import { FiSend, FiPaperclip } from 'react-icons/fi'
 import { io } from 'socket.io-client'
+import { useAuthStore } from "../../store/auth"; // Add this
+import { useNavigate } from 'react-router-dom'; // Add this
+import { useProfileStore } from '../../store/profile'
 
-const socket = io('http://localhost:3000');
+const socket = io('http://localhost:5000', {
+  withCredentials: true
+});
 
 const AdminChat = () => {
   const { colorMode } = useColorMode()
@@ -20,33 +25,96 @@ const AdminChat = () => {
     room: string;
     content: string;
     sender: string;
+    senderName?: string;  // Add this to store customer name
     timestamp: Date;
   }
+
+  const { user } = useAuthStore(); // Add this
+  const navigate = useNavigate(); // Add this
+
+  // Add role check
+  useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [message, setMessage] = useState('');
   const [rooms, setRooms] = useState<string[]>([]);  // List of active chat rooms
+  const { profileMap, fetchProfileReviews } = useProfileStore();
 
+  // Add debug logging for messages state
+  const logMessages = () => {
+    console.log('[ADMIN UI] Current messages state:', {
+      activeRoom,
+      messages,
+      roomsCount: Object.keys(messages).length
+    });
+  };
+
+  // Join all rooms when component mounts
   useEffect(() => {
+    // Register as admin when component mounts
+    // Register as admin when component mounts
+    socket.emit('join_admin');
+    console.log('[ADMIN UI] Emitted join_admin');
     // Listen for new connections
     socket.on('user_connected', (roomId) => {
-      setRooms(prev => [...prev, roomId]);
+      console.log('[ADMIN] New user connected to room:', roomId);
+      setRooms(prev => {
+        if (!prev.includes(roomId)) {
+          // Join the new room immediately
+          socket.emit('join_room', roomId);
+          return [...prev, roomId];
+        }
+        return prev;
+      });
     });
 
-    // Listen for messages
-    socket.on('receive_message', (data) => {
-      setMessages(prev => ({
-        ...prev,
-        [data.room]: [...(prev[data.room] || []), data]
-      }));
+    // Listen for messages with improved logging and handling
+    socket.on('receive_message', (data: ChatMessage) => {
+      console.log('[ADMIN UI] Received message:', data);
+      
+      setMessages(prev => {
+        // Make sure we're using the correct room ID
+        const roomId = data.room;
+        const updatedMessages = {
+          ...prev,
+          [roomId]: [
+            ...(prev[roomId] || []),
+            {
+              ...data,
+              timestamp: new Date(data.timestamp)
+            }
+          ]
+        };
+        console.log('[ADMIN UI] Room messages after update:', {
+          roomId,
+          messagesInRoom: updatedMessages[roomId]
+        });
+        return updatedMessages;
+      });
     });
 
+    // Cleanup function
     return () => {
+      console.log('[ADMIN] Cleaning up socket listeners');
       socket.off('user_connected');
       socket.off('receive_message');
     };
-  }, []);
+  });
+
+  // Add useEffect to monitor messages state changes
+  useEffect(() => {
+    logMessages();
+  }, [messages, activeRoom]);
+
+  // Add useEffect to fetch profiles
+  useEffect(() => {
+    fetchProfileReviews();
+  }, [fetchProfileReviews]);
 
   const sendMessage = () => {
     if (message.trim() && activeRoom) {
@@ -54,12 +122,33 @@ const AdminChat = () => {
         room: activeRoom,
         content: message,
         sender: 'admin',
+        senderName: 'Admin', // Add admin name
         timestamp: new Date()
       };
 
+      console.log('[ADMIN] Sending message:', messageData);
+      console.log('[ADMIN] To room:', activeRoom);
+      
       socket.emit('send_message', messageData);
       setMessage('');
+
+      // Optimistically add message to state
+      setMessages(prev => ({
+        ...prev,
+        [activeRoom]: [
+          ...(prev[activeRoom] || []),
+          messageData
+        ]
+      }));
     }
+  };
+
+  const handleRoomSelect = (roomId: string) => {
+    console.log('[ADMIN UI] Selecting room:', roomId);
+    console.log('[ADMIN UI] Messages for room:', messages[roomId]);
+    setActiveRoom(roomId);
+    // Ensure we're joined to the room
+    socket.emit('join_room', roomId);
   };
 
   return (
@@ -99,26 +188,41 @@ const AdminChat = () => {
               gap={1}
               p={2}
             >
-              {rooms.map(roomId => (
-                <HStack
-                  key={roomId}
-                  p={3}
-                  w="100%"
-                  bg={activeRoom === roomId ? 
-                    (colorMode === 'light' ? 'blue.500' : 'blue.600') : 
-                    'transparent'}
-                  color={activeRoom === roomId ? 'white' : 'inherit'}
-                  borderRadius="md"
-                  _hover={{ bg: activeRoom === roomId ? 
-                    (colorMode === 'light' ? 'blue.600' : 'blue.700') : 
-                    (colorMode === 'light' ? 'gray.200' : 'gray.700') }}
-                  cursor="pointer"
-                  onClick={() => setActiveRoom(roomId)}
-                >
-                  <Avatar name={roomId} colorPalette={pickPalette(roomId)} />
-                  <Text fontWeight="medium">User {roomId}</Text>
-                </HStack>
-              ))}
+              {rooms.map(roomId => {
+                const userProfile = profileMap[roomId];
+                return (
+                  <HStack
+                    key={roomId}
+                    p={3}
+                    w="100%"
+                    bg={activeRoom === roomId ? 
+                      (colorMode === 'light' ? 'blue.500' : 'blue.600') : 
+                      'transparent'}
+                    color={activeRoom === roomId ? 'white' : 'inherit'}
+                    borderRadius="md"
+                    _hover={{ bg: activeRoom === roomId ? 
+                      (colorMode === 'light' ? 'blue.600' : 'blue.700') : 
+                      (colorMode === 'light' ? 'gray.200' : 'gray.700') }}
+                    cursor="pointer"
+                    onClick={() => handleRoomSelect(roomId)}
+                  >
+                    <Avatar 
+                      name={userProfile?.nama || roomId} 
+                      colorPalette={pickPalette(userProfile?.nama || roomId)} 
+                    />
+                    <VStack align="start" gap={0}>
+                      <Text fontWeight="medium">
+                        {userProfile?.nama || `User ${roomId}`}
+                      </Text>
+                      {messages[roomId]?.length > 0 && (
+                        <Text fontSize="xs" color="gray.500" truncate>
+                          {messages[roomId][messages[roomId].length - 1].content}
+                        </Text>
+                      )}
+                    </VStack>
+                  </HStack>
+                );
+              })}
             </VStack>
           </VStack>
 
@@ -140,40 +244,57 @@ const AdminChat = () => {
             </Box>
 
             <VStack w="100%" h="calc(100% - 140px)" p={6} overflowY="auto" gap={4}>
-              {activeRoom && messages[activeRoom]?.map((msg, index) => (
-                <HStack key={index} w="100%" justify={msg.sender === 'admin' ? 'flex-end' : 'flex-start'}>
-                  <VStack align={msg.sender === 'admin' ? 'end' : 'start'} maxW="70%">
-                    <Box
-                      position="relative"
-                      bg={msg.sender === 'admin' ?
-                        (colorMode === 'light' ? '#007AFF' : '#0A84FF') :
-                        (colorMode === 'light' ? '#E9E9EB' : '#303030')
-                      }
-                      px={4}
-                      py={2}
-                      borderRadius="2xl"
-                      color={msg.sender === 'admin' ? 'white' : 'inherit'}
-                      _before={{
-                        content: '""',
-                        position: 'absolute',
-                        bottom: '0',
-                        [msg.sender === 'admin' ? 'right' : 'left']: '-8px',
-                        width: '20px',
-                        height: '20px',
-                        backgroundColor: 'inherit',
-                        clipPath: msg.sender === 'admin' ? 
-                          'polygon(0 0, 100% 0, 100% 100%)' : 
-                          'polygon(0 0, 100% 0, 0 100%)'
-                      }}
-                    >
-                      <Text>{msg.content}</Text>
-                    </Box>
-                    <Text fontSize="xs" color="gray.500" px={2}>
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                  </VStack>
-                </HStack>
-              ))}
+              {activeRoom ? (
+                messages[activeRoom]?.map((msg, index) => (
+                  <HStack 
+                    key={`${activeRoom}-${index}`} 
+                    w="100%" 
+                    justify={msg.sender === 'admin' ? 'flex-end' : 'flex-start'}
+                  >
+                    <VStack align={msg.sender === 'admin' ? 'end' : 'start'} maxW="70%">
+                      <Text fontSize="xs" color="gray.500">
+                        {msg.senderName || msg.sender}
+                      </Text>
+                      <Box
+                        position="relative"
+                        bg={msg.sender === 'admin' ?
+                          (colorMode === 'light' ? '#007AFF' : '#0A84FF') :
+                          (colorMode === 'light' ? '#E9E9EB' : '#303030')
+                        }
+                        px={4}
+                        py={2}
+                        borderRadius="2xl"
+                        color={msg.sender === 'admin' ? 'white' : 'inherit'}
+                        _before={{
+                            content: '""',
+                            position: 'absolute',
+                            bottom: '0',
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: 'inherit',
+                            ...(msg.sender === 'admin'
+                              ? {
+                                  right: '-8px',
+                                  clipPath: 'polygon(0 0, 100% 0, 100% 100%)'
+                                }
+                              : {
+                                  left: '-8px',
+                                  clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+                                }
+                            )
+                        }}
+                      >
+                        <Text>{msg.content}</Text>
+                        <Text fontSize="xs" opacity={0.7}>
+                          {new Date(msg.timestamp).toLocaleTimeString()}
+                        </Text>
+                      </Box>
+                    </VStack>
+                  </HStack>
+                ))
+              ) : (
+                <Text color="gray.500">Select a chat to view messages</Text>
+              )}
             </VStack>
 
             <Box
