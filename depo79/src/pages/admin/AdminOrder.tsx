@@ -1,10 +1,13 @@
-import { Box, createListCollection, HStack, Input, Separator, Text, VStack } from '@chakra-ui/react'
+import { Box, createListCollection, HStack, Input, Separator, Table, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
 import CustomDatePicker from '../../components/main/CustomDatePicker'
 import { Field } from '../../components/ui/field'
 import { Button } from '../../components/ui/button'
+import { IoPersonSharp } from "react-icons/io5";
+import { FaLocationDot } from "react-icons/fa6";
+import { BsTelephoneFill } from "react-icons/bs";
 
 const AdminOrder = () => {
   const { colorMode } = useColorMode()
@@ -43,6 +46,22 @@ const AdminOrder = () => {
           </HStack>
 
           <Separator />
+
+          <HStack>
+            <Table.Root>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>Order</Table.ColumnHeader>
+                  <Table.ColumnHeader>Customer</Table.ColumnHeader>
+                  <Table.ColumnHeader>Type</Table.ColumnHeader>
+                  <Table.ColumnHeader>Status</Table.ColumnHeader>
+                  <Table.ColumnHeader>Product</Table.ColumnHeader>
+                  <Table.ColumnHeader>Total</Table.ColumnHeader>
+                  <Table.ColumnHeader>Date</Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+            </Table.Root>
+          </HStack>
         </VStack>
       </Box>
       <Box
@@ -56,6 +75,56 @@ const AdminOrder = () => {
         <VStack align="stretch" height="100%" w={'100%'}>
           <Text>Admin Order</Text>
           {/* Add your content here */}
+          <Separator />
+
+          <HStack w={'100%'} justifyContent={'space-between'}>
+            <Text>Semen Gresik Tiga Roda</Text>
+            <Text>#128394</Text>
+          </HStack>
+          <Text fontWeight={'bold'}>1 X Rp. 30.000.000,00</Text>
+
+          <HStack w={'100%'} justifyContent={'space-between'}>
+            <Text>Semen Mantap Jaya</Text>
+            <Text>#128938</Text>
+          </HStack>
+          <Text fontWeight={'bold'}>3 X Rp. 30.000.000,00</Text>
+
+          <HStack w={'100%'} justifyContent={'space-between'}>
+            <Text>Semen Mantap Jaya</Text>
+            <Text>#128938</Text>
+          </HStack>
+          <Text fontWeight={'bold'}>2 X Rp. 30.000.000,00</Text>
+
+          <Separator />
+          <Text> Total </Text>
+          <Text fontWeight={'bold'} mb={10}> Rp. 180.000.000,00</Text>
+          <HStack>
+            <IoPersonSharp />
+            <Text>Harizz Lisukun</Text>
+          </HStack>
+          <HStack w={'100%'} alignSelf={'flex-start'}>
+            <FaLocationDot />
+            <Text>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+            </Text>
+          </HStack>
+          <HStack>
+            <BsTelephoneFill />
+            <Text>
+              +62 812 3456 7890
+            </Text>
+          </HStack>
+          <Button w={'100%'}>
+            Bayar
+          </Button>
+          <HStack w={'100%'}>
+            <Button w={'49%'} bg={'red'}>
+              Rauls
+            </Button>
+            <Button w={'49%'} bg={'green'}>
+              asdjahsd
+            </Button>
+          </HStack>
         </VStack>
       </Box>
     </Box>
