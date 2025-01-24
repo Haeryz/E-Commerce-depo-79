@@ -48,8 +48,8 @@ function Checkout() {
               <Field label="Email" w="full">
                 <Input placeholder="me@example.com" />
               </Field>
-              <Field label="Konfirmasi Email" w="full">
-                <Input placeholder="me@example.com" />
+              <Field label="Nomor Telepon" w="full">
+                <Input placeholder="+62" />
               </Field>
             </Stack>
             <Text mt={4} mb={2} fontWeight="medium">
