@@ -16,6 +16,8 @@ import { useSearchStore } from "../../store/search";
 import { useDebounce } from 'use-debounce';
 import { Switch } from '../ui/switch';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline';
+import { LuCheck, LuPackage, LuShip } from 'react-icons/lu';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -293,16 +295,42 @@ function Navbar2() {
                         Open Dialog
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Dialog Title</DialogTitle>
-                      </DialogHeader>
-                      <DialogBody>
-                        <p>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </p>
-                      </DialogBody>
+                    <DialogContent p={10}>
+                      <TimelineRoot maxW="400px">
+                        <TimelineItem>
+                          <TimelineConnector>
+                            <LuShip />
+                          </TimelineConnector>
+                          <TimelineContent>
+                            <TimelineTitle>Product Shipped</TimelineTitle>
+                            <TimelineDescription>13th May 2021</TimelineDescription>
+                            <Text textStyle="sm">
+                              We shipped your product via <strong>FedEx</strong> and it should
+                              arrive within 3-5 business days.
+                            </Text>
+                          </TimelineContent>
+                        </TimelineItem>
+
+                        <TimelineItem>
+                          <TimelineConnector>
+                            <LuCheck />
+                          </TimelineConnector>
+                          <TimelineContent>
+                            <TimelineTitle textStyle="sm">Order Confirmed</TimelineTitle>
+                            <TimelineDescription>18th May 2021</TimelineDescription>
+                          </TimelineContent>
+                        </TimelineItem>
+
+                        <TimelineItem>
+                          <TimelineConnector>
+                            <LuPackage />
+                          </TimelineConnector>
+                          <TimelineContent>
+                            <TimelineTitle textStyle="sm">Order Delivered</TimelineTitle>
+                            <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
+                          </TimelineContent>
+                        </TimelineItem>
+                      </TimelineRoot>
                       <DialogCloseTrigger />
                     </DialogContent>
                   </DialogRoot>
