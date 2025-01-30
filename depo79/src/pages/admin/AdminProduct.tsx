@@ -56,8 +56,8 @@ const AdminProduct = () => {
   if (productsError) return <Box p={5}>Error: {productsError}</Box>;
 
   return (
-    <Box w={"85%"} p={5}>
-      <Box borderRadius={"md"} boxShadow={"md"} overflowX="auto" bg="white">
+    <Box w={"85%"} p={5} h={"100vh"}>
+      <Box borderRadius={"md"} boxShadow={"md"} overflowX="auto" bg="white" h="100%" overflowY="auto">
         {/* Search and Filter Section */}
         <HStack gap={4} p={5} borderBottom="1px" borderColor="gray.200" bg="white" flexWrap="wrap">
           <HStack w="full" gap={2}>
