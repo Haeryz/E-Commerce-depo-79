@@ -269,7 +269,6 @@ function Cart() {
                             fontSize={{ base: 'sm', md: 'md' }}
                             colorScheme="blue"
                             borderRadius="xl"
-                            _loading={loading}
                             _hover={{
                                 transform: 'translateY(-2px)',
                                 shadow: 'lg',
