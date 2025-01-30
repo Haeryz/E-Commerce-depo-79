@@ -7,6 +7,7 @@ import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { motion } from 'framer-motion'
 import { EmptyState } from "../../components/ui/empty-state"
+import { Link } from 'react-router-dom';
 
 function Cart() {
     const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem } = useCartStore();
@@ -206,7 +207,7 @@ function Cart() {
                                                     size="sm"
                                                     onClick={() => handleRemoveItem(item.product._id)}
                                                 >
-                                                  <FaTrashAlt />
+                                                <FaTrashAlt />
                                                 </IconButton>
                                             </HStack>
 
@@ -263,6 +264,7 @@ function Cart() {
                             </Text>
                         </HStack>
                         
+                        <Link to="/checkout/:id">
                         <Button 
                             w={'full'} 
                             size={{ base: 'md', md: 'lg' }}
@@ -276,6 +278,7 @@ function Cart() {
                         >
                             Checkout Now
                         </Button>
+                        </Link>
                     </VStack>
                 </Box>
             </HStack>
