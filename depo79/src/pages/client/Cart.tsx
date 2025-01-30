@@ -171,7 +171,6 @@ function Cart() {
                                                     </VStack>
                                                 </HStack>
                                             </Checkbox>
-
                                             <HStack gap={{ base: 2, md: 4 }} alignSelf={{ base: 'flex-start', sm: 'center' }} ml={{ base: 4, sm: 8, md: 0 }}>
                                                 <Box bg="white" shadow="md" borderRadius="full" px={4} py={2}>
                                                     <HStack gap={4}>
@@ -264,20 +263,20 @@ function Cart() {
                             </Text>
                         </HStack>
                         
-                        <Link to="/checkout/:id">
-                        <Button 
-                            w={'full'} 
-                            size={{ base: 'md', md: 'lg' }}
-                            fontSize={{ base: 'sm', md: 'md' }}
-                            colorScheme="blue"
-                            borderRadius="xl"
-                            _hover={{
-                                transform: 'translateY(-2px)',
-                                shadow: 'lg',
-                            }}
-                        >
-                            Checkout Now
-                        </Button>
+                        <Link to={`/checkout/${items[0]?._id}`}>  {/* Update this line */}
+                            <Button 
+                                w={'full'} 
+                                size={{ base: 'md', md: 'lg' }}
+                                fontSize={{ base: 'sm', md: 'md' }}
+                                colorScheme="blue"
+                                borderRadius="xl"
+                                _hover={{
+                                    transform: 'translateY(-2px)',
+                                    shadow: 'lg',
+                                }}
+                            >
+                                Checkout Now
+                            </Button>
                         </Link>
                     </VStack>
                 </Box>

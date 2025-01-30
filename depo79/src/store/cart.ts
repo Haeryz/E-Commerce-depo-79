@@ -112,7 +112,7 @@ export const useCartStore = create<CartState>((set, get) => ({
                 throw new Error(data.message);
             }
         } catch (error) {
-            // If server sync fails, refetch the entire cart
+            console.log('Failed to sync cart with server', error);
             get().fetchCart();
         }
     },

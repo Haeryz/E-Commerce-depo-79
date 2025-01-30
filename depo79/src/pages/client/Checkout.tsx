@@ -4,15 +4,17 @@ import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../com
 import { Field } from '../../components/ui/field'
 import { Button } from '../../components/ui/button'
 import axios from 'axios' // Add this import
+import { useParams } from 'react-router-dom';
 
 function Checkout() {
+  const { id } = useParams(); // Add this line
   const [total, setTotal] = useState(0); // Add state for total
 
   useEffect(() => {
     // Fetch total from cart controller
     const fetchTotal = async () => {
       try {
-        const response = await axios.get('/api/cart/total');
+        const response = await axios.get(`/api/cart/${id}/total`); // Update API endpoint
         setTotal(response.data.total);
       } catch (error) {
         console.error('Error fetching total:', error);
@@ -20,7 +22,7 @@ function Checkout() {
     };
 
     fetchTotal();
-  }, []);
+  }, [id]); // Add id as dependency
 
   return (
     <VStack p={[4, 6, 10]} align="stretch">

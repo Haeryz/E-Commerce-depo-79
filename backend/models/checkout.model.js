@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const checkoutSchema = new mongoose.Schema({
     buktiTransfer: {
         type: String,
-        required: true
+        required: false
     },
     nama : {
         type : mongoose.Schema.Types.ObjectId,
@@ -13,11 +13,11 @@ const checkoutSchema = new mongoose.Schema({
     pembayaran: {
         type: String,
         enum : ["Transfer", "COD"],
-        required: true
+        required: false
     },
     status: {
         type: String,
-        enum : ["Belum Dibayar", "Dibayar", "Dikirim", "Diterima"],
+        enum : ["Belum Dibayar", "Dibayar", "Dikirim", "Diterima", "Selesai"],
         required: true
     },
     grandTotal: {
