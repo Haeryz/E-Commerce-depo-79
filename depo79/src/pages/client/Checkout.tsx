@@ -1,28 +1,34 @@
-import { Box, HStack, Input, Separator, Text, Textarea, VStack, Stack } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import { Box, HStack, Input, Separator, Text, Textarea, VStack, Stack, Spinner } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Field } from '../../components/ui/field'
 import { Button } from '../../components/ui/button'
-import axios from 'axios' // Add this import
-import { useParams } from 'react-router-dom';
+import { useCartStore } from '../../store/cart';
+
 
 function Checkout() {
-  const { id } = useParams(); // Add this line
-  const [total, setTotal] = useState(0); // Add state for total
+  const [loading, setLoading] = useState(true);
+
+  const { items, total, fetchCart } = useCartStore();
 
   useEffect(() => {
-    // Fetch total from cart controller
-    const fetchTotal = async () => {
+    const initializeCheckout = async () => {
       try {
-        const response = await axios.get(`/api/cart/${id}/total`); // Update API endpoint
-        setTotal(response.data.total);
+        setLoading(true);
+        await fetchCart();
       } catch (error) {
-        console.error('Error fetching total:', error);
+        console.error('Error initializing checkout:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchTotal();
-  }, [id]); // Add id as dependency
+    initializeCheckout();
+  }, [fetchCart]);
+
+  if (loading) {
+    return <Box textAlign="center" mt={10}><Spinner size="xl" /></Box>;
+  }
 
   return (
     <VStack p={[4, 6, 10]} align="stretch">
@@ -115,12 +121,21 @@ function Checkout() {
           alignSelf={['center', 'center', 'flex-start']}
         >
           <VStack>
+            {items.map(item => (
+              <HStack key={item._id} justifyContent="space-between" w="full" p={4}>
+                <Text fontSize="sm">{item.product.nama} x {item.quantity}</Text>
+                <Text>Rp.{(item.product.harga_jual * item.quantity).toLocaleString('id-ID')}</Text>
+              </HStack>
+            ))}
+            
+            <Separator />
+            
             <HStack justifyContent="space-between" w="full" mt={5}>
               <Text ml={5} fontWeight="Bold" color="gray.500">
                 Subtotal
               </Text>
               <Text mr={5}>
-                Rp.{total.toLocaleString('id-ID')},00
+                Rp.{total.toLocaleString('id-ID')}
               </Text>
             </HStack>
             <HStack justifyContent="space-between" w="full">
@@ -137,7 +152,7 @@ function Checkout() {
                 Grandtotal
               </Text>
               <Text mr={5}>
-                Rp.{total.toLocaleString('id-ID')},00
+                Rp.{total.toLocaleString('id-ID')}
               </Text>
             </HStack>
             <Button w="90%" mb={5}>
