@@ -24,7 +24,7 @@ function SidebarAlamat() {
             <VStack align="start" gap={[4, 6, 8]} w="100%">
                 <HStack gap={[3, 4, 6]} wrap="wrap">
                     <LuMapPin size={40} />
-                    <Text fontWeight="bold" fontSize={["2xl", "3xl", "4xl"]}>
+                    <Text fontWeight="bold" fontSize={["2xl", "3xl", "4xl"]} color={"black"}>
                         INFORMASI ALAMAT
                     </Text>
                 </HStack>
