@@ -32,6 +32,8 @@ function Navbar2() {
   const [debouncedSearch] = useDebounce(searchQuery, 300);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isPesananOpen, setIsPesananOpen] = useState(false);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -73,6 +75,11 @@ function Navbar2() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const handlePesananClick = () => {
+    setIsPopoverOpen(false); // Close popover
+    setIsPesananOpen(true); // Open dialog
+  };
 
   return (
     <HStack
@@ -271,80 +278,79 @@ function Navbar2() {
           </>
         )}
         {isAuthenticated && user ? (
-          <PopoverRoot >
-            <PopoverTrigger asChild>
-              <Button borderRadius={40}>
-                {user.name.charAt(0).toUpperCase()}
-              </Button>
-            </PopoverTrigger >
-            <PopoverContent
-              borderRadius="md"
-              boxShadow="lg"
-              backgroundColor={colorMode === 'light' ? 'white' : 'gray.700'}
-            >
-              <PopoverArrow />
-              <PopoverBody>
-                <VStack>
-                  <Text mb="0">{user.name}</Text>
-                  <Button pl={10} pr={10} onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
-                  <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
-                  <Button onClick={() => navigate("/profile")}>Review History</Button>
-                  <DialogRoot>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        Open Dialog
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent p={10}>
-                      <TimelineRoot maxW="400px">
-                        <TimelineItem>
-                          <TimelineConnector>
-                            <LuShip />
-                          </TimelineConnector>
-                          <TimelineContent>
-                            <TimelineTitle>Product Shipped</TimelineTitle>
-                            <TimelineDescription>13th May 2021</TimelineDescription>
-                            <Text textStyle="sm">
-                              We shipped your product via <strong>FedEx</strong> and it should
-                              arrive within 3-5 business days.
-                            </Text>
-                          </TimelineContent>
-                        </TimelineItem>
+          <>
+            <PopoverRoot open={isPopoverOpen} onOpenChange={(e) => setIsPopoverOpen(e.open)}>
+              <PopoverTrigger asChild>
+                <Button borderRadius={40}>
+                  {user.name.charAt(0).toUpperCase()}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                borderRadius="md"
+                boxShadow="lg"
+                backgroundColor={colorMode === 'light' ? 'white' : 'gray.700'}
+              >
+                <PopoverArrow />
+                <PopoverBody>
+                  <VStack>
+                    <Text mb="0">{user.name}</Text>
+                    <Button pl={10} pr={10} onClick={() => navigate("/profile/profile-sidebar")}>Setting</Button>
+                    <Button pl={6} pr={7} onClick={() => navigate("/profile")}>Buy History</Button>
+                    <Button onClick={() => navigate("/profile")}>Review History</Button>
+                    <Button variant="outline" size="sm" onClick={handlePesananClick}>
+                      Pesanan
+                    </Button>
+                    <Button
+                      color={colorMode === 'light' ? 'white' : 'black'}
+                      backgroundColor={colorMode === 'light' ? 'red' : 'pink'}
+                      onClick={() => useAuthStore.getState().logout(() => navigate("/"))}
+                    >
+                      Logout
+                    </Button>
+                  </VStack>
+                </PopoverBody>
+              </PopoverContent>
+            </PopoverRoot>
 
-                        <TimelineItem>
-                          <TimelineConnector>
-                            <LuCheck />
-                          </TimelineConnector>
-                          <TimelineContent>
-                            <TimelineTitle textStyle="sm">Order Confirmed</TimelineTitle>
-                            <TimelineDescription>18th May 2021</TimelineDescription>
-                          </TimelineContent>
-                        </TimelineItem>
-
-                        <TimelineItem>
-                          <TimelineConnector>
-                            <LuPackage />
-                          </TimelineConnector>
-                          <TimelineContent>
-                            <TimelineTitle textStyle="sm">Order Delivered</TimelineTitle>
-                            <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
-                          </TimelineContent>
-                        </TimelineItem>
-                      </TimelineRoot>
-                      <DialogCloseTrigger />
-                    </DialogContent>
-                  </DialogRoot>
-                  <Button
-                    color={colorMode === 'light' ? 'white' : 'black'}
-                    backgroundColor={colorMode === 'light' ? 'red' : 'pink'}
-                    onClick={() => useAuthStore.getState().logout(() => navigate("/"))}
-                  >
-                    Logout
-                  </Button>
-                </VStack>
-              </PopoverBody>
-            </PopoverContent>
-          </PopoverRoot>
+            <DialogRoot open={isPesananOpen} onOpenChange={(e) => setIsPesananOpen(e.open)}>
+              <DialogContent p={10}>
+                <TimelineRoot maxW="400px">
+                  <TimelineItem>
+                    <TimelineConnector>
+                      <LuShip />
+                    </TimelineConnector>
+                    <TimelineContent>
+                      <TimelineTitle>Product Shipped</TimelineTitle>
+                      <TimelineDescription>13th May 2021</TimelineDescription>
+                      <Text textStyle="sm">
+                        We shipped your product via <strong>FedEx</strong> and it should
+                        arrive within 3-5 business days.
+                      </Text>
+                    </TimelineContent>
+                  </TimelineItem>
+                  <TimelineItem>
+                    <TimelineConnector>
+                      <LuCheck />
+                    </TimelineConnector>
+                    <TimelineContent>
+                      <TimelineTitle textStyle="sm">Order Confirmed</TimelineTitle>
+                      <TimelineDescription>18th May 2021</TimelineDescription>
+                    </TimelineContent>
+                  </TimelineItem>
+                  <TimelineItem>
+                    <TimelineConnector>
+                      <LuPackage />
+                    </TimelineConnector>
+                    <TimelineContent>
+                      <TimelineTitle textStyle="sm">Order Delivered</TimelineTitle>
+                      <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
+                    </TimelineContent>
+                  </TimelineItem>
+                </TimelineRoot>
+                <DialogCloseTrigger />
+              </DialogContent>
+            </DialogRoot>
+          </>
         ) : (
           <Button onClick={() => navigate('/login')} colorScheme="blue">
             Login
