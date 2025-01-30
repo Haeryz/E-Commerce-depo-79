@@ -1,5 +1,5 @@
 import { HStack, Text, VStack } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { IoPersonOutline } from "react-icons/io5";
 import { LuMapPin } from "react-icons/lu";
 import { Link } from 'react-router-dom';
@@ -13,7 +13,7 @@ function ProfileSidebar() {
 
     return (
         <VStack align="stretch" minH="70vh">
-            <Text fontWeight="bold" fontSize={["md", "xs", "xl"]}>
+            <Text fontWeight="bold" fontSize={["md", "xs", "xl"]} color={"black"}>
                 Settings
             </Text>
             <HStack
@@ -26,7 +26,7 @@ function ProfileSidebar() {
                 <Link to="profile-sidebar">
                     <Text
                         fontWeight={selected === "profile-sidebar" ? "bold" : "normal"}
-                        fontSize={["2xs", "xs", "md"]}
+                        fontSize={["2xs", "xs", "md"]} color={"black"}
                     >
                         Informasi Pribadi
                     </Text>

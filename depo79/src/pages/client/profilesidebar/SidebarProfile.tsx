@@ -89,7 +89,7 @@ function SidebarProfile() {
             <VStack align="start">
                 <HStack gapX={4} wrap="wrap">
                     <LuMapPin size={40} />
-                    <Text fontWeight="bold" fontSize={["2xl", "3xl", "4xl"]}>
+                    <Text fontWeight="bold" fontSize={["2xl", "3xl", "4xl"]} color={"black"}>
                         INFORMASI PRIBADI
                     </Text>
                 </HStack>
@@ -98,7 +98,7 @@ function SidebarProfile() {
                     px={[4, 6, 10]}
                     gapX={[4, 10, 20]}
                     wrap="wrap"
-                    justify={["center", "start"]}
+                    justify={["center", "start"]} 
                 >
                     <Avatar
                         name={profile?.nama || 'Rusdi'}
@@ -106,7 +106,7 @@ function SidebarProfile() {
                         colorPalette="teal"
                         size={["lg", "xl", "2xl"]}
                     />
-                    <Text fontWeight="bold" fontSize={["lg", "xl", "2xl"]}>
+                    <Text fontWeight="bold" fontSize={["lg", "xl", "2xl"]} color={"black"}>
                         {profile?.nama || 'Rusdi'}
                     </Text>
                     <DialogRoot role="dialog">

@@ -1,5 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
-import React from 'react';
+// import React from 'react';
 import ProfileSidebar from '../../components/profile/ProfileSidebar';
 import { Outlet } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ function Profile() {
         borderRadius="10px"
         p={5}
         minH="70vh" // Match the height of the Flex container
+        
       >
         <ProfileSidebar />
       </Box>
@@ -32,6 +33,7 @@ function Profile() {
         p={8}
         borderRadius="10px"
         minH="70vh" // Match the height of the Flex container
+        color={"black"}
       >
         <Outlet />
       </Box>
