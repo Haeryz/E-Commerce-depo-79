@@ -86,7 +86,9 @@ const AdminProduct = () => {
           </HStack>
         </HStack>
 
-        <Separator variant={"solid"} size={"lg"} mb={5} mt={5} ml={5} borderColor={"gray.800"} />
+        <Box px={5}>
+          <Separator variant={"solid"} size={"lg"} mb={5} mt={5} borderColor={"gray.800"} />
+        </Box>
 
         {/* Table Section */}
         <Table.Root variant="line">
@@ -111,7 +113,7 @@ const AdminProduct = () => {
                 <Table.Cell>Rp. {product.harga_beli.toLocaleString()}</Table.Cell>
                 <Table.Cell>{product.stok}</Table.Cell>
                 <Table.Cell>{product.diskon}%</Table.Cell>
-                <Table.Cell>{product.berat.value} {beratMap[product.berat.unit]}</Table.Cell>
+                <Table.Cell whiteSpace="nowrap">{product.berat.value} {beratMap[product.berat.unit]}</Table.Cell>
                 <Table.Cell>
                   <HStack gap={2}>
                     <DialogRoot>
