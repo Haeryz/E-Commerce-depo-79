@@ -80,7 +80,7 @@ function App() {
                 </Route>
 
                 <Route path='/cart' element={<ProtectedRoute element={Cart} />} />
-                <Route path='/checkout' element={<ProtectedRoute element={Checkout} />} />
+                <Route path='/checkout/:id' element={<ProtectedRoute element={Checkout} />} />
                 <Route path='/chat' element={<ProtectedRoute element={Chat} />} />
                 <Route path='/payment' element={<ProtectedRoute element={Payment} />} />
                 <Route path='/status-pengiriman' element={<ProtectedRoute element={StatusPengiriman} />} />

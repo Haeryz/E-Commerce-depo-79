@@ -1,10 +1,29 @@
 import { Box, HStack, Input, Separator, Text, Textarea, VStack, Stack } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Field } from '../../components/ui/field'
 import { Button } from '../../components/ui/button'
+import axios from 'axios' // Add this import
+import { useParams } from 'react-router-dom';
 
 function Checkout() {
+  const { id } = useParams(); // Add this line
+  const [total, setTotal] = useState(0); // Add state for total
+
+  useEffect(() => {
+    // Fetch total from cart controller
+    const fetchTotal = async () => {
+      try {
+        const response = await axios.get(`/api/cart/${id}/total`); // Update API endpoint
+        setTotal(response.data.total);
+      } catch (error) {
+        console.error('Error fetching total:', error);
+      }
+    };
+
+    fetchTotal();
+  }, [id]); // Add id as dependency
+
   return (
     <VStack p={[4, 6, 10]} align="stretch">
       <BreadcrumbRoot fontWeight="bold" ml={[4, 6, 10]} mb={5} alignSelf="flex-start">
@@ -101,7 +120,7 @@ function Checkout() {
                 Subtotal
               </Text>
               <Text mr={5}>
-                Rp.300.000,00
+                Rp.{total.toLocaleString('id-ID')},00
               </Text>
             </HStack>
             <HStack justifyContent="space-between" w="full">
@@ -118,7 +137,7 @@ function Checkout() {
                 Grandtotal
               </Text>
               <Text mr={5}>
-                Rp.300.000,00
+                Rp.{total.toLocaleString('id-ID')},00
               </Text>
             </HStack>
             <Button w="90%" mb={5}>

@@ -7,6 +7,7 @@ import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { motion } from 'framer-motion'
 import { EmptyState } from "../../components/ui/empty-state"
+import { Link } from 'react-router-dom';
 
 function Cart() {
     const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem } = useCartStore();
@@ -170,7 +171,6 @@ function Cart() {
                                                     </VStack>
                                                 </HStack>
                                             </Checkbox>
-
                                             <HStack gap={{ base: 2, md: 4 }} alignSelf={{ base: 'flex-start', sm: 'center' }} ml={{ base: 4, sm: 8, md: 0 }}>
                                                 <Box bg="white" shadow="md" borderRadius="full" px={4} py={2}>
                                                     <HStack gap={4}>
@@ -206,7 +206,7 @@ function Cart() {
                                                     size="sm"
                                                     onClick={() => handleRemoveItem(item.product._id)}
                                                 >
-                                                  <FaTrashAlt />
+                                                <FaTrashAlt />
                                                 </IconButton>
                                             </HStack>
 
@@ -263,20 +263,21 @@ function Cart() {
                             </Text>
                         </HStack>
                         
-                        <Button 
-                            w={'full'} 
-                            size={{ base: 'md', md: 'lg' }}
-                            fontSize={{ base: 'sm', md: 'md' }}
-                            colorScheme="blue"
-                            borderRadius="xl"
-                            _loading={loading}
-                            _hover={{
-                                transform: 'translateY(-2px)',
-                                shadow: 'lg',
-                            }}
-                        >
-                            Checkout Now
-                        </Button>
+                        <Link to={`/checkout/${items[0]?._id}`}>  {/* Update this line */}
+                            <Button 
+                                w={'full'} 
+                                size={{ base: 'md', md: 'lg' }}
+                                fontSize={{ base: 'sm', md: 'md' }}
+                                colorScheme="blue"
+                                borderRadius="xl"
+                                _hover={{
+                                    transform: 'translateY(-2px)',
+                                    shadow: 'lg',
+                                }}
+                            >
+                                Checkout Now
+                            </Button>
+                        </Link>
                     </VStack>
                 </Box>
             </HStack>
