@@ -82,7 +82,6 @@ export const useProfileStore = create<ProfileState>((set) => ({
     
             const data = await response.json();
             if (data.success) {
-                // Map profiles by '_id'
                 const profileMap = data.profiles.reduce(
                     (map: Record<string, { nama: string }>, profile: { _id: string; nama: string }) => {
                         map[profile._id] = { nama: profile.nama };

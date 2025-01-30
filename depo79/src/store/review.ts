@@ -30,13 +30,22 @@ export const useReviewStore = create<ReviewStore>((set) => ({
     fetchReviews: async () => {
         set({ loading: true, error: null });
         try {
-            const response = await axios.get("api/review");
-            set({ reviews: response.data.reviews, loading: false });
-        } catch (error: Error | unknown) {
-            const axiosError = error as { response?: { data?: { message?: string } } };
+            const response = await axios.get("/api/review");
+            if (response.data.success) {  // Add check for success
+                set({ 
+                    reviews: response.data.reviews,
+                    loading: false 
+                });
+                console.log("Reviews fetched:", response.data.reviews); // Debug log
+            } else {
+                throw new Error(response.data.message || "Failed to fetch reviews");
+            }
+        } catch (error: any) {
+            console.error("Error fetching reviews:", error);
             set({
                 loading: false,
-                error: axiosError.response?.data?.message || "Failed to fetch reviews",
+                error: error.message || "Failed to fetch reviews",
+                reviews: [], // Reset reviews on error
             });
         }
     },
