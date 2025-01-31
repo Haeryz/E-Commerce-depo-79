@@ -14,6 +14,14 @@ interface CartItem {
 }
 
 interface CartState {
+    cart: {
+        _id: string;
+        user: {
+            _id: string;
+            nama: string;
+        };
+        // ...other cart fields...
+    } | null;
     items: CartItem[];
     total: number;
     loading: boolean;
@@ -28,6 +36,7 @@ interface CartState {
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
+    cart: null, // Add this to store the full cart object
     items: [],
     total: 0,
     loading: false,
@@ -44,7 +53,11 @@ export const useCartStore = create<CartState>((set, get) => ({
             });
             const data = await response.json();
             if (data.success) {
-                set({ items: data.cart.items, total: data.cart.total });
+                set({ 
+                    cart: data.cart, // Store the full cart object
+                    items: data.cart.items, 
+                    total: data.cart.total 
+                });
             } else {
                 throw new Error(data.message);
             }

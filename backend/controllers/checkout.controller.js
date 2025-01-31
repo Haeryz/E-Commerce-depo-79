@@ -35,13 +35,26 @@ export const createCheckout = async (req, res) => {
       provinsi,
       kota,
       kecamatan,
-      kelurahan,
+      kelurahan,  // This field is empty in your request
       kodepos
     } = req.body;
+
+    // Log the request body for debugging
+    console.log('Received checkout data:', req.body);
 
     // Validate required fields (removed pembayaran)
     if (!nama || !cartId || !alamat_lengkap || 
         !provinsi || !kota || !kecamatan || !kelurahan || !kodepos) {
+      console.log('Missing fields:', {
+        nama: !!nama,
+        cartId: !!cartId,
+        alamat_lengkap: !!alamat_lengkap,
+        provinsi: !!provinsi,
+        kota: !!kota,
+        kecamatan: !!kecamatan,
+        kelurahan: !!kelurahan, // This is false because it's empty
+        kodepos: !!kodepos
+      });
       return res.status(400).json({
         success: false,
         message: "Missing required fields"
