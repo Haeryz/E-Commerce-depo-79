@@ -53,7 +53,7 @@ const AdminOrder = () => {
                 <Table.Row>
                   <Table.ColumnHeader>Order</Table.ColumnHeader>
                   <Table.ColumnHeader>Customer</Table.ColumnHeader>
-                  <Table.ColumnHeader>Type</Table.ColumnHeader>
+                  <Table.ColumnHeader>Pembayaran</Table.ColumnHeader>
                   <Table.ColumnHeader>Status</Table.ColumnHeader>
                   <Table.ColumnHeader>Product</Table.ColumnHeader>
                   <Table.ColumnHeader>Total</Table.ColumnHeader>
