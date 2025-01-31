@@ -17,6 +17,11 @@ const MobileDrawer = () => {
     const navigate = useNavigate();
     const cartItemsCount = useCartStore((state) => state.items.length); // Add this near other hooks
 
+    const handleNavigation = (path: string) => {
+        setOpen(false);
+        navigate(path);
+    };
+
     const [isScrolled, setIsScrolled] = useState(false);
     const [open, setOpen] = useState(false);
 
@@ -62,6 +67,9 @@ const MobileDrawer = () => {
                                 Mode
                             </Text>
                         </IconButton>
+                        <Button onClick={() => handleNavigation('/login')} colorScheme="blue">
+                            Login
+                        </Button>
                         {isAuthenticated && (
                             <>
                                 <DialogRoot size={'full'}>
@@ -106,7 +114,7 @@ const MobileDrawer = () => {
                                 </DialogRoot>
                                 <Button
                                     variant="ghost"
-                                    onClick={() => navigate('/cart')}
+                                    onClick={() => handleNavigation('/cart')}
                                     position="relative"
                                     width="100%"
                                 >
@@ -136,13 +144,13 @@ const MobileDrawer = () => {
                                         <Text>Cart</Text>
                                     </HStack>
                                 </Button>
-                                <Button variant="ghost" onClick={() => navigate("/profile/profile-sidebar")}>
+                                <Button variant="ghost" onClick={() => handleNavigation("/profile/profile-sidebar")}>
                                     Settings
                                 </Button>
-                                <Button variant="ghost" onClick={() => navigate("/profile")}>
+                                <Button variant="ghost" onClick={() => handleNavigation("/profile")}>
                                     Buy History
                                 </Button>
-                                <Button variant="ghost" onClick={() => navigate("/profile")}>
+                                <Button variant="ghost" onClick={() => handleNavigation("/profile")}>
                                     Review History
                                 </Button>
                                 <Button
