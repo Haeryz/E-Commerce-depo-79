@@ -1,6 +1,6 @@
 import { Box, HStack, Input, Text, VStack, Button as ChakraButton } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { MdPerson } from "react-icons/md"; // Ganti dengan ikon person
+import { MdPerson } from "react-icons/md";
 import { Avatar } from "../../../components/ui/avatar";
 import { Field } from "../../../components/ui/field";
 import { useAuthStore } from "../../../store/auth";
@@ -89,18 +89,21 @@ function SidebarProfile() {
   };
 
   return (
-    <Box px={[4, 6, 10]} py={5}>
-      <VStack align="start" height={"100%"}>
+    <Box px={[4, 6, 10]} py={5} width="100%">
+      <VStack align="start" spacing={[4, 6, 8]}>
+        {/* Header */}
         <HStack gapX={4} wrap="wrap">
-          <MdPerson size={40} /> {/* Ganti dengan ikon person */}
-          <Text fontWeight="bold" fontSize={["2xl", "3xl", "4xl"]} color={"black"}>
+          <MdPerson size={40} />
+          <Text fontWeight="bold" fontSize={["xl", "2xl", "3xl"]} color="black">
             INFORMASI PRIBADI
           </Text>
         </HStack>
+
+        {/* Avatar dan Nama */}
         <HStack
-          mt={10}
-          px={[4, 6, 10]}
-          gapX={[4, 10, 20]}
+          mt={[4, 6, 8]}
+          px={[2, 4, 6]}
+          gapX={[4, 6, 8]}
           wrap="wrap"
           justify={["center", "start"]}
         >
@@ -108,36 +111,39 @@ function SidebarProfile() {
             name={profile?.nama || "Rusdi"}
             src="https://bit.ly/broken-link"
             colorPalette="teal"
-            size={["2xl", "2xl", "full"]}
-            width={["100px", "100px", "100px"]}
-            height={["100px", "100px", "100px"]}
+            size={["xl", "2xl", "full"]}
+            width={["80px", "100px", "120px"]}
+            height={["80px", "100px", "120px"]}
           />
-          <Text fontWeight="bold" fontSize={["lg", "xl", "2xl"]} color={"black"}>
+          <Text fontWeight="bold" fontSize={["lg", "xl", "2xl"]} color="black">
             {profile?.nama || "Rusdaaaaaaai"}
           </Text>
         </HStack>
-      </VStack>
-      <VStack mt={10} align="start">
-        <Field label="Email" maxW={["100%", "70%", "100%"]}>
-          <Input placeholder="me@example.com" value={email?.email} readOnly />
-        </Field>
-        <Field label="Nama" maxW={["100%", "70%", "100%"]}>
-          <Input placeholder="Nama" value={profile?.nama} readOnly />
-        </Field>
-        <Field label="Nomor Telefon" maxW={["100%", "70%", "100%"]}>
-          <Input placeholder="Nomor Telefon" value={profile?.nomorhp} readOnly />
-        </Field>
-        <Field label="Jenis Kelamin" maxW={["100%", "70%", "100%"]}>
-          <Input placeholder="Jenis Kelamin" value={profile?.jeniskelamin} readOnly />
-        </Field>
+
+        {/* Form Informasi Pribadi */}
+        <VStack mt={[4, 6, 8]} align="start" width="100%">
+          <Field label="Email" width="100%">
+            <Input placeholder="me@example.com" value={email?.email} readOnly />
+          </Field>
+          <Field label="Nama" width="100%">
+            <Input placeholder="Nama" value={profile?.nama} readOnly />
+          </Field>
+          <Field label="Nomor Telefon" width="100%">
+            <Input placeholder="Nomor Telefon" value={profile?.nomorhp} readOnly />
+          </Field>
+          <Field label="Jenis Kelamin" width="100%">
+            <Input placeholder="Jenis Kelamin" value={profile?.jeniskelamin} readOnly />
+          </Field>
+        </VStack>
 
         {/* Button Edit Profile dan Create Account */}
-        <HStack spacing={4} mt={4} width="30%">
+        <HStack spacing={4} mt={4} width={["100%", "80%", "50%"]}>
           <DialogRoot role="dialog">
             <DialogTrigger asChild>
               <ChakraButton
                 colorScheme="blue"
-                flex={1} // Membagi ruang secara merata
+                flex={1}
+                size={["sm", "md", "lg"]}
                 onClick={handleDialogOpen}
               >
                 Edit Profile
@@ -186,7 +192,8 @@ function SidebarProfile() {
             <DialogTrigger asChild>
               <ChakraButton
                 colorScheme="teal"
-                flex={1} // Membagi ruang secara merata
+                flex={1}
+                size={["sm", "md", "lg"]}
                 onClick={handleCreateDialogOpen}
               >
                 Create Account

@@ -23,6 +23,7 @@ function Footer() {
         w="full"
         gap={[8, 8, 10]}
         px={[4, 6, 10]}
+        justify="space-between" // Add this for spacing between columns
       >
         {/* Newsletter Section */}
         <VStack
@@ -31,11 +32,11 @@ function Footer() {
           w={['full', 'full', '400px']}
         >
           <Link to="/">
-          <Image
-            src={LogoCompany}
-            w={'24'}
-          />
-        </Link>
+            <Image
+              src={LogoCompany}
+              w={'24'}
+            />
+          </Link>
           <Text fontSize={['sm', 'md']}>
             Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk semua item
           </Text>
@@ -58,7 +59,7 @@ function Footer() {
                 _selection={{
                   backgroundColor: '#2563eb',
                   color: 'white'
-              }}
+                }}
               />
             </Field>
             <Button
@@ -76,7 +77,8 @@ function Footer() {
           direction={['column', 'column', 'row']}
           gap={[6, 8, 10]}
           w={['full', 'full', 'auto']}
-          ml={[0, 0, 'auto']}
+          ml={[0, 0, '10%']} // Adjusted to give space to the right
+          justify="center" // Centers content between Product and Sosmed
         >
           {/* Product Section */}
           <Stack direction={['row', 'row', 'row']} gap={[8, 10, 12]}>
@@ -112,7 +114,7 @@ function Footer() {
                 </Button>
               ))}
             </VStack>
-            
+
             {/* Social Media Section */}
             <VStack alignItems="flex-start" gap={2}>
               <Text fontWeight="bold" fontSize={['md', 'lg']}>Sosmed</Text>
