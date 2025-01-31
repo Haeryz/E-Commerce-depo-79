@@ -162,7 +162,7 @@ function Footer() {
             </IconButton>
             <Text fontSize={['sm', 'md']}>2025 Depo79 Production</Text>
           </HStack>
-          <HStack gap={2}>
+          {/* <HStack gap={2}>
             <Button
               variant="ghost"
               size={['sm', 'md']}
@@ -177,7 +177,7 @@ function Footer() {
             >
               Alamat
             </Button>
-          </HStack>
+          </HStack> */}
         </Stack>
 
         <Stack
