@@ -1,12 +1,41 @@
 import { create } from "zustand";
 
+// Enhanced interfaces to match backend models
+interface CheckoutData {
+    nama: string;
+    cartId: string;
+    nama_lengkap?: string;
+    Email?: string;
+    nomor_telefon?: string;
+    alamat_lengkap: string;
+    provinsi: string;
+    kota: string;
+    kecamatan: string;
+    kelurahan: string;
+    kodepos: string;
+}
+
+interface PaymentUpdate {
+    pembayaran: 'Transfer' | 'COD';
+    buktiTransfer?: File;
+}
+
 interface Checkout {
     _id: string;
     buktiTransfer: string;
     nama: string;
-    pembayaran: "Transfer" | "COD";
-    status: "Belum Dibayar" | "Dibayar" | "Dikirim" | "Diterima";
+    nama_lengkap?: string;
+    Email?: string;
+    nomor_telefon?: string;
+    pembayaran: "Transfer" | "COD" | "Pending";
+    status: "Pending" | "Menunggu Konfirmasi" | "Dibayar" | "Ditolak" | "Belum Dibayar" | "Dikirim" | "Diterima" | "Selesai";
     grandTotal: number;
+    alamat_lengkap: string;
+    provinsi: string;
+    kota: string;
+    kecamatan: string;
+    kelurahan: string;
+    kodepos: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -20,7 +49,8 @@ interface CheckoutState {
     // Actions
     fetchCheckouts: () => Promise<void>;
     fetchCheckoutById: (id: string) => Promise<void>;
-    createCheckout: (data: FormData) => Promise<void>;
+    createInitialCheckout: (data: CheckoutData) => Promise<string>; // Returns checkout ID
+    uploadPaymentProof: (checkoutId: string, paymentData: PaymentUpdate) => Promise<void>;
     updateCheckout: (id: string, data: FormData) => Promise<void>;
     deleteCheckout: (id: string) => Promise<void>;
     clearError: () => void;
@@ -60,23 +90,63 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
         }
     },
 
-    createCheckout: async (formData: FormData) => {
+    createInitialCheckout: async (data: CheckoutData) => {
         set({ loading: true, error: null });
         try {
-            const response = await fetch(`/api/checkout`, {
+            const response = await fetch('/api/checkout', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
             });
-            const data = await response.json();
-            if (!data.success) throw new Error(data.message);
+
+            const result = await response.json();
+            if (!result.success) throw new Error(result.message);
 
             const { checkouts } = get();
             set({
-                checkouts: [...checkouts, data.checkout],
-                currentCheckout: data.checkout
+                checkouts: [...checkouts, result.checkout],
+                currentCheckout: result.checkout
             });
+
+            return result.checkout._id; // Return the ID for the next step
         } catch (error) {
             set({ error: error instanceof Error ? error.message : 'Failed to create checkout' });
+            throw error; // Re-throw to handle in the component
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    uploadPaymentProof: async (checkoutId: string, paymentData: PaymentUpdate) => {
+        set({ loading: true, error: null });
+        try {
+            const formData = new FormData();
+            formData.append('pembayaran', paymentData.pembayaran);
+            
+            if (paymentData.pembayaran === 'Transfer' && paymentData.buktiTransfer) {
+                formData.append('file', paymentData.buktiTransfer);
+            }
+
+            const response = await fetch(`/api/checkout/${checkoutId}/bukti-transfer`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (!result.success) throw new Error(result.message);
+
+            const { checkouts } = get();
+            set({
+                checkouts: checkouts.map(checkout =>
+                    checkout._id === checkoutId ? result.checkout : checkout
+                ),
+                currentCheckout: result.checkout
+            });
+        } catch (error) {
+            set({ error: error instanceof Error ? error.message : 'Failed to upload payment proof' });
+            throw error;
         } finally {
             set({ loading: false });
         }
