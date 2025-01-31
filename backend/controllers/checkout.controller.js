@@ -94,7 +94,14 @@ export const createCheckout = async (req, res) => {
       });
     }
 
-    // Create new checkout with pending status
+    // Transform cart items for checkout
+    const checkoutItems = cart.items.map(item => ({
+      product: item.product._id,
+      quantity: item.quantity,
+      price: item.product.harga_jual // assuming this is the price field
+    }));
+
+    // Create new checkout with pending status and items
     const newCheckout = new Checkout({
       buktiTransfer: "",
       nama,
@@ -104,6 +111,7 @@ export const createCheckout = async (req, res) => {
       pembayaran: "Pending",  // Set initial payment method as Pending
       status: "Pending", // All orders start as pending
       grandTotal: cart.total,
+      items: checkoutItems, // Add the items here
       alamat_lengkap,
       provinsi,
       kota,
@@ -113,9 +121,22 @@ export const createCheckout = async (req, res) => {
     });
 
     await newCheckout.save();
+
+    // Optionally clear the cart or mark it as checked out
+    await Cart.findByIdAndUpdate(cartId, { 
+      $set: { 
+        items: [],
+        total: 0
+      }
+    });
+
+    // Populate the items before sending response
+    const populatedCheckout = await Checkout.findById(newCheckout._id)
+      .populate('items.product');
+
     return res.status(201).json({
       success: true,
-      checkout: newCheckout
+      checkout: populatedCheckout
     });
   } catch (error) {
     console.log("Error:", error);
