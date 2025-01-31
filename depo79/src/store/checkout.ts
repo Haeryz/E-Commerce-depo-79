@@ -1,8 +1,22 @@
 import { create } from "zustand";
+import { useProfileStore } from "./profile"; // Add this import
 
 // Enhanced interfaces to match backend models
 interface CheckoutData {
     nama: string;
+    cartId: string;
+    nama_lengkap?: string;
+    Email?: string;
+    nomor_telefon?: string;
+    alamat_lengkap: string;
+    provinsi: string;
+    kota: string;
+    kecamatan: string;
+    kelurahan: string;
+    kodepos: string;
+}
+
+interface InitialCheckoutData {
     cartId: string;
     nama_lengkap?: string;
     Email?: string;
@@ -54,6 +68,7 @@ interface CheckoutState {
     updateCheckout: (id: string, data: FormData) => Promise<void>;
     deleteCheckout: (id: string) => Promise<void>;
     clearError: () => void;
+    initializeCheckout: (data: InitialCheckoutData) => Promise<string>;
 }
 
 const useCheckoutStore = create<CheckoutState>((set, get) => ({
@@ -197,7 +212,44 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
         }
     },
 
-    clearError: () => set({ error: null })
+    clearError: () => set({ error: null }),
+
+    initializeCheckout: async (data: InitialCheckoutData) => {
+        set({ loading: true, error: null });
+        try {
+            // Get profile first to ensure we have it
+            const profile = await useProfileStore.getState().profile;
+            if (!profile) {
+                throw new Error('No profile found');
+            }
+
+            const checkoutData = {
+                ...data,
+                nama: profile._id, // Add profile ID to checkout data
+            };
+
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(checkoutData)
+            });
+
+            const result = await response.json();
+            if (!result.success) throw new Error(result.message);
+
+            // Update current checkout
+            set({ currentCheckout: result.checkout });
+
+            return result.checkout._id;
+        } catch (error) {
+            set({ error: error instanceof Error ? error.message : 'Failed to initialize checkout' });
+            throw error;
+        } finally {
+            set({ loading: false });
+        }
+    }
 }));
 
 export default useCheckoutStore;
