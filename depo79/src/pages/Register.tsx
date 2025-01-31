@@ -56,7 +56,6 @@ const Register: React.FC = () => {
       p={6}
       borderWidth={2}
       borderRadius="30px"
-      border="1px solid #000"
       boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
       bg={bgColor}
       color={textColor}
