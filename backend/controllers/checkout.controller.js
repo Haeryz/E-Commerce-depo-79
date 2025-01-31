@@ -25,17 +25,46 @@ export const getCheckout = async (req, res) => {
 
 export const createCheckout = async (req, res) => {
   try {
-    const { nama, pembayaran, cartId } = req.body;
+    const { 
+      nama, 
+      cartId,
+      nama_lengkap,
+      Email,
+      nomor_telefon,
+      alamat_lengkap,
+      provinsi,
+      kota,
+      kecamatan,
+      kelurahan,
+      kodepos
+    } = req.body;
 
-    // Validate required fields
-    if (!nama || !pembayaran || !cartId) {
+    // Validate required fields (removed pembayaran)
+    if (!nama || !cartId || !alamat_lengkap || 
+        !provinsi || !kota || !kecamatan || !kelurahan || !kodepos) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields"
       });
     }
 
-    // Get cart total
+    // Validate email format if provided
+    if (Email && !/\S+@\S+\.\S+/.test(Email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format"
+      });
+    }
+
+    // Validate phone number if provided
+    if (nomor_telefon && nomor_telefon.length !== 12) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number must be exactly 12 characters"
+      });
+    }
+
+    // Get cart and verify profile
     const cart = await Cart.findById(cartId).populate('items.product');
     if (!cart) {
       return res.status(404).json({
@@ -44,8 +73,78 @@ export const createCheckout = async (req, res) => {
       });
     }
 
-    // Handle file upload if payment method is Transfer
-    let buktiTransferUrl = null;
+    const profileExists = await mongoose.model('Profile').findById(nama);
+    if (!profileExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found"
+      });
+    }
+
+    // Create new checkout with pending status
+    const newCheckout = new Checkout({
+      buktiTransfer: "",
+      nama,
+      nama_lengkap: nama_lengkap || "",
+      Email: Email || "",
+      nomor_telefon: nomor_telefon || "",
+      pembayaran: "Pending",  // Set initial payment method as Pending
+      status: "Pending", // All orders start as pending
+      grandTotal: cart.total,
+      alamat_lengkap,
+      provinsi,
+      kota,
+      kecamatan,
+      kelurahan,
+      kodepos
+    });
+
+    await newCheckout.save();
+    return res.status(201).json({
+      success: true,
+      checkout: newCheckout
+    });
+  } catch (error) {
+    console.log("Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// Add a new endpoint to upload bukti transfer later
+export const uploadBuktiTransfer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { pembayaran } = req.body;
+
+    if (!pembayaran || !['Transfer', 'COD'].includes(pembayaran)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment method. Must be either 'Transfer' or 'COD'"
+      });
+    }
+
+    const checkout = await Checkout.findById(id);
+    if (!checkout) {
+      return res.status(404).json({
+        success: false,
+        message: "Checkout not found"
+      });
+    }
+
+    // Prevent changing payment method if already set
+    if (checkout.pembayaran !== "Pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment method already set and cannot be changed"
+      });
+    }
+
+    checkout.pembayaran = pembayaran;
+
+    // If Transfer, require and process bukti transfer
     if (pembayaran === "Transfer") {
       if (!req.file) {
         return res.status(400).json({
@@ -68,22 +167,19 @@ export const createCheckout = async (req, res) => {
         });
       }
 
-      buktiTransferUrl = uploadResult.url;
+      checkout.buktiTransfer = uploadResult.url;
+      checkout.status = "Menunggu Konfirmasi";
+    } else {
+      // For COD
+      checkout.buktiTransfer = "";
+      checkout.status = "Belum Dibayar";
     }
 
-    // Create new checkout with proper initial status and cart total
-    const newCheckout = new Checkout({
-      buktiTransfer: buktiTransferUrl || "",  // Empty string for COD
-      nama,
-      pembayaran,
-      status: pembayaran === "COD" ? "Belum Dibayar" : "Dibayar",  // Set initial status based on payment method
-      grandTotal: cart.total
-    });
+    await checkout.save();
 
-    await newCheckout.save();
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      checkout: newCheckout
+      checkout
     });
   } catch (error) {
     console.log("Error:", error);
@@ -92,11 +188,23 @@ export const createCheckout = async (req, res) => {
       message: error.message
     });
   }
-};
+}
 
 export const updateCheckout = async (req, res) => {
   const { id } = req.params;
-  const { status, pembayaran } = req.body;
+  const { 
+    status, 
+    pembayaran,
+    nama_lengkap,
+    Email,
+    nomor_telefon,
+    alamat_lengkap,
+    provinsi,
+    kota,
+    kecamatan,
+    kelurahan,
+    kodepos
+  } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Checkout not found" });
@@ -106,6 +214,22 @@ export const updateCheckout = async (req, res) => {
     const checkout = await Checkout.findById(id);
     if (!checkout) {
       return res.status(404).json({ success: false, message: "Checkout not found" });
+    }
+
+    // Validate email format if being updated
+    if (Email && !/\S+@\S+\.\S+/.test(Email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format"
+      });
+    }
+
+    // Validate phone number if being updated
+    if (nomor_telefon && nomor_telefon.length !== 12) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number must be exactly 12 characters"
+      });
     }
 
     // Handle new bukti transfer if payment method changes to Transfer
@@ -122,9 +246,18 @@ export const updateCheckout = async (req, res) => {
       }
     }
 
-    // Update allowed fields
+    // Update all allowed fields
     if (status) checkout.status = status;
     if (pembayaran) checkout.pembayaran = pembayaran;
+    if (nama_lengkap) checkout.nama_lengkap = nama_lengkap;
+    if (Email) checkout.Email = Email;
+    if (nomor_telefon) checkout.nomor_telefon = nomor_telefon;
+    if (alamat_lengkap) checkout.alamat_lengkap = alamat_lengkap;
+    if (provinsi) checkout.provinsi = provinsi;
+    if (kota) checkout.kota = kota;
+    if (kecamatan) checkout.kecamatan = kecamatan;
+    if (kelurahan) checkout.kelurahan = kelurahan;
+    if (kodepos) checkout.kodepos = kodepos;
 
     await checkout.save();
     return res.status(200).json({ success: true, checkout });
