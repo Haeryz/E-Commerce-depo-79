@@ -31,11 +31,23 @@ const Login: React.FC = () => {
         }
 
         try {
-            await loginUser(email, password, turnstileToken); // Send Turnstile token
-
-            navigate("/");
+            const result = await loginUser(email, password, turnstileToken);
+            
+            if (result.success) {
+                // Show success toast
+                toaster.create({ 
+                    title: "Login Successful", 
+                    type: "success",
+                });
+                
+                if (result.role === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }    
+            }
         } catch (error) {
-            alert(error);
+            toaster.create({ title: error as string, type: "error" });
         }
     };
 
