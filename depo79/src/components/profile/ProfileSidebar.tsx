@@ -12,7 +12,7 @@ function ProfileSidebar() {
     };
 
     return (
-        <VStack align="stretch" minH="70vh">
+        <VStack align="stretch" minH="95vh">
             <Text fontWeight="bold" fontSize={["md", "xs", "xl"]} color={"black"}>
                 Settings
             </Text>
