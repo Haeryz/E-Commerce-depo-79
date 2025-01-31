@@ -140,6 +140,42 @@ function Navbar2() {
         </Link>
       </HStack>
       <Box display={{ base: "none", md: "flex" }}>
+        {/* Home Button */}
+        <Link to="/">
+          <Button
+            textStyle=""
+            w={16}
+            h={11}
+            background={
+              isScrolled
+                ? colorMode === "light"
+                  ? "white"
+                  : "gray.800"
+                : "transparent"
+            }
+            color={colorMode === "light" ? "black" : "white"}
+            border={isScrolled ? "none" : "none"}
+            borderColor={
+              isScrolled
+                ? colorMode === "light"
+                  ? "blackAlpha.300"
+                  : "whiteAlpha.300"
+                : "transparent"
+            }
+            _hover={{
+              background: isScrolled
+                ? colorMode === "light"
+                  ? "gray.100"
+                  : "gray.700"
+                : "transparent",
+            }}
+            transition="background-color 0.3s ease, border-color 0.3s ease"
+          >
+            Home
+          </Button>
+        </Link>
+
+        {/* Diskon Button */}
         <Button
           textStyle=""
           w={16}
@@ -171,6 +207,8 @@ function Navbar2() {
         >
           Diskon
         </Button>
+
+        {/* Alamat Button */}
         <DialogRoot
           size="cover"
           placement="center"
