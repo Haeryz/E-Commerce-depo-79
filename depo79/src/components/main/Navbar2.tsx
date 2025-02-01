@@ -264,9 +264,14 @@ function Navbar2() {
           <Field
             maxW={{ base: "full", sm: "200px", md: "4xs" }}
             borderRadius="15px"
-            outline={"1px solid black"}
+            outline="1px solid"
             border="none"
-            _focus={{ outline: "1px solid black", borderRadius: "50px" }}
+            borderColor={colorMode === "dark" ? "white" : "black"} // Border berubah sesuai mode
+            _focus={{
+              outline: "1px solid",
+              borderRadius: "50px",
+              borderColor: colorMode === "dark" ? "white" : "black", // Fokus border menjadi putih atau hitam
+            }}
             order={{ base: 3, sm: "initial" }}
             flexGrow={{ base: 1, sm: 0 }}
           >
@@ -278,7 +283,11 @@ function Navbar2() {
                 setSearchQuery(e.target.value);
                 setShowSuggestions(true);
               }}
-              _focus={{ outline: "none", boxShadow: "none" }}
+              _focus={{
+                outline: "none",
+                boxShadow: "none",
+                borderColor: colorMode === "dark" ? "white" : "black", // Fokus border berubah warna berdasarkan mode
+              }}
               _selection={{
                 backgroundColor: "#2563eb",
                 color: "white",

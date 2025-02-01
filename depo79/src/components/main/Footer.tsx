@@ -21,315 +21,247 @@ function Footer() {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
-    <Stack
-      direction="column"
-      gap={6}
-      bg={colorMode === "light" ? "white" : "gray.800"}
-      p={[4, 5, 8]}
-    >
-      {/* Main Footer Content */}
-      <Flex
-        direction={["column", "column", "row"]}
-        w="full"
-        gap={[8, 10, 10]}
-        px={[4, 6, 10]}
-
-        align="start"
-        justify="flex-start"
-
-        justify="space-between" // Add this for spacing between columns
-
+    <>
+      <Stack
+        direction="column"
+        gap={6}
+        bg={colorMode === "light" ? "white" : "gray.800"}
+        p={[4, 5, 8]}
       >
-        {/* Logo and Company Description Section */}
-        <VStack alignItems="flex-start" gap={3} w={["full", "full", "auto"]}>
-          <Link to="/">
-            <Image src={LogoCompany} w={"24"} />
-          </Link>
-          <Text fontSize={["sm", "md"]} maxW={["full", "full", "320px"]}>
-            Depo79 adalah penyedia bahan bangunan terkemuka yang menyediakan
-            berbagai produk berkualitas tinggi untuk memenuhi kebutuhan
-            konstruksi dan renovasi Anda. Kami berkomitmen untuk memberikan
-            layanan terbaik dan harga yang kompetitif.
-          </Text>
-        </VStack>
-
-        {/* Shortcut Section */}
-        <VStack alignItems="flex-start" gap={2}>
-          <Text fontWeight="bold" fontSize={["sm", "md"]}>
-            SHORTCUT
-          </Text>
-          <Link to="/">
-
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              About Us
+        {/* Main Footer Content */}
+        <Flex
+          direction={["column", "column", "row"]}
+          w="full"
+          gap={[8, 10, 10]}
+          px={[4, 6, 10]}
+          align="start"
+          justify="flex-start"
+        >
+          {/* Logo and Company Description Section */}
+          <VStack alignItems="flex-start" gap={3} w={["full", "full", "auto"]}>
+            <Link to="/">
+              <Image src={LogoCompany} w={"24"} />
+            </Link>
+            <Text fontSize={["sm", "md"]} maxW={["full", "full", "320px"]}>
+              Depo79 adalah penyedia bahan bangunan terkemuka yang menyediakan
+              berbagai produk berkualitas tinggi untuk memenuhi kebutuhan
+              konstruksi dan renovasi Anda. Kami berkomitmen untuk memberikan
+              layanan terbaik dan harga yang kompetitif.
             </Text>
-          </Link>
-          <Link to="/">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              FAQs
+          </VStack>
+
+          {/* Shortcut Section */}
+          <VStack alignItems="flex-start" gap={2}>
+            <Text fontWeight="bold" fontSize={["sm", "md"]}>
+              SHORTCUT
             </Text>
-          </Link>
-        </VStack>
-
-        {/* Sosmed Section */}
-        <VStack alignItems="flex-start" gap={2}>
-          <Text fontWeight="bold" fontSize={["sm", "md"]}>
-            SOSMED
-          </Text>
-          <Link to="https://www.instagram.com" target="_blank">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              Instagram
-            </Text>
-          </Link>
-
-          <Link to="https://wa.me" target="_blank">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              Whatsapp
-            </Text>
-          </Link>
-
-          <Link to="https://www.facebook.com" target="_blank">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              Facebook
-            </Text>
-          </Link>
-
-          <Link to="https://www.linkedin.com" target="_blank">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              LinkedIn
-            </Text>
-          </Link>
-        </VStack>
-
-        {/* Contact Us Section */}
-        <VStack alignItems="flex-start" gap={2}>
-          <Text fontWeight="bold" fontSize={["sm", "md"]}>
-            CONTACT US
-
-            <Image
-              src={LogoCompany}
-              w={'24'}
-            />
-          </Link>
-          <Text fontSize={['sm', 'md']}>
-            Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk semua item
-
-          </Text>
-          <Link
-            to="https://www.google.com/maps?q=Jl.+Raya+Tlogomas+No.246,+Jawa+Timur+65144,+Indonesia"
-            target="_blank"
-          >
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              Jl. Raya Tlogomas No.246, Jawa Timur 65144, Indonesia
-            </Text>
-          </Link>
-
-          <a
-            href="https://wa.me/6285158779239"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              +6285158779239
-            </Text>
-          </a>
-
-          <Link to="mailto:lab.informatika@umm.ac.id">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              lab.informatika@umm.ac.id
-            </Text>
-          </Link>
-
-          <Link to="mailto:lab.informatika.umm@gmail.com">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              lab.informatika.umm@gmail.com
-            </Text>
-          </Link>
-        </VStack>
-
-        {/* Email Subscription Section */}
-        <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
-          <Text fontSize={["sm", "md"]}>
-            Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk
-            semua item
-          </Text>
-          <Stack direction={["column", "row"]} w="full" gap={3}>
-            <Field
-              w={["full", "240px"]}
-              borderRadius="15px"
-              outline="1px solid black"
-              border="none"
-              _focus={{ outline: "1px solid black", borderRadius: "50px" }}
-            >
-              <Input
-                placeholder="Your Email"
-                border="none"
-
-                _focus={{ outline: "none", boxShadow: "none" }}
-                _selection={{ backgroundColor: "#2563eb", color: "white" }}
-                aria-label="Enter your email"
-
-                _focus={{ outline: 'none', boxShadow: 'none' }}
-                _selection={{
-                  backgroundColor: '#2563eb',
-                  color: 'white'
+            <Link to="/">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
                 }}
+              >
+                About Us
+              </Text>
+            </Link>
+            <Link to="/">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                FAQs
+              </Text>
+            </Link>
+          </VStack>
 
-              />
-            </Field>
-            <Button
-              borderRadius="15px"
-              w={["full", "auto"]}
-              minW={["full", "100px"]}
-              _hover={{ bg: "blue.500", color: "white" }}
-              aria-label="Send email subscription request"
+          {/* Sosmed Section */}
+          <VStack alignItems="flex-start" gap={2}>
+            <Text fontWeight="bold" fontSize={["sm", "md"]}>
+              SOSMED
+            </Text>
+            <Link to="https://www.instagram.com" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Instagram
+              </Text>
+            </Link>
+
+            <Link to="https://wa.me" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Whatsapp
+              </Text>
+            </Link>
+
+            <Link to="https://www.facebook.com" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Facebook
+              </Text>
+            </Link>
+
+            <Link to="https://www.linkedin.com" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                LinkedIn
+              </Text>
+            </Link>
+          </VStack>
+
+          {/* Contact Us Section */}
+          <VStack alignItems="flex-start" gap={2}>
+            <Text fontWeight="bold" fontSize={["sm", "md"]}>
+              CONTACT US
+            </Text>
+
+            <Link
+              to="https://www.google.com/maps/place/Jl.+Raya+Tulus+Ayu+No.27,+Tulus+Ayu,+Tulusbesar,+Kec.+Tumpang,+Kabupaten+Malang,+Jawa+Timur+65156/@-8.0186061,112.7627725,17z/data=!4m16!1m9!3m8!1s0x2dd625a09fbb0793:0x385098ff2e1ecf6e!2sJl.+Raya+Tulus+Ayu+No.27,+Tulus+Ayu,+Tulusbesar,+Kec.+Tumpang,+Kabupaten+Malang,+Jawa+Timur+65156!3b1!8m2!3d-8.0187187!4d112.762755!10e5!16s%2Fg%2F11q4jrtd0r!3m5!1s0x2dd625a09fbb0793:0x385098ff2e1ecf6e!8m2!3d-8.0187187!4d112.762755!16s%2Fg%2F11q4jrtd0r?entry=ttu&g_ep=EgoyMDI1MDEyOS4xIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
             >
-              Kirim
-            </Button>
-          </Stack>
-        </VStack>
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Jl. Raya Tulus Ayu No.27, Tulus Ayu, Tulusbesar, Kec. Tumpang,
+                Kabupaten Malang, Jawa Timur 65156
+              </Text>
+            </Link>
 
-      </Flex>
+            <a
+              href="https://wa.me/6285158779239"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                +6285158779239
+              </Text>
+            </a>
 
+            <Link to="mailto:lab.informatika@umm.ac.id">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                lab.informatika@umm.ac.id
+              </Text>
+            </Link>
+
+            <Link to="mailto:lab.informatika.umm@gmail.com">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                lab.informatika.umm@gmail.com
+              </Text>
+            </Link>
+          </VStack>
+
+          {/* Email Subscription Section */}
+          <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
+            <Text fontSize={["sm", "md"]}>
+              Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk
+              semua item
+            </Text>
+            <Stack direction={["column", "row"]} w="full" gap={3}>
+              <Field
+                w={["full", "240px"]}
+                borderRadius="15px"
+                outline="1px solid"
+                border="none"
+                _focus={{
+                  outline: "1px solid",
+                  borderRadius: "50px",
+                  borderColor: "white", // Border color will be white in dark mode when focused
+                }}
+                borderColor={colorMode === "dark" ? "white" : "black"} // Set border color based on color mode
+              >
+                <Input
+                  placeholder="Your Email"
+                  border="none"
+                  _focus={{
+                    outline: "none",
+                    boxShadow: "none",
+                    borderColor: colorMode === "dark" ? "white" : "black", // Set border color on focus based on color mode
+                  }}
+                  _selection={{ backgroundColor: "#2563eb", color: "white" }}
+                  aria-label="Enter your email"
+                />
+              </Field>
+              <Button
+                borderRadius="15px"
+                w={["full", "auto"]}
+                minW={["full", "100px"]}
+                _hover={{ bg: "blue.500", color: "white" }}
+                aria-label="Send email subscription request"
+              >
+                Kirim
+              </Button>
+            </Stack>
+          </VStack>
+        </Flex>
 
         {/* Links Sections */}
         <Stack
-          direction={['column', 'column', 'row']}
+          direction={["column", "column", "row"]}
           gap={[6, 8, 10]}
-          w={['full', 'full', 'auto']}
-          ml={[0, 0, '10%']} // Adjusted to give space to the right
+          w={["full", "full", "auto"]}
+          ml={[0, 0, "10%"]} // Adjusted to give space to the right
           justify="center" // Centers content between Product and Sosmed
-        >
-          {/* Product Section */}
-          <Stack direction={['row', 'row', 'row']} gap={[8, 10, 12]}>
-            <VStack alignItems="flex-start" gap={2}>
-              <Text fontWeight="bold" fontSize={['md', 'lg']}>Product</Text>
-              {["Kayu", "Semen", "Paku", "Cat", "Keramik"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-
-            <VStack alignItems="flex-start" gap={2} mt={[0, 0, '32px']}>
-              {["Elektrik", "Kaca", "Alumunium", "Pipa"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-
-            {/* Social Media Section */}
-            <VStack alignItems="flex-start" gap={2}>
-              <Text fontWeight="bold" fontSize={['md', 'lg']}>Sosmed</Text>
-              {["Facebook", "Twitter", "Instagram", "LinkedIn", "YouTube"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-          </Stack>
-        </Stack>
+        ></Stack>
       </Stack>
-
-
       <Separator />
 
-      {/* Bottom Footer */}
+      {/* // Bottom Footer */}
       <Stack
         direction={["column", "column", "row"]}
         w="full"
@@ -390,7 +322,7 @@ function Footer() {
           </HStack>
         </Stack>
       </Stack>
-    </Stack>
+    </>
   );
 }
 
