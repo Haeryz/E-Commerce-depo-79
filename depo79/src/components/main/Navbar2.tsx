@@ -446,6 +446,7 @@ function Navbar2() {
                             color={
                               order.status === 'Pending' ? 'yellow.500' :
                               order.status === 'Dikirim' ? 'blue.500' :
+                              order.status === 'Ditolak' ? 'red.500' :
                               order.status === 'Selesai' ? 'green.500' : 'gray.500'
                             }
                           >
