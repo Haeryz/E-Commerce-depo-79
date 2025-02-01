@@ -33,12 +33,8 @@ function Footer() {
         w="full"
         gap={[8, 10, 10]}
         px={[4, 6, 10]}
-
         align="start"
         justify="flex-start"
-
-        justify="space-between" // Add this for spacing between columns
-
       >
         {/* Logo and Company Description Section */}
         <VStack alignItems="flex-start" gap={3} w={["full", "full", "auto"]}>
@@ -59,7 +55,6 @@ function Footer() {
             SHORTCUT
           </Text>
           <Link to="/">
-
             <Text
               fontSize={["sm", "md"]}
               color="gray.400"
@@ -147,18 +142,9 @@ function Footer() {
         <VStack alignItems="flex-start" gap={2}>
           <Text fontWeight="bold" fontSize={["sm", "md"]}>
             CONTACT US
-
-            <Image
-              src={LogoCompany}
-              w={'24'}
-            />
-          </Link>
-          <Text fontSize={['sm', 'md']}>
-            Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk semua item
-
           </Text>
           <Link
-            to="https://www.google.com/maps?q=Jl.+Raya+Tlogomas+No.246,+Jawa+Timur+65144,+Indonesia"
+            to="https://www.google.com/maps/place/Jl.+Raya+Tulus+Ayu+No.27,+Tulus+Ayu,+Tulusbesar,+Kec.+Tumpang,+Kabupaten+Malang,+Jawa+Timur+65156/@-8.0186061,112.7627725,17z/data=!4m16!1m9!3m8!1s0x2dd625a09fbb0793:0x385098ff2e1ecf6e!2sJl.+Raya+Tulus+Ayu+No.27,+Tulus+Ayu,+Tulusbesar,+Kec.+Tumpang,+Kabupaten+Malang,+Jawa+Timur+65156!3b1!8m2!3d-8.0187187!4d112.762755!10e5!16s%2Fg%2F11q4jrtd0r!3m5!1s0x2dd625a09fbb0793:0x385098ff2e1ecf6e!8m2!3d-8.0187187!4d112.762755!16s%2Fg%2F11q4jrtd0r?entry=ttu&g_ep=EgoyMDI1MDEyOS4xIKXMDSoASAFQAw%3D%3D"
             target="_blank"
           >
             <Text
@@ -169,7 +155,8 @@ function Footer() {
                 color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
               }}
             >
-              Jl. Raya Tlogomas No.246, Jawa Timur 65144, Indonesia
+              Jl. Raya Tulus Ayu No.27, Tulus Ayu, Tulusbesar, Kec. Tumpang,
+              Kabupaten Malang, Jawa Timur 65156
             </Text>
           </Link>
 
@@ -218,7 +205,7 @@ function Footer() {
         </VStack>
 
         {/* Email Subscription Section */}
-        <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
+        <VStack alignItems="flex-start" gap={2} w={["full", "full", "300px"]}>
           <Text fontSize={["sm", "md"]}>
             Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk
             semua item
@@ -234,17 +221,9 @@ function Footer() {
               <Input
                 placeholder="Your Email"
                 border="none"
-
                 _focus={{ outline: "none", boxShadow: "none" }}
                 _selection={{ backgroundColor: "#2563eb", color: "white" }}
                 aria-label="Enter your email"
-
-                _focus={{ outline: 'none', boxShadow: 'none' }}
-                _selection={{
-                  backgroundColor: '#2563eb',
-                  color: 'white'
-                }}
-
               />
             </Field>
             <Button
@@ -258,74 +237,7 @@ function Footer() {
             </Button>
           </Stack>
         </VStack>
-
       </Flex>
-
-
-        {/* Links Sections */}
-        <Stack
-          direction={['column', 'column', 'row']}
-          gap={[6, 8, 10]}
-          w={['full', 'full', 'auto']}
-          ml={[0, 0, '10%']} // Adjusted to give space to the right
-          justify="center" // Centers content between Product and Sosmed
-        >
-          {/* Product Section */}
-          <Stack direction={['row', 'row', 'row']} gap={[8, 10, 12]}>
-            <VStack alignItems="flex-start" gap={2}>
-              <Text fontWeight="bold" fontSize={['md', 'lg']}>Product</Text>
-              {["Kayu", "Semen", "Paku", "Cat", "Keramik"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-
-            <VStack alignItems="flex-start" gap={2} mt={[0, 0, '32px']}>
-              {["Elektrik", "Kaca", "Alumunium", "Pipa"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-
-            {/* Social Media Section */}
-            <VStack alignItems="flex-start" gap={2}>
-              <Text fontWeight="bold" fontSize={['md', 'lg']}>Sosmed</Text>
-              {["Facebook", "Twitter", "Instagram", "LinkedIn", "YouTube"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-          </Stack>
-        </Stack>
-      </Stack>
-
 
       <Separator />
 
