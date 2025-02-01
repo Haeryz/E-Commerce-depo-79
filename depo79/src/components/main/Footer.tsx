@@ -143,10 +143,7 @@ function Footer() {
           <Text fontWeight="bold" fontSize={["sm", "md"]}>
             CONTACT US
           </Text>
-          <Link
-            to="https://www.google.com/maps/place/Jl.+Raya+Tulus+Ayu+No.27,+Tulus+Ayu,+Tulusbesar,+Kec.+Tumpang,+Kabupaten+Malang,+Jawa+Timur+65156/@-8.0186061,112.7627725,17z/data=!4m16!1m9!3m8!1s0x2dd625a09fbb0793:0x385098ff2e1ecf6e!2sJl.+Raya+Tulus+Ayu+No.27,+Tulus+Ayu,+Tulusbesar,+Kec.+Tumpang,+Kabupaten+Malang,+Jawa+Timur+65156!3b1!8m2!3d-8.0187187!4d112.762755!10e5!16s%2Fg%2F11q4jrtd0r!3m5!1s0x2dd625a09fbb0793:0x385098ff2e1ecf6e!8m2!3d-8.0187187!4d112.762755!16s%2Fg%2F11q4jrtd0r?entry=ttu&g_ep=EgoyMDI1MDEyOS4xIKXMDSoASAFQAw%3D%3D"
-            target="_blank"
-          >
+          <Link to="https://maps.app.goo.gl/zRsej2BJ1LGNvrFQ7" target="_blank">
             <Text
               fontSize={["sm", "md"]}
               color="gray.400"
@@ -155,7 +152,7 @@ function Footer() {
                 color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
               }}
             >
-              Jl. Raya Tulus Ayu No.27, Tulus Ayu, Tulusbesar, Kec. Tumpang,
+              Jl. Raya Tulus Ayu No.171, Tulus Ayu, Tulusbesar, Kec. Tumpang,
               Kabupaten Malang, Jawa Timur 65156
             </Text>
           </Link>
