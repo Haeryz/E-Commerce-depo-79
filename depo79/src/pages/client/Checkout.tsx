@@ -203,9 +203,6 @@ function Checkout() {
         <BreadcrumbCurrentLink>
           checkout
         </BreadcrumbCurrentLink>
-        <BreadcrumbLink href="/payment">
-          payment
-        </BreadcrumbLink>
       </BreadcrumbRoot>
 
       <Stack

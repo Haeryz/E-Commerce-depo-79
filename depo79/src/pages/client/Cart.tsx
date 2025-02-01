@@ -19,20 +19,20 @@ function Cart() {
 
     const handleQuantityChange = async (productId: string, quantity: number) => {
         setUpdatingItems(prev => ({ ...prev, [productId]: true }));
-        
+
         // Immediately update the UI
         updateLocalQuantity(productId, quantity);
-        
+
         // Sync with server in the background
         await syncWithServer(productId, quantity);
-        
+
         setUpdatingItems(prev => ({ ...prev, [productId]: false }));
     };
 
     const handleRemoveItem = async (productId: string) => {
         // Optimistically update UI
         removeLocalItem(productId);
-        
+
         // Sync with server in background
         try {
             await removeFromCart(productId);
@@ -71,57 +71,53 @@ function Cart() {
     }
 
     return (
-        <VStack 
-            align={'stretch'} 
-            w="full" 
-            bg="gray.50" 
-            minH="100vh" 
+        <VStack
+            align={'stretch'}
+            w="full"
+            bg="gray.50"
+            minH="100vh"
             py={{ base: 4, md: 8 }}
             px={{ base: 2, sm: 4, md: 6, lg: 8 }}
         >
-            <BreadcrumbRoot 
-                display={{ base: 'none', sm: 'flex' }}
-                mb={{ base: 3, md: 5 }} 
-                alignSelf={'flex-start'}
-            >
-                <BreadcrumbLink href="/detail-barang">Detail</BreadcrumbLink>
-                <BreadcrumbLink>Cart</BreadcrumbLink>
-                <BreadcrumbCurrentLink>Payments</BreadcrumbCurrentLink>
+            <BreadcrumbRoot fontWeight="bold" ml={[4, 6, 10]} mb={5} alignSelf="flex-start">
+                <BreadcrumbCurrentLink>
+                    cart
+                </BreadcrumbCurrentLink>
             </BreadcrumbRoot>
-            
-            <HStack 
-                justifyContent={'space-between'} 
-                w={'full'} 
+
+            <HStack
+                justifyContent={'space-between'}
+                w={'full'}
                 direction={{ base: 'column', lg: 'row' }}
-                gap={{ base: 4, sm: 6, lg: 8 }}  
+                gap={{ base: 4, sm: 6, lg: 8 }}
                 alignItems="flex-start"
                 as={VStack}
             >
                 {/* Cart Section */}
-                <Box 
-                    bg="white" 
+                <Box
+                    bg="white"
                     shadow={{ base: 'md', md: 'xl' }}
                     borderRadius={{ base: 'lg', md: '2xl' }}
-                    w={{ base: '100%', lg: '70%' }} 
+                    w={{ base: '100%', lg: '70%' }}
                     mb={{ base: 3, md: 5 }}
                 >
-                    <VStack gap={{ base: 4, md: 6 }}>  
-                        <HStack 
-                            justifyContent={'space-between'} 
-                            w={'full'} 
+                    <VStack gap={{ base: 4, md: 6 }}>
+                        <HStack
+                            justifyContent={'space-between'}
+                            w={'full'}
                             p={{ base: 4, sm: 6, md: 8 }}
                             bg="gray.50"
                             flexWrap={{ base: 'wrap', sm: 'nowrap' }}
                         >
-                            <Text 
-                                fontWeight="extrabold" 
+                            <Text
+                                fontWeight="extrabold"
                                 fontSize={{ base: 'xl', sm: '2xl', md: '3xl' }}
                                 bgGradient="linear(to-r, blue.500, purple.500)"
                                 bgClip="text"
                             >
                                 Shopping Cart
                             </Text>
-                            <Button 
+                            <Button
                                 size={{ base: 'sm', md: 'md' }}
                                 colorScheme="red"
                                 variant="ghost"
@@ -133,9 +129,9 @@ function Cart() {
                         </HStack>
 
                         {/* Products Header */}
-                        <HStack 
-                            justifyContent={'space-between'} 
-                            w={'full'} 
+                        <HStack
+                            justifyContent={'space-between'}
+                            w={'full'}
                             px={8}
                             display={{ base: 'none', sm: 'flex' }}
                             color="gray.500"
@@ -149,11 +145,11 @@ function Cart() {
                         {/* Product Items */}
                         {items.map((item) => (
                             <VStack key={item._id} w="full" gap={{ base: 3, md: 4 }} px={{ base: 2, sm: 4 }}>
-                                <motion.div 
-                                    whileHover={{ scale: 1.02 }} 
+                                <motion.div
+                                    whileHover={{ scale: 1.02 }}
                                     transition={{ duration: 0.2 }}
-                                    style={{ 
-                                        width: '100%', 
+                                    style={{
+                                        width: '100%',
                                         opacity: updatingItems[item.product._id] ? 0.7 : 1,
                                         transition: 'opacity 0.2s'
                                     }}
@@ -206,7 +202,7 @@ function Cart() {
                                                     size="sm"
                                                     onClick={() => handleRemoveItem(item.product._id)}
                                                 >
-                                                <FaTrashAlt />
+                                                    <FaTrashAlt />
                                                 </IconButton>
                                             </HStack>
 
@@ -223,8 +219,8 @@ function Cart() {
                 </Box>
 
                 {/* Summary Section */}
-                <Box 
-                    bg="white" 
+                <Box
+                    bg="white"
                     shadow={{ base: 'md', md: 'xl' }}
                     borderRadius={{ base: 'lg', md: '2xl' }}
                     w={{ base: '100%', lg: '30%' }}
@@ -232,7 +228,7 @@ function Cart() {
                     top={{ lg: '20px' }}
                     p={{ base: 4, md: 6 }}
                 >
-                    <VStack gap={{ base: 3, md: 4 }}>  
+                    <VStack gap={{ base: 3, md: 4 }}>
                         <Text
                             w="full"
                             fontSize={{ base: 'lg', md: 'xl' }}
@@ -243,29 +239,29 @@ function Cart() {
                         >
                             Order Summary
                         </Text>
-                        
+
                         <HStack justifyContent={'space-between'} w={'full'}>
                             <Text color={'gray.600'}>Subtotal</Text>
                             <Text fontWeight="medium">Rp.{total.toLocaleString()}</Text>
                         </HStack>
-                        
+
                         <HStack justifyContent={'space-between'} w={'full'}>
                             <Text color={'gray.600'}>Discount</Text>
                             <Text fontWeight="medium" color="green.500">- Rp.0</Text>
                         </HStack>
-                        
+
                         <Box w="full" h="1px" bg="gray.100" my={2} />
-                        
+
                         <HStack justifyContent={'space-between'} w={'full'}>
                             <Text fontWeight="bold">Total</Text>
                             <Text fontWeight="bold" fontSize="xl" color="blue.600">
                                 Rp.{total.toLocaleString()}
                             </Text>
                         </HStack>
-                        
+
                         <Link to={`/checkout/${items[0]?._id}`}>  {/* Update this line */}
-                            <Button 
-                                w={'full'} 
+                            <Button
+                                w={'full'}
                                 size={{ base: 'md', md: 'lg' }}
                                 fontSize={{ base: 'sm', md: 'md' }}
                                 colorScheme="blue"
