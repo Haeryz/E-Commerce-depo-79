@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, HStack, IconButton, Text, VStack, Separator, Image, Input, Stack } from '@chakra-ui/react';
 import { MdOutlineDarkMode } from 'react-icons/md';
 import { FaRegCopyright } from "react-icons/fa";

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 function ProfileSidebar() {
     const [selected, setSelected] = useState("profile-sidebar");
 
-    const handleSelect = (key) => {
+    const handleSelect = (key: "profile-sidebar" | "alamat-sidebar") => {
         setSelected(key);
     };
 

@@ -9,10 +9,9 @@ import {
   Table,
   Separator,
   VStack,
-  Fieldset,
   createListCollection,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useProductStore } from "../../store/product";
 import { useBeratStore } from "../../store/berat";
 import {
@@ -36,7 +35,6 @@ import {
 import {
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectRoot,
   SelectTrigger,
   SelectValueText,

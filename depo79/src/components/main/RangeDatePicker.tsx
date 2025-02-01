@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Box, Input } from '@chakra-ui/react';
@@ -6,13 +6,13 @@ import { Box, Input } from '@chakra-ui/react';
 const RangeDatePicker = () => {
   const defaultStartDate = new Date("2024-08-01");
   const defaultEndDate = new Date("2024-10-01");
-  const [startDate, setStartDate] = useState(defaultStartDate);
-  const [endDate, setEndDate] = useState(defaultEndDate);
+  const [startDate, setStartDate] = useState<Date | null>(defaultStartDate);
+  const [endDate, setEndDate] = useState<Date | null>(defaultEndDate);
 
   const handleChange = (dates: [Date | null, Date | null]) => {
-    const [newStartDate, newEndDate] = dates;
-    setStartDate(newStartDate);
-    setEndDate(newEndDate);
+    const [start, end] = dates;
+    setStartDate(start || defaultStartDate);
+    setEndDate(end || defaultEndDate);
   };
 
   const disabledDates = [
@@ -37,7 +37,7 @@ const RangeDatePicker = () => {
         customInput={
           <Input 
             width="100%" 
-            value={`${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`} 
+            value={`${startDate?.toLocaleDateString() || ''} - ${endDate?.toLocaleDateString() || ''}`} 
             placeholder="Select date range" 
           />
         }

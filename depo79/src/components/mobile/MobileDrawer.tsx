@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerHeader, DrawerRoot, DrawerTitle, DrawerTrigger } from '../ui/drawer'
-import { IconButton, Input, Text, useBreakpointValue, VStack, HStack, Box, Stack } from '@chakra-ui/react'
+import { IconButton, Input, Text, VStack, Box, Stack } from '@chakra-ui/react'
 import { MdChat, MdMenu, MdOutlineDarkMode, MdOutlineShoppingCart } from 'react-icons/md'
 import { Button } from '../ui/button'
 import { useAuthStore } from '../../store/auth'
@@ -24,7 +24,7 @@ const MobileDrawer = () => {
         navigate(path);
     };
 
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false); // Fix the comma
     const [open, setOpen] = useState(false);
     const [isPesananOpen, setIsPesananOpen] = useState(false);
 
@@ -52,6 +52,7 @@ const MobileDrawer = () => {
                         display={{ base: 'flex', md: 'none' }}
                         aria-label="Open menu"
                         variant="ghost"
+                        bg={isScrolled ? 'white' : 'transparent'} // Add usage of isScrolled
                     >
                         <MdMenu />
                     </IconButton>

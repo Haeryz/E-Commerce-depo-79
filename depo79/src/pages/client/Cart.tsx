@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useCartStore } from '../../store/cart';
-import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
+import { BreadcrumbCurrentLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Box, Button, HStack, IconButton, Image, Separator, Spinner, Text, VStack } from '@chakra-ui/react'
 import { Checkbox } from '../../components/ui/checkbox'
 import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";

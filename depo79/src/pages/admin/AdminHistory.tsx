@@ -1,4 +1,3 @@
-import React from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
 import CustomDatePicker from '../../components/main/CustomDatePicker'

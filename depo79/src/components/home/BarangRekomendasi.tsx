@@ -13,9 +13,9 @@ function BarangRekomendasi() {
     const itemsPerPage = 8;
 
     useEffect(() => {
-        fetchProducts();
+        fetchProducts(currentPage, itemsPerPage);
         fetchBerat();
-    }, [fetchProducts, fetchBerat]);
+    }, [fetchProducts, fetchBerat, currentPage, itemsPerPage]);
 
     const isLoading = productLoading || beratLoading;
     const isError = productError || beratError;

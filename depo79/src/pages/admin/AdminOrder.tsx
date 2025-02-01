@@ -10,7 +10,7 @@ import { BsTelephoneFill } from "react-icons/bs"
 import useCheckoutStore from '../../store/checkout'
 import { format } from 'date-fns'
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
-import { io, Socket } from 'socket.io-client'
+import { io } from 'socket.io-client'
 
 interface CheckoutItem {
   _id: string;
@@ -40,17 +40,13 @@ const getButtonStyles = (color: string) => ({
 });
 
 const AdminOrder = () => {
-  // Remove useDisclosure hook since we're using DialogRoot
   const { colorMode } = useColorMode()
-  const { checkouts, fetchCheckouts, loading } = useCheckoutStore()
+  const { checkouts, fetchCheckouts } = useCheckoutStore()
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null)
-  const [socket, setSocket] = React.useState<Socket | null>(null);
-
+  
   useEffect(() => {
-    // Initial fetch
     fetchCheckouts();
 
-    // Connect to socket with explicit configuration
     const socketInstance = io(import.meta.env.VITE_API_URL, {
       withCredentials: true,
       transports: ['websocket', 'polling'],
@@ -89,8 +85,6 @@ const AdminOrder = () => {
         prev?._id === updatedCheckout._id ? updatedCheckout : prev
       );
     });
-
-    setSocket(socketInstance);
 
     // Cleanup
     return () => {

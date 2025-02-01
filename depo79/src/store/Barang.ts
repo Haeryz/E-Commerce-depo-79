@@ -31,7 +31,7 @@ interface ProductState {
     pagination: Pagination;
     loading: boolean;
     error: string | null;
-    fetchProducts: (page: number, limit: number) => Promise<void>;
+    fetchProducts: (page?: number, limit?: number) => Promise<void>;
     fetchProductById: (id: string) => Promise<void>; // Fetch single product by ID
 }
 
