@@ -81,6 +81,7 @@ interface CheckoutState {
     deleteCheckout: (id: string) => Promise<void>;
     clearError: () => void;
     initializeCheckout: (data: InitialCheckoutData) => Promise<string>;
+    fetchProfileCheckouts: (profileId: string) => Promise<void>; // Add this line
 }
 
 const useCheckoutStore = create<CheckoutState>((set, get) => ({
@@ -265,7 +266,24 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
         } finally {
             set({ loading: false });
         }
-    }
+    },
+
+    fetchProfileCheckouts: async (profileId: string) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch(`/api/checkout/profile/${profileId}`);
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message);
+            set({ checkouts: data.checkouts.filter(checkout => checkout.nama === profileId) });
+        } catch (error) {
+            set({ 
+                error: error instanceof Error ? error.message : 'Failed to fetch profile checkouts',
+                checkouts: [] 
+            });
+        } finally {
+            set({ loading: false });
+        }
+    },
 }));
 
 export default useCheckoutStore;

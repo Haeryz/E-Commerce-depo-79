@@ -19,13 +19,16 @@ import { FaMoon, FaSun } from 'react-icons/fa';
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline';
 import { LuCheck, LuPackage, LuShip, LuClock } from 'react-icons/lu';
 import useCheckoutStore from '../../store/checkout'; // Add this import
+import { useProfileStore } from '../../store/profile'; // Add this import
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
   const { user, isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
   const navigate = useNavigate();
   const cartItemsCount = useCartStore((state) => state.items.length); // Add this near other hooks
-  const { currentCheckout } = useCheckoutStore(); // Add this hook
+  const { checkouts, fetchProfileCheckouts, currentCheckout, fetchCheckoutById } = useCheckoutStore();
+  const { profile } = useProfileStore();
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -78,9 +81,17 @@ function Navbar2() {
     };
   }, []);
 
-  const handlePesananClick = () => {
-    setIsPopoverOpen(false); // Close popover
-    setIsPesananOpen(true); // Open dialog
+  const handlePesananClick = async () => {
+    setIsPopoverOpen(false);
+    if (profile?._id) {
+        await fetchProfileCheckouts(profile._id);
+    }
+    setIsPesananOpen(true);
+  };
+
+  const handleOrderClick = async (orderId: string) => {
+    await fetchCheckoutById(orderId);
+    setSelectedOrderId(orderId);
   };
 
   const formatDateTime = (dateString: string) => {
@@ -386,11 +397,63 @@ function Navbar2() {
               </PopoverContent>
             </PopoverRoot>
 
-            <DialogRoot open={isPesananOpen} onOpenChange={(e) => setIsPesananOpen(e.open)}>
+            <DialogRoot open={isPesananOpen} onOpenChange={(e) => {
+              setIsPesananOpen(e.open);
+              if (!e.open) {
+                setSelectedOrderId(null);
+              }
+            }}>
               <DialogContent p={10}>
-                <TimelineRoot maxW="400px">
-                  {getTimelineItems()}
-                </TimelineRoot>
+                {!selectedOrderId ? (
+                  <VStack align="stretch" gap={4}>
+                    <Text fontSize="xl" fontWeight="bold">Your Orders</Text>
+                    {checkouts.map((order) => (
+                      <Box
+                        key={order._id}
+                        p={4}
+                        border="1px"
+                        borderColor={colorMode === 'light' ? 'gray.200' : 'gray.600'}
+                        borderRadius="md"
+                        cursor="pointer"
+                        onClick={() => handleOrderClick(order._id)}
+                        _hover={{
+                          bg: colorMode === 'light' ? 'gray.50' : 'gray.700'
+                        }}
+                      >
+                        <HStack justify="space-between">
+                          <VStack align="start" gap={1}>
+                            <Text fontWeight="medium">Order #{order._id.slice(-8)}</Text>
+                            <Text fontSize="sm" color={colorMode === 'light' ? 'gray.600' : 'gray.400'}>
+                              {formatDateTime(order.createdAt)}
+                            </Text>
+                          </VStack>
+                          <Text 
+                            color={
+                              order.status === 'Pending' ? 'yellow.500' :
+                              order.status === 'Dikirim' ? 'blue.500' :
+                              order.status === 'Selesai' ? 'green.500' : 'gray.500'
+                            }
+                          >
+                            {order.status}
+                          </Text>
+                        </HStack>
+                        <Text mt={2}>Total: Rp {order.grandTotal.toLocaleString()}</Text>
+                      </Box>
+                    ))}
+                  </VStack>
+                ) : (
+                  <VStack align="stretch" gap={4}>
+                    <HStack justify="space-between">
+                      <Text fontSize="xl" fontWeight="bold">Order Status</Text>
+                      <Button size="sm" variant="ghost" onClick={() => setSelectedOrderId(null)}>
+                        Back to Orders
+                      </Button>
+                    </HStack>
+                    <TimelineRoot maxW="400px">
+                      {getTimelineItems()}
+                    </TimelineRoot>
+                  </VStack>
+                )}
                 <DialogCloseTrigger />
               </DialogContent>
             </DialogRoot>
