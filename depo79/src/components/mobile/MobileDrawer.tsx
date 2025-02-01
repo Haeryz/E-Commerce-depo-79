@@ -67,10 +67,11 @@ const MobileDrawer = () => {
                                 Mode
                             </Text>
                         </IconButton>
-                        <Button onClick={() => handleNavigation('/login')} colorScheme="blue">
-                            Login
-                        </Button>
-                        {isAuthenticated && (
+                        {!isAuthenticated ? (
+                            <Button onClick={() => handleNavigation('/login')} colorScheme="blue">
+                                Login
+                            </Button>
+                        ) : (
                             <>
                                 <DialogRoot size={'full'}>
                                     <DialogTrigger w={'100%'} asChild>
@@ -117,32 +118,32 @@ const MobileDrawer = () => {
                                     onClick={() => handleNavigation('/cart')}
                                     position="relative"
                                     width="100%"
+                                    
+                                    gap={2}
                                 >
-                                    <HStack width="100%" justifyContent="flex-start">
-                                        <Box position="relative">
-                                            <MdOutlineShoppingCart />
-                                            {cartItemsCount > 0 && (
-                                                <Box
-                                                    position="absolute"
-                                                    top="-2"
-                                                    right="-2"
-                                                    px={1.5}
-                                                    py={0.5}
-                                                    fontSize="10px"
-                                                    fontWeight="bold"
-                                                    lineHeight="none"
-                                                    color="white"
-                                                    bg="red.500"
-                                                    borderRadius="full"
-                                                    minWidth={4}
-                                                    textAlign="center"
-                                                >
-                                                    {cartItemsCount}
-                                                </Box>
-                                            )}
-                                        </Box>
-                                        <Text>Cart</Text>
-                                    </HStack>
+                                    <Box position="relative" display="flex" alignItems="center">
+                                        <MdOutlineShoppingCart size={20} />
+                                        {cartItemsCount > 0 && (
+                                            <Box
+                                                position="absolute"
+                                                top="-8px"
+                                                right="-8px"
+                                                px={1.5}
+                                                py={0.5}
+                                                fontSize="10px"
+                                                fontWeight="bold"
+                                                lineHeight="none"
+                                                color="white"
+                                                bg="red.500"
+                                                borderRadius="full"
+                                                minWidth={4}
+                                                textAlign="center"
+                                            >
+                                                {cartItemsCount}
+                                            </Box>
+                                        )}
+                                    </Box>
+                                    <Text>Cart</Text>
                                 </Button>
                                 <Button variant="ghost" onClick={() => handleNavigation("/profile/profile-sidebar")}>
                                     Settings
