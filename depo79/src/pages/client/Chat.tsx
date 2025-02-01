@@ -191,7 +191,7 @@ function Chat() {
               isDisabled={!message.trim()}
             >
               <i
-                className="bx bx-up-arrow-alt"
+                className="bx bx-right-arrow-alt"
                 style={{ fontSize: "24px" }}
               ></i>
             </Button>
