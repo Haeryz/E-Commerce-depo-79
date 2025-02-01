@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Checkout from "../models/checkout.model.js";  // Fixed typo
 import Cart from "../models/cart.model.js";
 import { uploadImage } from "../services/cloudinary.service.js";
+import { getIO } from '../socket.js';
 
 export const getCheckout = async (req, res) => {
   try {
@@ -136,6 +137,9 @@ export const createCheckout = async (req, res) => {
     const populatedCheckout = await Checkout.findById(newCheckout._id)
       .populate('items.product');
 
+    // Emit event after successful checkout creation
+    getIO().emit('newCheckout', populatedCheckout);
+
     return res.status(201).json({
       success: true,
       checkout: populatedCheckout
@@ -212,10 +216,17 @@ export const uploadBuktiTransfer = async (req, res) => {
     }
 
     await checkout.save();
+    
+    // Populate the checkout before emitting
+    const populatedCheckout = await Checkout.findById(checkout._id)
+      .populate('items.product', 'nama harga_jual');
+    
+    // Emit the updated checkout
+    getIO().emit('checkoutUpdated', populatedCheckout);
 
     return res.status(200).json({
       success: true,
-      checkout
+      checkout: populatedCheckout
     });
   } catch (error) {
     console.log("Error:", error);
@@ -228,19 +239,7 @@ export const uploadBuktiTransfer = async (req, res) => {
 
 export const updateCheckout = async (req, res) => {
   const { id } = req.params;
-  const { 
-    status, 
-    pembayaran,
-    nama_lengkap,
-    Email,
-    nomor_telefon,
-    alamat_lengkap,
-    provinsi,
-    kota,
-    kecamatan,
-    kelurahan,
-    kodepos
-  } = req.body;
+  const { status } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Checkout not found" });
@@ -252,51 +251,45 @@ export const updateCheckout = async (req, res) => {
       return res.status(404).json({ success: false, message: "Checkout not found" });
     }
 
-    // Validate email format if being updated
-    if (Email && !/\S+@\S+\.\S+/.test(Email)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email format"
-      });
-    }
-
-    // Validate phone number if being updated
-    if (nomor_telefon && nomor_telefon.length !== 12) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number must be exactly 12 characters"
-      });
-    }
-
-    // Handle new bukti transfer if payment method changes to Transfer
-    if (pembayaran === "Transfer" && req.file) {
-      const fileStr = req.file.buffer.toString('base64');
-      const fileUri = `data:${req.file.mimetype};base64,${fileStr}`;
-
-      const uploadResult = await uploadImage(fileUri, {
-        folder: 'bukti-transfer',
-      });
-
-      if (uploadResult.success) {
-        checkout.buktiTransfer = uploadResult.url;
+    // Validate status transition
+    if (status) {
+      // Handle transitions from "Menunggu Konfirmasi"
+      if (checkout.status === "Menunggu Konfirmasi") {
+        if (!["Dikirim", "Ditolak"].includes(status)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid status transition from Menunggu Konfirmasi"
+          });
+        }
+      } 
+      // Handle transition from "Dikirim" to "Selesai"
+      else if (checkout.status === "Dikirim") {
+        if (status !== "Selesai") {
+          return res.status(400).json({
+            success: false,
+            message: "Can only transition to Selesai from Dikirim status"
+          });
+        }
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status transition"
+        });
       }
+      
+      checkout.status = status;
     }
-
-    // Update all allowed fields
-    if (status) checkout.status = status;
-    if (pembayaran) checkout.pembayaran = pembayaran;
-    if (nama_lengkap) checkout.nama_lengkap = nama_lengkap;
-    if (Email) checkout.Email = Email;
-    if (nomor_telefon) checkout.nomor_telefon = nomor_telefon;
-    if (alamat_lengkap) checkout.alamat_lengkap = alamat_lengkap;
-    if (provinsi) checkout.provinsi = provinsi;
-    if (kota) checkout.kota = kota;
-    if (kecamatan) checkout.kecamatan = kecamatan;
-    if (kelurahan) checkout.kelurahan = kelurahan;
-    if (kodepos) checkout.kodepos = kodepos;
 
     await checkout.save();
-    return res.status(200).json({ success: true, checkout });
+    
+    // Populate the items before sending response
+    const updatedCheckout = await Checkout.findById(id)
+      .populate('items.product', 'nama harga_jual');
+      
+    // Emit event after successful update
+    getIO().emit('checkoutUpdated', updatedCheckout);
+    
+    return res.status(200).json({ success: true, checkout: updatedCheckout });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });

@@ -13,7 +13,7 @@ import cartRoutes from "./routes/cart.route.js";
 import cors from 'cors';
 import checkoutRoute from "./routes/checkout.route.js";
 import { createServer } from 'http';
-import { initSocket } from './services/socket.service.js';
+import { initSocket } from './socket.js'; // Make sure path is correct
 import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
 
 dotenv.config();
@@ -21,10 +21,15 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
-// Initialize socket.io
-initSocket(httpServer);
+// Initialize Socket.IO before routes
+const io = initSocket(httpServer);
 
-app.use(cors());
+// Enable CORS with credentials
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true
+}));
+
 app.use(express.json());
 
 //routes

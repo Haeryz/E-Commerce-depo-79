@@ -77,7 +77,7 @@ interface CheckoutState {
     fetchCheckoutById: (id: string) => Promise<void>;
     createInitialCheckout: (data: CheckoutData) => Promise<string>; // Returns checkout ID
     uploadPaymentProof: (checkoutId: string, paymentData: PaymentUpdate) => Promise<void>;
-    updateCheckout: (id: string, data: FormData) => Promise<void>;
+    updateCheckout: (id: string, data: Partial<Checkout>) => Promise<void>; // Updated method signature
     deleteCheckout: (id: string) => Promise<void>;
     clearError: () => void;
     initializeCheckout: (data: InitialCheckoutData) => Promise<string>;
@@ -179,25 +179,29 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
         }
     },
 
-    updateCheckout: async (id: string, formData: FormData) => {
+    updateCheckout: async (id: string, data: Partial<Checkout>) => {
         set({ loading: true, error: null });
         try {
             const response = await fetch(`/api/checkout/${id}`, {
-                method: 'PUT',
-                body: formData
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
             });
-            const data = await response.json();
-            if (!data.success) throw new Error(data.message);
+            const result = await response.json();
+            if (!result.success) throw new Error(result.message);
 
             const { checkouts } = get();
             set({
                 checkouts: checkouts.map(checkout =>
-                    checkout._id === id ? data.checkout : checkout
+                    checkout._id === id ? result.checkout : checkout
                 ),
-                currentCheckout: data.checkout
+                currentCheckout: result.checkout
             });
         } catch (error) {
             set({ error: error instanceof Error ? error.message : 'Failed to update checkout' });
+            throw error;
         } finally {
             set({ loading: false });
         }

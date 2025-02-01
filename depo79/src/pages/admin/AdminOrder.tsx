@@ -9,7 +9,8 @@ import { FaLocationDot } from "react-icons/fa6"
 import { BsTelephoneFill } from "react-icons/bs"
 import useCheckoutStore from '../../store/checkout'
 import { format } from 'date-fns'
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../../components/ui/dialog'
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
+import { io, Socket } from 'socket.io-client'
 
 interface CheckoutItem {
   _id: string;
@@ -22,15 +23,83 @@ interface CheckoutItem {
   price: number;
 }
 
+// Add these utility functions at the component level
+const getButtonStyles = (color: string) => ({
+  bg: color,
+  transition: 'all 0.2s',
+  transform: 'translateY(0)',
+  _hover: {
+    opacity: 0.9,
+    transform: 'translateY(-2px)',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+  },
+  _active: {
+    transform: 'translateY(0)',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+  },
+});
+
 const AdminOrder = () => {
   // Remove useDisclosure hook since we're using DialogRoot
   const { colorMode } = useColorMode()
   const { checkouts, fetchCheckouts, loading } = useCheckoutStore()
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null)
+  const [socket, setSocket] = React.useState<Socket | null>(null);
 
   useEffect(() => {
-    fetchCheckouts()
-  }, [fetchCheckouts])
+    // Initial fetch
+    fetchCheckouts();
+
+    // Connect to socket with explicit configuration
+    const socketInstance = io(import.meta.env.VITE_API_URL, {
+      withCredentials: true,
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5
+    });
+
+    // Debug connection
+    socketInstance.on('connect', () => {
+      console.log('Connected to socket server:', socketInstance.id);
+    });
+
+    socketInstance.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+
+    // Listen for new checkouts
+    socketInstance.on('newCheckout', (newCheckout) => {
+      console.log('New checkout received:', newCheckout);
+      useCheckoutStore.setState(state => ({
+        checkouts: [...state.checkouts, newCheckout]
+      }));
+    });
+
+    // Listen for checkout updates
+    socketInstance.on('checkoutUpdated', (updatedCheckout) => {
+      console.log('Checkout update received:', updatedCheckout);
+      useCheckoutStore.setState(state => ({
+        checkouts: state.checkouts.map(checkout =>
+          checkout._id === updatedCheckout._id ? updatedCheckout : checkout
+        )
+      }));
+      
+      setSelectedCheckout(prev => 
+        prev?._id === updatedCheckout._id ? updatedCheckout : prev
+      );
+    });
+
+    setSocket(socketInstance);
+
+    // Cleanup
+    return () => {
+      if (socketInstance) {
+        console.log('Disconnecting socket...');
+        socketInstance.disconnect();
+      }
+    };
+  }, []);
 
   // Format date helper function
   const formatDate = (dateString: string) => {
@@ -46,6 +115,43 @@ const AdminOrder = () => {
   const handleRowClick = (checkout: typeof checkouts[0]) => {
     setSelectedCheckout(checkout)
   }
+
+  // Add these new functions
+  const handleAcceptOrder = async () => {
+    if (!selectedCheckout) return;
+    try {
+      await useCheckoutStore.getState().updateCheckout(selectedCheckout._id, {
+        status: 'Dikirim'
+      });
+      // Remove fetchCheckouts() as we'll rely on socket updates
+    } catch (error) {
+      console.error('Failed to accept order:', error);
+    }
+  };
+
+  const handleRejectOrder = async () => {
+    if (!selectedCheckout) return;
+    try {
+      await useCheckoutStore.getState().updateCheckout(selectedCheckout._id, {
+        status: 'Ditolak'
+      });
+      // Remove fetchCheckouts() as we'll rely on socket updates
+    } catch (error) {
+      console.error('Failed to reject order:', error);
+    }
+  };
+
+  const handleCompleteOrder = async () => {
+    if (!selectedCheckout) return;
+    try {
+      await useCheckoutStore.getState().updateCheckout(selectedCheckout._id, {
+        status: 'Selesai'
+      });
+      // Remove fetchCheckouts() as we'll rely on socket updates
+    } catch (error) {
+      console.error('Failed to complete order:', error);
+    }
+  };
 
   return (
     <Box display="flex" height="100vh" p={4} w={'85%'} gap={4}>
@@ -157,6 +263,7 @@ const AdminOrder = () => {
                     <Button 
                       w={'100%'} 
                       disabled={!selectedCheckout?.buktiTransfer}
+                      {...getButtonStyles('blue')}
                     >
                       Cek Bukti Bayar
                     </Button>
@@ -181,12 +288,32 @@ const AdminOrder = () => {
                   </DialogContent>
                 </DialogRoot>
                 <HStack w={'100%'}>
-                  <Button w={'49%'} bg={'red'}>
-                    Tolak
-                  </Button>
-                  <Button w={'49%'} bg={'green'}>
-                    Terima Pesanan
-                  </Button>
+                  {selectedCheckout?.status === 'Menunggu Konfirmasi' ? (
+                    <>
+                      <Button 
+                        w={'49%'} 
+                        onClick={handleRejectOrder}
+                        {...getButtonStyles('red')}
+                      >
+                        Tolak
+                      </Button>
+                      <Button 
+                        w={'49%'} 
+                        onClick={handleAcceptOrder}
+                        {...getButtonStyles('green')}
+                      >
+                        Terima Pesanan
+                      </Button>
+                    </>
+                  ) : selectedCheckout?.status === 'Dikirim' ? (
+                    <Button 
+                      w={'100%'} 
+                      onClick={handleCompleteOrder}
+                      {...getButtonStyles('green')}
+                    >
+                      Pesanan Selesai
+                    </Button>
+                  ) : null}
                 </HStack>
               </VStack>
             </>
