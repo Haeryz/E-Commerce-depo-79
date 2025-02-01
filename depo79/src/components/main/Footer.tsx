@@ -239,7 +239,11 @@ function Footer() {
         </VStack>
       </Flex>
 
-      <Separator />
+      <Separator
+        orientation="horizontal" // Menentukan garis pemisah horizontal
+        borderColor={colorMode === "light" ? "gray.200" : "gray.600"} // Sesuaikan warna garis berdasarkan mode
+        my={2} // Margin vertikal (top & bottom) untuk memberi jarak antar elemen
+      />
 
       {/* Bottom Footer */}
       <Stack
