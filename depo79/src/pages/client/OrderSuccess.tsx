@@ -6,10 +6,85 @@ import { Button } from '../../components/ui/button'
 import { HiColorSwatch } from 'react-icons/hi'
 import { DialogCloseTrigger, DialogContent, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../../components/ui/timeline'
-import { LuCheck, LuPackage, LuShip } from 'react-icons/lu'
+import { LuCheck, LuPackage, LuShip, LuClock } from 'react-icons/lu'
+import useCheckoutStore from '../../store/checkout'
 
 const OrderSuccess = () => {
     const { colorMode } = useColorMode()
+    const { currentCheckout } = useCheckoutStore()
+
+    const formatDateTime = (dateString: string) => {
+        const date = new Date(dateString)
+        return date.toLocaleString('id-ID', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
+    const getTimelineItems = () => {
+        const items = [];
+        const status = currentCheckout?.status || 'Pending';
+
+        // Always show waiting admin for Pending
+        items.push(
+            <TimelineItem key="waiting">
+                <TimelineConnector>
+                    <LuClock />
+                </TimelineConnector>
+                <TimelineContent>
+                    <TimelineTitle>Product is waiting admin</TimelineTitle>
+                    <TimelineDescription>{formatDateTime(currentCheckout?.createdAt || '')}</TimelineDescription>
+                </TimelineContent>
+            </TimelineItem>
+        );
+
+        if (status !== 'Pending') {
+            items.push(
+                <TimelineItem key="confirmed">
+                    <TimelineConnector>
+                        <LuCheck />
+                    </TimelineConnector>
+                    <TimelineContent>
+                        <TimelineTitle>Order Confirmed</TimelineTitle>
+                        <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
+                    </TimelineContent>
+                </TimelineItem>
+            );
+        }
+
+        if (status === 'Dikirim' || status === 'Diterima' || status === 'Selesai') {
+            items.push(
+                <TimelineItem key="shipped">
+                    <TimelineConnector>
+                        <LuShip />
+                    </TimelineConnector>
+                    <TimelineContent>
+                        <TimelineTitle>Product Shipped</TimelineTitle>
+                        <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
+                    </TimelineContent>
+                </TimelineItem>
+            );
+        }
+
+        if (status === 'Diterima' || status === 'Selesai') {
+            items.push(
+                <TimelineItem key="delivered">
+                    <TimelineConnector>
+                        <LuPackage />
+                    </TimelineConnector>
+                    <TimelineContent>
+                        <TimelineTitle>Order Delivered</TimelineTitle>
+                        <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
+                    </TimelineContent>
+                </TimelineItem>
+            );
+        }
+
+        return items;
+    };
 
     return (
         <Box display="flex" height="92vh" w="100%" p={4}>
@@ -37,37 +112,7 @@ const OrderSuccess = () => {
                         </DialogTrigger>
                         <DialogContent p={10}>
                             <TimelineRoot maxW="400px">
-                                <TimelineItem>
-                                    <TimelineConnector>
-                                        <LuShip />
-                                    </TimelineConnector>
-                                    <TimelineContent>
-                                        <TimelineTitle>Product Shipped</TimelineTitle>
-                                        <TimelineDescription>13th May 2021</TimelineDescription>
-                                        <Text textStyle="sm">
-                                            We shipped your product via <strong>FedEx</strong> and it should
-                                            arrive within 3-5 business days.
-                                        </Text>
-                                    </TimelineContent>
-                                </TimelineItem>
-                                <TimelineItem>
-                                    <TimelineConnector>
-                                        <LuCheck />
-                                    </TimelineConnector>
-                                    <TimelineContent>
-                                        <TimelineTitle textStyle="sm">Order Confirmed</TimelineTitle>
-                                        <TimelineDescription>18th May 2021</TimelineDescription>
-                                    </TimelineContent>
-                                </TimelineItem>
-                                <TimelineItem>
-                                    <TimelineConnector>
-                                        <LuPackage />
-                                    </TimelineConnector>
-                                    <TimelineContent>
-                                        <TimelineTitle textStyle="sm">Order Delivered</TimelineTitle>
-                                        <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
-                                    </TimelineContent>
-                                </TimelineItem>
+                                {getTimelineItems()}
                             </TimelineRoot>
                             <DialogCloseTrigger />
                         </DialogContent>
