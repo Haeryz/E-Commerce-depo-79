@@ -204,7 +204,7 @@ function Footer() {
         </VStack>
 
         {/* Email Subscription Section */}
-        <VStack alignItems="flex-start" gap={2} w={["full", "full", "260px"]}>
+        <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
           <Text fontSize={["sm", "md"]}>
             Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk
             semua item
