@@ -34,6 +34,17 @@ interface PaymentUpdate {
     buktiTransfer?: File;
 }
 
+interface CheckoutItem {
+    _id: string;
+    product: {
+        _id: string;
+        nama: string;
+        harga_jual: number;
+    };
+    quantity: number;
+    price: number;
+}
+
 interface Checkout {
     _id: string;
     buktiTransfer: string;
@@ -50,6 +61,7 @@ interface Checkout {
     kecamatan: string;
     kelurahan: string;
     kodepos: string;
+    items: CheckoutItem[]; // Add this line
     createdAt: string;
     updatedAt: string;
 }

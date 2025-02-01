@@ -41,9 +41,7 @@ const checkoutSchema = new mongoose.Schema({
         enum: [
             "Pending",
             "Menunggu Konfirmasi",
-            "Dibayar",
             "Ditolak",
-            "Belum Dibayar",
             "Dikirim",
             "Diterima",
             "Selesai"

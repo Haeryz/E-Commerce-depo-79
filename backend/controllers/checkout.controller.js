@@ -6,7 +6,8 @@ import { uploadImage } from "../services/cloudinary.service.js";
 export const getCheckout = async (req, res) => {
   try {
     if (req.params.id) {
-      const checkout = await Checkout.findById(req.params.id);
+      const checkout = await Checkout.findById(req.params.id)
+        .populate('items.product', 'nama harga_jual'); // Add populate here
       if (!checkout) {
         return res
           .status(404)
@@ -14,7 +15,8 @@ export const getCheckout = async (req, res) => {
       }
       return res.status(200).json({ success: true, checkout });
     } else {
-      const checkouts = await Checkout.find();
+      const checkouts = await Checkout.find()
+        .populate('items.product', 'nama harga_jual'); // Add populate here
       return res.status(200).json({ success: true, checkouts });
     }
   } catch (error) {
