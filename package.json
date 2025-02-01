@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon backend/server.js",
-    "prod": "nodemon backend/server.js"
+    "dev": "NODE_ENV=development nodemon backend/server.js",
+    "build": "npm install && npm install --prefix depo79 && npm run build --prefix depo79",
+    "start": "NODE_ENV=production node backend/server.js"
   },
   "type": "module",
   "keywords": [],

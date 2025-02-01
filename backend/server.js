@@ -15,6 +15,7 @@ import checkoutRoute from "./routes/checkout.route.js";
 import { createServer } from 'http';
 import { initSocket } from './socket.js'; // Make sure path is correct
 import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
+import path from "path";
 
 dotenv.config();
 
@@ -44,6 +45,13 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoute);
 
+if(process.env === 'production'){
+  app.use(express.static(path.join(__dirname, "/depo79/dist")))
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "depo79", "dist", "index.html"));
+  })
+}
+
 // Add test endpoint for Cloudinary
 app.post('/api/upload-image', async (req, res) => {
     const { imagePath } = req.body;
@@ -64,6 +72,7 @@ app.use((err, req, res, next) => {
     error: err.message 
   });
 });
+
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
