@@ -17,7 +17,7 @@ import { useDebounce } from 'use-debounce';
 import { Switch } from '../ui/switch';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline';
-import { LuCheck, LuPackage, LuShip, LuClock } from 'react-icons/lu';
+import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu'; // Add LuXCircle
 import useCheckoutStore from '../../store/checkout'; // Add this import
 import { useProfileStore } from '../../store/profile'; // Add this import
 
@@ -121,7 +121,22 @@ function Navbar2() {
         </TimelineItem>
     );
 
-    if (status !== 'Pending') {
+    if (status === 'Ditolak') {
+        items.push(
+            <TimelineItem key="rejected">
+                <TimelineConnector>
+                    <LuCircle />
+                </TimelineConnector>
+                <TimelineContent>
+                    <TimelineTitle>Order Cancelled</TimelineTitle>
+                    <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
+                    <Text color="red.500" mt={1} fontSize="sm">
+                        Order was rejected by admin
+                    </Text>
+                </TimelineContent>
+            </TimelineItem>
+        );
+    } else if (status !== 'Pending') {
         items.push(
             <TimelineItem key="confirmed">
                 <TimelineConnector>
