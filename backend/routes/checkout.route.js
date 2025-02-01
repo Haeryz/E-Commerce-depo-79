@@ -4,7 +4,8 @@ import {
     createCheckout, 
     updateCheckout, 
     deleteCheckout, 
-    uploadBuktiTransfer 
+    uploadBuktiTransfer,
+    getCheckoutsByProfile
 } from "../controllers/checkout.controller.js";
 import upload, { compressImage } from '../middleware/upload.middleware.js';
 
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.get('/', getCheckout);
 router.get('/:id', getCheckout);
+router.get('/profile/:profileId', getCheckoutsByProfile);
 // Create checkout without bukti transfer
 router.post('/', createCheckout);
 // Separate endpoint for uploading bukti transfer

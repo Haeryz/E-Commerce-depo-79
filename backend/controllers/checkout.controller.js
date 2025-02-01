@@ -315,3 +315,21 @@ export const deleteCheckout = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getCheckoutsByProfile = async (req, res) => {
+  try {
+    const { profileId } = req.params;
+    const checkouts = await Checkout.find({ nama: profileId })
+      .sort({ createdAt: -1 });
+
+    res.json({ 
+      success: true, 
+      checkouts 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
