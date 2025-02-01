@@ -1,9 +1,12 @@
-import { Alert, Box, Group } from '@chakra-ui/react'
+import { Alert, Box, Group, Text } from '@chakra-ui/react'
 import React from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { EmptyState } from '../../components/ui/empty-state'
 import { Button } from '../../components/ui/button'
 import { HiColorSwatch } from 'react-icons/hi'
+import { DialogCloseTrigger, DialogContent, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
+import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../../components/ui/timeline'
+import { LuCheck, LuPackage, LuShip } from 'react-icons/lu'
 
 const OrderSuccess = () => {
     const { colorMode } = useColorMode()
@@ -28,7 +31,47 @@ const OrderSuccess = () => {
                     title="Lihat Pesanan Anda Disini"
                     description="Atau Klik Pesanan Pada Tombol di kanan atas"
                 >
-                    <Button>Pesanan Anda</Button>
+                    <DialogRoot>
+                        <DialogTrigger>
+                            <Button >Lihat Pesanan</Button>
+                        </DialogTrigger>
+                        <DialogContent p={10}>
+                            <TimelineRoot maxW="400px">
+                                <TimelineItem>
+                                    <TimelineConnector>
+                                        <LuShip />
+                                    </TimelineConnector>
+                                    <TimelineContent>
+                                        <TimelineTitle>Product Shipped</TimelineTitle>
+                                        <TimelineDescription>13th May 2021</TimelineDescription>
+                                        <Text textStyle="sm">
+                                            We shipped your product via <strong>FedEx</strong> and it should
+                                            arrive within 3-5 business days.
+                                        </Text>
+                                    </TimelineContent>
+                                </TimelineItem>
+                                <TimelineItem>
+                                    <TimelineConnector>
+                                        <LuCheck />
+                                    </TimelineConnector>
+                                    <TimelineContent>
+                                        <TimelineTitle textStyle="sm">Order Confirmed</TimelineTitle>
+                                        <TimelineDescription>18th May 2021</TimelineDescription>
+                                    </TimelineContent>
+                                </TimelineItem>
+                                <TimelineItem>
+                                    <TimelineConnector>
+                                        <LuPackage />
+                                    </TimelineConnector>
+                                    <TimelineContent>
+                                        <TimelineTitle textStyle="sm">Order Delivered</TimelineTitle>
+                                        <TimelineDescription>20th May 2021, 10:30am</TimelineDescription>
+                                    </TimelineContent>
+                                </TimelineItem>
+                            </TimelineRoot>
+                            <DialogCloseTrigger />
+                        </DialogContent>
+                    </DialogRoot>
                 </EmptyState>
             </Box>
         </Box>
