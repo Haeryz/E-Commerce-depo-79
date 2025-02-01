@@ -1,6 +1,6 @@
 import { Box, HStack, IconButton, Image, Text, VStack } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import React from 'react'
+// import React from 'react'
 import Logo from '../../assets/LogoCompany.png'
 import { FaBoxArchive } from "react-icons/fa6"
 import { FaHistory, FaHome, FaStar } from "react-icons/fa"

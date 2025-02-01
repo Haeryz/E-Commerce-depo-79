@@ -1,30 +1,34 @@
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { useColorMode } from '../ui/color-mode'
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 export default function NotFound() {
+  const { colorMode } = useColorMode(); // Get the current color mode
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex justify-center items-center bg-black text-white"
+      className="flex justify-center items-center"
       style={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         minHeight: "calc(100vh - 150px)", // Adjust based on your Navbar and Footer height
+        backgroundColor: colorMode === "light" ? "#f7f7f7" : "#1d1d1d", // Light mode background
       }}
     >
       <Box
-        className="text-center p-6 bg-black rounded-lg shadow-lg"
+        className="text-center p-6 rounded-lg shadow-lg"
         style={{
-          maxWidth: "500px", // Adjust the width as needed
+          maxWidth: "500px",
           padding: "50px 30px",
-          backgroundColor: "#1d1d1d", // Dark background to match image
-          borderRadius: "10px", // Rounded corners
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)", // Slight shadow for depth
+          backgroundColor: colorMode === "light" ? "#ffffff" : "#1d1d1d", // Card background color
+          borderRadius: "10px",
+          boxShadow: colorMode === "light" ? "0 4px 10px rgba(0, 0, 0, 0.1)" : "0 4px 10px rgba(0, 0, 0, 0.3)", // Shadow for light mode
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -32,44 +36,40 @@ export default function NotFound() {
         }}
       >
         <Heading
-          className="text-6xl font-extrabold text-white mb-4"
+          className="text-6xl font-extrabold mb-4"
           style={{
-            fontSize: "90px", // Adjust the font size of the "404" to match the image
-            color: "#fff", // White color for the "404"
-            lineHeight: "1", // Ensures tight line spacing
-            fontWeight: "900", // Heavier weight for emphasis
-            marginBottom: "20px", // Space between the 404 text and the rest of the content
+            fontSize: "90px",
+            color: colorMode === "light" ? "#000000" : "#ffffff", // Heading color based on mode
+            marginBottom: "20px",
           }}
         >
           404
         </Heading>
         <Text
-          className="text-xl text-gray-300 mb-6"
+          className="text-lg mb-4"
           style={{
-            color: "#b5b5b5", // Light gray color for the text to match the image
-            fontSize: "18px", // Adjust font size of the message
+            fontSize: "18px",
+            color: colorMode === "light" ? "#333333" : "#b5b5b5", // Text color for light mode
+            marginBottom: "20px",
           }}
         >
-          The page you are looking for doesn't exist.
+          Sorry, the page you're looking for doesn't exist.
         </Text>
-        <VStack spacing={4}>
-          <Button
-            as={Link}
-            to="/"
-            className="px-8 py-4 bg-gray-600 text-white text-lg rounded-full hover:bg-gray-500 transition-all duration-300"
-            style={{
-              padding: "15px 30px", // Matching button size from the image
-              fontSize: "18px", // Adjust button text size
-              backgroundColor: "#3a3a3a", // gray-600 for the button
-              borderRadius: "30px", // Rounded edges for the button
-              width: "100%", // Button takes full width inside the box
-              border: "none", // Remove any borders
-              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // Soft shadow around the button
-            }}
-          >
-            Return Home
-          </Button>
-        </VStack>
+        <Button
+          as={Link}
+          to="/"
+          colorScheme="teal"
+          size="lg"
+          style={{
+            backgroundColor: "#38B2AC", // Button color
+            padding: "12px 24px",
+            borderRadius: "5px",
+            color: "white",
+            fontWeight: "bold",
+          }}
+        >
+          Go Back Home
+        </Button>
       </Box>
     </motion.div>
   );
