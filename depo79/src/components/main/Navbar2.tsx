@@ -50,6 +50,7 @@ import {
   TimelineTitle,
 } from "../ui/timeline";
 import { LuCheck, LuPackage, LuShip } from "react-icons/lu";
+import { useProfileStore } from "../../store/profile";
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -66,6 +67,9 @@ function Navbar2() {
   const searchRef = useRef<HTMLDivElement>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isPesananOpen, setIsPesananOpen] = useState(false);
+
+  const { profile, updateProfileName } = useProfileStore(); // Ambil profil dan fungsi update
+  const userName = profile?.nama || "Guest";
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -407,7 +411,7 @@ function Navbar2() {
             >
               <PopoverTrigger asChild>
                 <Button borderRadius={40}>
-                  {user.name.charAt(0).toUpperCase()}
+                  {userName.charAt(0).toUpperCase()}
                 </Button>
               </PopoverTrigger>
               <PopoverContent
@@ -418,7 +422,7 @@ function Navbar2() {
                 <PopoverArrow />
                 <PopoverBody>
                   <VStack>
-                    <Text mb="0">{user.name}</Text>
+                    <Text mb="0">{userName}</Text>
                     <Button
                       pl={10}
                       pr={10}
