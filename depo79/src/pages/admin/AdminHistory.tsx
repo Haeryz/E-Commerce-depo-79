@@ -8,9 +8,25 @@ import { IoPersonSharp } from "react-icons/io5";
 import { FaLocationDot } from "react-icons/fa6";
 import { BsTelephoneFill } from "react-icons/bs";
 import { Box, createListCollection, HStack, Input, Separator, Table, Text, VStack } from '@chakra-ui/react'
+import useCheckoutStore from '../../store/checkout'
+import { format } from 'date-fns' // Add this import
+
+// Define the formatDate helper function
+const formatDate = (dateString: string) => {
+  return format(new Date(dateString), 'dd/MM/yyyy HH:mm')
+}
 
 const AdminHistory = () => {
   const { colorMode } = useColorMode()
+  const { checkouts } = useCheckoutStore();
+
+  // Filter checkouts to include only 'Selesai' and 'Ditolak' if updated before today
+  const filteredCheckouts = checkouts.filter(checkout => {
+    const today = new Date();
+    const updatedAt = new Date(checkout.updatedAt);
+    const isBeforeToday = updatedAt.toDateString() !== today.toDateString();
+    return (checkout.status === 'Selesai' || checkout.status === 'Ditolak') && isBeforeToday;
+  });
 
   return (
     <Box display="flex" height="100vh" p={4} w={'85%'} gap={4}>
@@ -60,6 +76,19 @@ const AdminHistory = () => {
                   <Table.ColumnHeader>Date</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
+              <Table.Body>
+                {filteredCheckouts.map((checkout) => (
+                  <Table.Row key={checkout._id}>
+                    <Table.Cell>#{checkout._id.slice(-6)}</Table.Cell>
+                    <Table.Cell>{checkout.nama_lengkap}</Table.Cell>
+                    <Table.Cell>{checkout.pembayaran}</Table.Cell>
+                    <Table.Cell>{checkout.status}</Table.Cell>
+                    <Table.Cell>{`${checkout.alamat_lengkap}, ${checkout.kota}`}</Table.Cell>
+                    <Table.Cell>Rp. {checkout.grandTotal.toLocaleString()}</Table.Cell>
+                    <Table.Cell>{formatDate(checkout.createdAt)}</Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
             </Table.Root>
           </HStack>
         </VStack>

@@ -189,6 +189,14 @@ const AdminOrder = () => {
     XLSX.writeFile(wb, fileName);
   };
 
+  // Filter checkouts to exclude 'Selesai' and 'Ditolak' if updated today
+  const filteredCheckouts = checkouts.filter(checkout => {
+    const today = new Date();
+    const updatedAt = new Date(checkout.updatedAt);
+    const isToday = updatedAt.toDateString() === today.toDateString();
+    return !(checkout.status === 'Selesai' || checkout.status === 'Ditolak') || isToday;
+  });
+
   return (
     <Box display="flex" height="100vh" p={4} w={'85%'} gap={4}>
       <Box
@@ -236,7 +244,7 @@ const AdminOrder = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {checkouts.map((checkout) => (
+                {filteredCheckouts.map((checkout) => (
                   <Table.Row key={checkout._id} onClick={() => handleRowClick(checkout)}>
                     <Table.Cell>#{checkout._id.slice(-6)}</Table.Cell>
                     <Table.Cell>{checkout.nama_lengkap}</Table.Cell>
