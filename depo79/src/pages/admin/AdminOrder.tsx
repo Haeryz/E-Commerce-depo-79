@@ -44,7 +44,7 @@ const getButtonStyles = (color: string) => ({
 const AdminOrder = () => {
   // Remove useDisclosure hook since we're using DialogRoot
   const { colorMode } = useColorMode()
-  const { checkouts, fetchCheckouts, loading } = useCheckoutStore()
+  const { checkouts, fetchCheckouts} = useCheckoutStore()
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null)
   const [socket, setSocket] = React.useState<Socket | null>(null);
 
@@ -198,8 +198,10 @@ const AdminOrder = () => {
         bg={colorMode === 'light' ? 'gray.100' : 'gray.700'}
         borderRadius={8}
         boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
+        display="flex"
+        flexDirection="column"
       >
-        <VStack align="stretch" height="100%" w={'100%'}>
+        <VStack align="stretch" height="100%" gap={4}>
           <HStack gap={4} align="stretch" width="100%">
             <CustomDatePicker />
             <Field w={'80%'}>
@@ -208,21 +210,21 @@ const AdminOrder = () => {
             <Button>
               Search
             </Button>
-            {/* Updated Export button with icon */}
             <Button 
               onClick={handleExportToExcel}
               {...getButtonStyles('green')}
             >
-              <FiDownload />
+              <FiDownload style={{ marginRight: '0.5rem' }} />
               Export
             </Button>
           </HStack>
 
           <Separator />
 
-          <HStack>
+          {/* Updated table container with overflow handling */}
+          <Box flex={1} overflow="auto" borderRadius="md">
             <Table.Root>
-              <Table.Header>
+              <Table.Header position="sticky" top={0} bg={colorMode === 'light' ? 'gray.100' : 'gray.700'} zIndex={1}>
                 <Table.Row>
                   <Table.ColumnHeader>Order</Table.ColumnHeader>
                   <Table.ColumnHeader>Customer</Table.ColumnHeader>
@@ -247,7 +249,7 @@ const AdminOrder = () => {
                 ))}
               </Table.Body>
             </Table.Root>
-          </HStack>
+          </Box>
         </VStack>
       </Box>
       <Box
