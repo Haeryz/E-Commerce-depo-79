@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProductStore } from "../../store/Barang";
-import { Box, SimpleGrid, Text, Stack, HStack, Button, IconButton } from "@chakra-ui/react";
-import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2";
+import { Box, SimpleGrid, Text, Stack, VStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { Skeleton, SkeletonText } from "../../components/ui/skeleton";
+import { EmptyState, List } from "@chakra-ui/react";
+import { HiColorSwatch } from "react-icons/hi";
 
 function ListBarang() {
   const [searchParams] = useSearchParams();
@@ -29,28 +30,20 @@ function ListBarang() {
 
   return (
     <Box p={{ base: 4, md: 5 }}>
-      {/* Buttons */}
-      <HStack align="center" gapX={5} mb={4} justify={"center"}>
-        <Button boxShadow={"xl"} borderRadius={"md"}>Semen</Button>
-        <Button boxShadow={"xl"} borderRadius={"md"}>Semen</Button>
-        <Button boxShadow={"xl"} borderRadius={"md"}>Semen</Button>
-        <Button boxShadow={"xl"} borderRadius={"md"}>Semen</Button>
-        <IconButton aria-label="Filter" borderRadius={"md"}>
-          <HiOutlineAdjustmentsHorizontal />
-        </IconButton>
-      </HStack>
-
       {/* Product Listing */}
-      <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
-        {isLoading
-          ? Array.from({ length: 10 }).map((_, index) => (
+      {isLoading ? (
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
+          {Array.from({ length: 10 }).map((_, index) => (
             <Stack key={index} gap="6" maxW="sm">
               <Skeleton height="200px" />
               <SkeletonText noOfLines={2} />
               <SkeletonText noOfLines={1} width="50%" />
             </Stack>
-          ))
-          : filteredProducts.map((product) => (
+          ))}
+        </SimpleGrid>
+      ) : filteredProducts.length > 0 ? (
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
+          {filteredProducts.map((product) => (
             <Box
               maxW="sm"
               overflow="hidden"
@@ -90,7 +83,26 @@ function ListBarang() {
               </Box>
             </Box>
           ))}
-      </SimpleGrid>
+        </SimpleGrid>
+      ) : (
+        <EmptyState.Root>
+          <EmptyState.Content>
+            <EmptyState.Indicator>
+              <HiColorSwatch />
+            </EmptyState.Indicator>
+            <VStack textAlign="center">
+              <EmptyState.Title>Item Tidak Ditemukan</EmptyState.Title>
+              <EmptyState.Description>
+                Try adjusting your search
+              </EmptyState.Description>
+            </VStack>
+            <List.Root variant="marker">
+              <List.Item>Try removing filters</List.Item>
+              <List.Item>Try different keywords</List.Item>
+            </List.Root>
+          </EmptyState.Content>
+        </EmptyState.Root>
+      )}
     </Box>
   );
 }
