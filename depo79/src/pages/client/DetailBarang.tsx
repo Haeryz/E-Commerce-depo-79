@@ -243,7 +243,6 @@ function DetailBarang() {
                                 {productDetail.reviews.map((review) => (
                                     <Box key={review._id} p={3} borderWidth="1px" borderRadius="md" w="full">
                                         <Text>By User: {profileMap[review.user._id]?.nama || review.user._id}</Text>
-                                        <Image src={review.image} alt="Review Image" w="100px" h="100px" objectFit="cover" borderRadius="md" my={2} />
                                         <Rating readOnly defaultValue={review.rating} size="sm" />
                                         <Text>Comment: {review.comment}</Text>
                                     </Box>
