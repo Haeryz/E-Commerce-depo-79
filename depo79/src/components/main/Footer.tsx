@@ -85,7 +85,7 @@ function Footer() {
           <Text fontWeight="bold" fontSize={["sm", "md"]}>
             SOSMED
           </Text>
-          <Link to="https://www.instagram.com" target="_blank">
+          <Link to="https://www.instagram.com/azkagroup.inc" target="_blank">
             <Text
               fontSize={["sm", "md"]}
               color="gray.400"
@@ -98,7 +98,7 @@ function Footer() {
             </Text>
           </Link>
 
-          <Link to="https://wa.me" target="_blank">
+          <Link to="https://wa.me/6285232668032" target="_blank">
             <Text
               fontSize={["sm", "md"]}
               color="gray.400"
@@ -158,7 +158,7 @@ function Footer() {
           </Link>
 
           <a
-            href="https://wa.me/6285158779239"
+            href="https://wa.me/6285232668032"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -170,7 +170,7 @@ function Footer() {
                 color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
               }}
             >
-              +6285158779239
+              +6285232668032
             </Text>
           </a>
 

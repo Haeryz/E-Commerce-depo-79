@@ -100,6 +100,7 @@ function Navbar2() {
     navigate(`/search?q=${encodeURIComponent(suggestion)}`);
   };
 
+  // useEffect to detect scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
@@ -114,6 +115,25 @@ function Navbar2() {
   const handlePesananClick = () => {
     setIsPopoverOpen(false); // Close popover
     setIsPesananOpen(true); // Open dialog
+  };
+
+  // General function to handle navigation and scroll to the top
+  const handleNavigateToTop = (
+    e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
+    targetUrl: string
+  ) => {
+    e.preventDefault(); // Prevent default behavior of Link (if it's wrapped in Link)
+
+    // Navigate to the target URL
+    navigate(targetUrl, { replace: true });
+
+    // Scroll to the top after navigation (using a slight delay)
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth", // This ensures smooth scrolling
+      });
+    }, 150); // A small delay to allow navigation to complete
   };
 
   return (
@@ -135,14 +155,15 @@ function Navbar2() {
       transition="background-color 0.3s ease, box-shadow 0.3s ease"
     >
       <HStack gap={4}>
-        <Link to="/">
+        <a href="/" onClick={(e) => handleNavigateToTop(e, "/")}>
           <Image src={LogoCompany} w={"24"} />
-        </Link>
+        </a>
       </HStack>
       <Box display={{ base: "none", md: "flex" }}>
         {/* Home Button */}
         <Link to="/">
           <Button
+            onClick={(e) => handleNavigateToTop(e, "/")}
             textStyle=""
             w={16}
             h={11}
@@ -163,13 +184,8 @@ function Navbar2() {
                 : "transparent"
             }
             _hover={{
-              background: isScrolled
-                ? colorMode === "light"
-                  ? "gray.100"
-                  : "gray.700"
-                : "transparent",
+              background: colorMode === "light" ? "gray.100" : "gray.700", // Adjust hover color based on color mode
             }}
-            transition="background-color 0.3s ease, border-color 0.3s ease"
           >
             Home
           </Button>
@@ -413,14 +429,20 @@ function Navbar2() {
                     <Button
                       pl={10}
                       pr={10}
-                      onClick={() => navigate("/profile/profile-sidebar")}
+                      onClick={(e) =>
+                        handleNavigateToTop(e, "/profile/profile-sidebar")
+                      }
                     >
                       Setting
                     </Button>
-                    <Button pl={6} pr={7} onClick={() => navigate("/profile")}>
+                    <Button
+                      pl={6}
+                      pr={7}
+                      onClick={(e) => handleNavigateToTop(e, "/profile")}
+                    >
                       Buy History
                     </Button>
-                    <Button onClick={() => navigate("/profile")}>
+                    <Button onClick={(e) => handleNavigateToTop(e, "/profile")}>
                       Review History
                     </Button>
                     <Button
