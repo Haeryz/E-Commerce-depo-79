@@ -14,6 +14,7 @@ import { Rating } from '../../components/ui/rating';
 import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogRoot } from '../../components/ui/dialog';
 import { useCartStore } from '../../store/cart';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 // Add interface for CustomNumberInput props
 interface CustomNumberInputProps {
@@ -76,6 +77,7 @@ function DetailBarang() {
     const { profileMap, fetchProfileReviews } = useProfileStore();
     const { addToCart, loading: cartLoading } = useCartStore();
     const [quantity, setQuantity] = useState(1);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (id) {
@@ -101,6 +103,12 @@ function DetailBarang() {
                     type: "error"    // Changed from variant to type
                 });
             }
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (id) {
+            navigate(`/checkout/${id}`, { state: { total: (productDetail?.harga_jual || 0) * quantity, singleProduct: true, productId: id, quantity, productName: productDetail?.nama } });
         }
     };
 
@@ -206,16 +214,29 @@ function DetailBarang() {
                                 </DialogTrigger>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Dialog Title</DialogTitle>
+                                        <DialogTitle>Confirm Purchase</DialogTitle>
                                     </DialogHeader>
                                     <DialogBody>
-
+                                        <VStack gap={4}>
+                                            <HStack>
+                                                <Text>Quantity:</Text>
+                                                <CustomNumberInput
+                                                    value={quantity}
+                                                    onChange={setQuantity}
+                                                    min={1}
+                                                    max={productDetail?.stok || 1}
+                                                />
+                                            </HStack>
+                                            <Text>Total: Rp. {(productDetail?.harga_jual || 0) * quantity}</Text>
+                                        </VStack>
                                     </DialogBody>
                                     <DialogFooter>
                                         <DialogActionTrigger asChild>
                                             <Button variant="outline">Cancel</Button>
                                         </DialogActionTrigger>
-                                        <Button>Save</Button>
+                                        <Button onClick={handleBuyNow}>
+                                            Beli
+                                        </Button>
                                     </DialogFooter>
                                     <DialogCloseTrigger />
                                 </DialogContent>
