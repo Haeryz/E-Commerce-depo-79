@@ -8,10 +8,12 @@ import { useLokasiStore } from '../../store/location';
 import { SelectContent, SelectItem, SelectLabel, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
 import { useProfileStore } from '../../store/profile';
 import useCheckoutStore from '../../store/checkout';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Checkout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { total: dialogTotal, singleProduct, productId, quantity, productName } = location.state || {};
   const [formData, setFormData] = useState({
     nama_lengkap: '',
     Email: '',
@@ -141,11 +143,6 @@ function Checkout() {
     try {
         setLoading(true);
         
-        // Get the cart ID directly from the cart object instead of items
-        if (!cart?._id) {
-            throw new Error('No active cart found');
-        }
-
         // Validate form data before submission
         if (!formData.alamat_lengkap || !formData.kodepos) {
             throw new Error('Please fill in all required fields');
@@ -168,13 +165,15 @@ function Checkout() {
         }
 
         const checkoutData = {
-            cartId: cart._id, // Use the cart._id instead of items[0]._id
+            cartId: singleProduct ? null : cart._id, // Use null if single product
             ...formData,
             nama: profile?._id, // Make sure profile is available
             provinsi: selectedProvName,
             kota: selectedKotaName,
             kecamatan: selectedKecName,
-            kelurahan: selectedKelName
+            kelurahan: selectedKelName,
+            total: singleProduct ? dialogTotal : total, // Use dialogTotal if single product
+            items: singleProduct ? [{ product: productId, quantity, price: dialogTotal / quantity, nama: productName }] : items // Add items for single product
         };
 
         // Log the data being sent
@@ -360,12 +359,19 @@ function Checkout() {
           alignSelf={['center', 'center', 'flex-start']}
         >
           <VStack>
-            {items.map(item => (
-              <HStack key={item._id} justifyContent="space-between" w="full" p={4}>
-                <Text fontSize="sm">{item.product.nama} x {item.quantity}</Text>
-                <Text>Rp.{(item.product.harga_jual * item.quantity).toLocaleString('id-ID')}</Text>
+            {singleProduct ? (
+              <HStack justifyContent="space-between" w="full" p={4}>
+                <Text fontSize="sm">{productName} x {quantity}</Text>
+                <Text>Rp.{dialogTotal.toLocaleString('id-ID')}</Text>
               </HStack>
-            ))}
+            ) : (
+              items.map(item => (
+                <HStack key={item._id} justifyContent="space-between" w="full" p={4}>
+                  <Text fontSize="sm">{item.product.nama} x {item.quantity}</Text>
+                  <Text>Rp.{(item.product.harga_jual * item.quantity).toLocaleString('id-ID')}</Text>
+                </HStack>
+              ))
+            )}
 
             <Separator />
 
@@ -374,7 +380,7 @@ function Checkout() {
                 Subtotal
               </Text>
               <Text mr={5}>
-                Rp.{total.toLocaleString('id-ID')}
+                Rp.{singleProduct ? dialogTotal.toLocaleString('id-ID') : total.toLocaleString('id-ID')}
               </Text>
             </HStack>
             <HStack justifyContent="space-between" w="full">
@@ -391,7 +397,7 @@ function Checkout() {
                 Grandtotal
               </Text>
               <Text mr={5}>
-                Rp.{total.toLocaleString('id-ID')}
+                Rp.{singleProduct ? dialogTotal.toLocaleString('id-ID') : total.toLocaleString('id-ID')}
               </Text>
             </HStack>
             <Button 
