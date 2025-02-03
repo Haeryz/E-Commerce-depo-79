@@ -16,6 +16,7 @@ import { createServer } from 'http';
 import { initSocket } from './socket.js'; // Make sure path is correct
 import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
 import path from "path";
+import strukRoute from "./routes/struk.route.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/api/alamat", alamatRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoute);
+app.use("/api/struk", strukRoute);
 
 if(process.env === 'production'){
   app.use(express.static(path.join(__dirname, "/depo79/dist")))

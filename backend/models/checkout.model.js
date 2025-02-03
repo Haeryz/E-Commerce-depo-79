@@ -91,7 +91,11 @@ const checkoutSchema = new mongoose.Schema({
             type: Number,
             required: true
         }
-    }]
+    }],
+    struk: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Struk'
+    }
 }, { timestamps: true });
 
 const Checkout = mongoose.model("Checkout", checkoutSchema);  // Fixed typo
