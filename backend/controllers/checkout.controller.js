@@ -39,18 +39,21 @@ export const createCheckout = async (req, res) => {
       kota,
       kecamatan,
       kelurahan,  // This field is empty in your request
-      kodepos
+      kodepos,
+      items,
+      total
     } = req.body;
 
     // Log the request body for debugging
     console.log('Received checkout data:', req.body);
 
     // Validate required fields (removed pembayaran)
-    if (!nama || !cartId || !alamat_lengkap || 
+    if (!nama || (!cartId && !items) || !alamat_lengkap || 
         !provinsi || !kota || !kecamatan || !kelurahan || !kodepos) {
       console.log('Missing fields:', {
         nama: !!nama,
         cartId: !!cartId,
+        items: !!items,
         alamat_lengkap: !!alamat_lengkap,
         provinsi: !!provinsi,
         kota: !!kota,
@@ -80,29 +83,41 @@ export const createCheckout = async (req, res) => {
       });
     }
 
-    // Get cart and verify profile
-    const cart = await Cart.findById(cartId).populate('items.product');
-    if (!cart) {
-      return res.status(404).json({
-        success: false,
-        message: "Cart not found"
+    let checkoutItems = items;
+
+    if (cartId) {
+      // Get cart and verify profile
+      const cart = await Cart.findById(cartId).populate('items.product');
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: "Cart not found"
+        });
+      }
+
+      const profileExists = await mongoose.model('Profile').findById(nama);
+      if (!profileExists) {
+        return res.status(404).json({
+          success: false,
+          message: "Profile not found"
+        });
+      }
+
+      // Transform cart items for checkout
+      checkoutItems = cart.items.map(item => ({
+        product: item.product._id,
+        quantity: item.quantity,
+        price: item.product.harga_jual // assuming this is the price field
+      }));
+
+      // Optionally clear the cart or mark it as checked out
+      await Cart.findByIdAndUpdate(cartId, { 
+        $set: { 
+          items: [],
+          total: 0
+        }
       });
     }
-
-    const profileExists = await mongoose.model('Profile').findById(nama);
-    if (!profileExists) {
-      return res.status(404).json({
-        success: false,
-        message: "Profile not found"
-      });
-    }
-
-    // Transform cart items for checkout
-    const checkoutItems = cart.items.map(item => ({
-      product: item.product._id,
-      quantity: item.quantity,
-      price: item.product.harga_jual // assuming this is the price field
-    }));
 
     // Create new checkout with pending status and items
     const newCheckout = new Checkout({
@@ -113,7 +128,7 @@ export const createCheckout = async (req, res) => {
       nomor_telefon: nomor_telefon || "",
       pembayaran: "Pending",  // Set initial payment method as Pending
       status: "Pending", // All orders start as pending
-      grandTotal: cart.total,
+      grandTotal: total,
       items: checkoutItems, // Add the items here
       alamat_lengkap,
       provinsi,
@@ -124,14 +139,6 @@ export const createCheckout = async (req, res) => {
     });
 
     await newCheckout.save();
-
-    // Optionally clear the cart or mark it as checked out
-    await Cart.findByIdAndUpdate(cartId, { 
-      $set: { 
-        items: [],
-        total: 0
-      }
-    });
 
     // Populate the items before sending response
     const populatedCheckout = await Checkout.findById(newCheckout._id)
