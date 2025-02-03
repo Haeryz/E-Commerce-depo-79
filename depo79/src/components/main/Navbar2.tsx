@@ -154,6 +154,7 @@ function Navbar2() {
       boxShadow={isScrolled ? "md" : "none"}
       transition="background-color 0.3s ease, box-shadow 0.3s ease"
     >
+      {/* Logo */}
       <HStack gap={4}>
         <a href="/" onClick={(e) => handleNavigateToTop(e, "/")}>
           <Image src={LogoCompany} w={"24"} />
