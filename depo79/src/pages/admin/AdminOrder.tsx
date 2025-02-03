@@ -7,10 +7,12 @@ import { Button } from '../../components/ui/button'
 import { IoPersonSharp } from "react-icons/io5"
 import { FaLocationDot } from "react-icons/fa6"
 import { BsTelephoneFill } from "react-icons/bs"
+import { FiDownload } from 'react-icons/fi';
 import useCheckoutStore from '../../store/checkout'
 import { format } from 'date-fns'
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
 import { io, Socket } from 'socket.io-client'
+import * as XLSX from 'xlsx';
 
 interface CheckoutItem {
   _id: string;
@@ -153,6 +155,40 @@ const AdminOrder = () => {
     }
   };
 
+  // Add this new function
+  const handleExportToExcel = () => {
+    // Transform checkouts data for Excel
+    const excelData = checkouts.map(checkout => ({
+      'Order ID': `#${checkout._id.slice(-6)}`,
+      'Customer Name': checkout.nama_lengkap,
+      'Payment Method': checkout.pembayaran,
+      'Status': checkout.status,
+      'Address': `${checkout.alamat_lengkap}, ${checkout.kota}`,
+      'Total': `Rp. ${checkout.grandTotal.toLocaleString()}`,
+      'Date': formatDate(checkout.createdAt),
+      'Phone': checkout.nomor_telefon || 'N/A',
+      'Email': checkout.Email || 'N/A',
+      'Province': checkout.provinsi,
+      'City': checkout.kota,
+      'District': checkout.kecamatan,
+      'Sub-District': checkout.kelurahan,
+      'Postal Code': checkout.kodepos
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Orders');
+
+    // Generate file name with current date
+    const fileName = `orders_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`;
+
+    // Save file
+    XLSX.writeFile(wb, fileName);
+  };
+
   return (
     <Box display="flex" height="100vh" p={4} w={'85%'} gap={4}>
       <Box
@@ -171,6 +207,14 @@ const AdminOrder = () => {
             </Field>
             <Button>
               Search
+            </Button>
+            {/* Updated Export button with icon */}
+            <Button 
+              onClick={handleExportToExcel}
+              {...getButtonStyles('green')}
+            >
+              <FiDownload />
+              Export
             </Button>
           </HStack>
 
