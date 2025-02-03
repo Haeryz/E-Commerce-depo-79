@@ -33,7 +33,7 @@ function BarangBaru() {
 
     return (
         <Box>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gapX={4} gapY={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gapX={4} gapY={4}>
                 {isLoading
                     ? Array.from({ length: itemsPerPage }).map((_, index) => (
                         <Stack key={index} gap="6" maxW="sm">
@@ -75,8 +75,8 @@ function BarangBaru() {
                                         </Text>
                                     </Card.Body>
                                     <Card.Footer gap="2">
-                                        <Button variant="solid">Beli</Button>
-                                        <Button variant="ghost">Tambahkan ke Keranjang</Button>
+                                        <Button variant="solid" size={{ base: "sm", md: "md" }}>Beli</Button>
+                                        <Button variant="ghost" size={{ base: "sm", md: "md" }}>Tambahkan ke Keranjang</Button>
                                     </Card.Footer>
                                 </Card.Root>
                             </Link>
@@ -89,6 +89,7 @@ function BarangBaru() {
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
+                    size={{ base: "sm", md: "md" }}
                 >
                     <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -98,6 +99,7 @@ function BarangBaru() {
                         key={index + 1}
                         variant={currentPage === index + 1 ? "solid" : "outline"}
                         onClick={() => handlePageChange(index + 1)}
+                        size={{ base: "sm", md: "md" }}
                     >
                         {index + 1}
                     </Button>
@@ -107,6 +109,7 @@ function BarangBaru() {
                     variant="outline"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
+                    size={{ base: "sm", md: "md" }}
                 >
                     <ChevronRight className="h-4 w-4" />
                 </Button>

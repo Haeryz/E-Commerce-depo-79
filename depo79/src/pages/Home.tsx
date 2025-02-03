@@ -8,7 +8,7 @@ import ReviewScroll from "../components/home/ReviewScroll";
 const Home: React.FC = () => {
 
   return (
-    <VStack mt={7} overflow={"hidden"}>
+    <VStack mt={7} overflow={"hidden"} px={{ base: 4, md: 0 }}>
       <Box>
         <Image 
         src={Banner}
@@ -16,8 +16,8 @@ const Home: React.FC = () => {
         />
       </Box>
 
-      <Box justifyItems={"center"}>
-        <Text fontWeight={"bold"} fontSize={60} mt={10}>
+      <Box justifyItems={"center"} textAlign="center">
+        <Text fontWeight={"bold"} fontSize={{ base: "3xl", md: 60 }} mt={10}>
           BAHAN BARU
         </Text>
 
@@ -30,14 +30,14 @@ const Home: React.FC = () => {
         </Text>
       </Box>
 
-      <Box justifyItems={"center"} mt={10}>
+      <Box justifyItems={"center"} mt={10} w="full">
         <BarangBaru />
       </Box>
 
       <Separator variant={"solid"} size={"xs"} mb={5} mt={5} borderColor={"gray.500"}/>
 
-      <Box justifyItems={"center"}>
-        <Text fontWeight={"bold"} fontSize={60} mt={10}>
+      <Box justifyItems={"center"} textAlign="center">
+        <Text fontWeight={"bold"} fontSize={{ base: "3xl", md: 60 }} mt={10}>
           BAHAN REKOMENDASI
         </Text>
 
@@ -50,11 +50,11 @@ const Home: React.FC = () => {
         </Text>
       </Box>
 
-      <Box justifyItems={"center"} mt={10}>
+      <Box justifyItems={"center"} mt={10} w="full">
         <BarangRekomendasi />
       </Box>
 
-      <Box justifyItems={"center"} mt={10}>
+      <Box justifyItems={"center"} mt={10} w="full">
         <ReviewScroll />
       </Box>
     </VStack>
