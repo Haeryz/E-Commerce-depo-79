@@ -251,7 +251,7 @@ function Navbar2() {
       <Box position="relative" ref={searchRef}>
         <form onSubmit={handleSearch}>
           <Field
-            maxW={{ base: 'full', sm: '200px', md: '4xs' }}
+            maxW={{ base: '120px', sm: '150px', md: '2xs' }}
             borderRadius="15px"
             outline={'1px solid black'}
             border="none"
