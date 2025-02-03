@@ -5,7 +5,6 @@ import { Box, SimpleGrid, Text, Stack, HStack, Button, IconButton } from "@chakr
 import { HiOutlineAdjustmentsHorizontal } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { Skeleton, SkeletonText } from "../../components/ui/skeleton";
-import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
 
 function ListBarang() {
   const [searchParams] = useSearchParams();
@@ -82,37 +81,12 @@ function ListBarang() {
                   <Text fontSize="sm" color="gray.500">
                     {product.keterangan || "No description available"}
                   </Text>
-                  <Text mt={2} fontWeight="medium" fontSize="lg">${product.harga_jual}</Text>
+                  <Text mt={2} fontWeight="medium" fontSize="lg">Rp.{product.harga_jual}</Text>
+                  <Text color={'gray.400'}>Klik disini untuk info lebih lanjut</Text>
                 </Box>
               </Link>
               {/* Keep the buttons outside the Link to make them independently clickable */}
               <Box p={4} display="flex" gap={2}>
-                <Link to={`/beli-barang/${product._id}`}>
-                  <Button variant="solid">Beli</Button>
-                </Link>
-                <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" fontSize={{base: 'xs', md: 'xl'}} >🛒 Tambahkan ke Keranjang</Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Dialog Title</DialogTitle>
-                    </DialogHeader>
-                    <DialogBody>
-                      <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                        do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      </p>
-                    </DialogBody>
-                    <DialogFooter>
-                      <DialogActionTrigger asChild>
-                        <Button variant="outline">Cancel</Button>
-                      </DialogActionTrigger>
-                      <Button>Save</Button>
-                    </DialogFooter>
-                    <DialogCloseTrigger />
-                  </DialogContent>
-                </DialogRoot>
               </Box>
             </Box>
           ))}
