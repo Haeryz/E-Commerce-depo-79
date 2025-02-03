@@ -28,7 +28,7 @@ function ListBarang() {
     : products;
 
   return (
-    <Box p={5}>
+    <Box p={{ base: 4, md: 5 }}>
       {/* Buttons */}
       <HStack align="center" gapX={5} mb={4} justify={"center"}>
         <Button boxShadow={"xl"} borderRadius={"md"}>Semen</Button>
