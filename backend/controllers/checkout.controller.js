@@ -3,6 +3,7 @@ import Checkout from "../models/checkout.model.js";  // Fixed typo
 import Cart from "../models/cart.model.js";
 import { uploadImage } from "../services/cloudinary.service.js";
 import { getIO } from '../socket.js';
+import Struk from "../models/struk.model.js";
 
 export const getCheckout = async (req, res) => {
   try {
@@ -284,6 +285,31 @@ export const updateCheckout = async (req, res) => {
         });
       }
       
+      // If the order is being marked as completed (Selesai), generate a struk
+      if (status === "Selesai") {
+        const strukNumber = `STR-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        
+        const newStruk = new Struk({
+            nomor_struk: strukNumber,
+            checkout: checkout._id,
+            items: checkout.items.map(item => ({
+                product: item.product,
+                quantity: item.quantity,
+                price: item.price,
+                subtotal: item.quantity * item.price
+            })),
+            total: checkout.grandTotal,
+            payment_method: checkout.pembayaran,
+            nama_kasir: req.user.name, // Assuming we have user info in req
+            customer_name: checkout.nama_lengkap
+        });
+
+        await newStruk.save();
+        
+        // Add struk reference to checkout
+        checkout.struk = newStruk._id;
+      }
+
       checkout.status = status;
     }
 
@@ -291,12 +317,17 @@ export const updateCheckout = async (req, res) => {
     
     // Populate the items before sending response
     const updatedCheckout = await Checkout.findById(id)
-      .populate('items.product', 'nama harga_jual');
+      .populate('items.product', 'nama harga_jual')
+      .populate('struk'); // Add this to include struk details
       
     // Emit event after successful update
     getIO().emit('checkoutUpdated', updatedCheckout);
     
-    return res.status(200).json({ success: true, checkout: updatedCheckout });
+    return res.status(200).json({ 
+      success: true, 
+      checkout: updatedCheckout,
+      struk: status === "Selesai" ? newStruk : undefined
+    });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
