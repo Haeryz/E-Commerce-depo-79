@@ -45,7 +45,7 @@ function Cart() {
         return (
             <Box textAlign="center" mt={10}>
                 <Spinner size="xl" />
-                <Text mt={4}>Loading cart...</Text>
+                <Text mt={4} fontSize={{ base: 'md', sm: 'lg' }}>Loading cart...</Text>
             </Box>
         );
     }
@@ -78,9 +78,11 @@ function Cart() {
             minH="100vh"
             py={{ base: 4, md: 8 }}
             px={{ base: 2, sm: 4, md: 6, lg: 8 }}
+            maxW={{ base: 'full', xl: '7xl' }}  // added
+            mx="auto"                           // added
         >
             <BreadcrumbRoot fontWeight="bold" ml={[4, 6, 10]} mb={5} alignSelf="flex-start">
-                <BreadcrumbCurrentLink>
+                <BreadcrumbCurrentLink fontSize={{ base: 'md', md: 'lg' }}>
                     cart
                 </BreadcrumbCurrentLink>
             </BreadcrumbRoot>
@@ -92,6 +94,7 @@ function Cart() {
                 gap={{ base: 4, sm: 6, lg: 8 }}
                 alignItems="flex-start"
                 as={VStack}
+                flexWrap={{ base: 'wrap', md: 'nowrap' }} // added
             >
                 {/* Cart Section */}
                 <Box
@@ -111,14 +114,14 @@ function Cart() {
                         >
                             <Text
                                 fontWeight="extrabold"
-                                fontSize={{ base: 'xl', sm: '2xl', md: '3xl' }}
+                                fontSize={{ base: 'lg', sm: '2xl', md: '3xl' }}
                                 bgGradient="linear(to-r, blue.500, purple.500)"
                                 bgClip="text"
                             >
                                 Shopping Cart
                             </Text>
                             <Button
-                                size={{ base: 'sm', md: 'md' }}
+                                size={{ base: 'xs', md: 'md' }} // changed
                                 colorScheme="red"
                                 variant="ghost"
                                 _hover={{ bg: 'red.50' }}
@@ -160,14 +163,14 @@ function Cart() {
                                                 <HStack gap={{ base: 3, md: 6 }}>
                                                     <Image src={item.product.image} alt={item.product.nama} w={{ base: '70px', sm: '80px', md: '100px' }} h={{ base: '70px', sm: '80px', md: '100px' }} objectFit="cover" borderRadius="xl" shadow="md" />
                                                     <VStack align="start" gap={1}>
-                                                        <Text fontSize="lg" fontWeight="bold">{item.product.nama}</Text>
+                                                        <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} fontWeight="bold">{item.product.nama}</Text>
                                                         <Text color={'blue.500'} fontSize="sm">
                                                             {item.product.stok > 0 ? 'In Stock' : 'Out of Stock'}
                                                         </Text>
                                                     </VStack>
                                                 </HStack>
                                             </Checkbox>
-                                            <HStack gap={{ base: 2, md: 4 }} alignSelf={{ base: 'flex-start', sm: 'center' }} ml={{ base: 4, sm: 8, md: 0 }}>
+                                            <HStack gap={{ base: 2, md: 4 }} alignSelf='center' ml={{ base: 4, sm: 8, md: 0 }}>
                                                 <Box bg="white" shadow="md" borderRadius="full" px={4} py={2}>
                                                     <HStack gap={4}>
                                                         <IconButton
@@ -180,7 +183,7 @@ function Cart() {
                                                         >
                                                             <FaMinus />
                                                         </IconButton>
-                                                        <Text minW="20px" textAlign="center" fontWeight="medium">
+                                                        <Text minW="20px" textAlign="center" fontWeight="medium" fontSize={{ base: 'sm', sm: 'md' }} lineHeight={{ base: 'short', md: 'shorter' }}>
                                                             {item.quantity}
                                                         </Text>
                                                         <IconButton
@@ -206,7 +209,7 @@ function Cart() {
                                                 </IconButton>
                                             </HStack>
 
-                                            <Text fontWeight="bold" fontSize={{ base: 'md', md: 'lg' }} color="blue.600">
+                                            <Text fontWeight="" fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color="blue.600" mt={{ base: 2, md: 0 }}>
                                                 Rp.{(item.product.harga_jual * item.quantity).toLocaleString()}
                                             </Text>
                                         </HStack>
@@ -231,7 +234,7 @@ function Cart() {
                     <VStack gap={{ base: 3, md: 4 }}>
                         <Text
                             w="full"
-                            fontSize={{ base: 'lg', md: 'xl' }}
+                            fontSize={{ base: 'md', md: 'lg' }}
                             fontWeight="bold"
                             pb={{ base: 3, md: 4 }}
                             borderBottom="1px"
@@ -241,12 +244,12 @@ function Cart() {
                         </Text>
 
                         <HStack justifyContent={'space-between'} w={'full'}>
-                            <Text color={'gray.600'}>Subtotal</Text>
+                            <Text color={'gray.600'} fontSize={{ base: 'sm', md: 'md' }}>Subtotal</Text>
                             <Text fontWeight="medium">Rp.{total.toLocaleString()}</Text>
                         </HStack>
 
                         <HStack justifyContent={'space-between'} w={'full'}>
-                            <Text color={'gray.600'}>Discount</Text>
+                            <Text color={'gray.600'} fontSize={{ base: 'sm', md: 'md' }}>Discount</Text>
                             <Text fontWeight="medium" color="green.500">- Rp.0</Text>
                         </HStack>
 
@@ -254,7 +257,7 @@ function Cart() {
 
                         <HStack justifyContent={'space-between'} w={'full'}>
                             <Text fontWeight="bold">Total</Text>
-                            <Text fontWeight="bold" fontSize="xl" color="blue.600">
+                            <Text fontWeight="bold" fontSize={{ base: 'md', md: 'lg' }} color="blue.600">
                                 Rp.{total.toLocaleString()}
                             </Text>
                         </HStack>
