@@ -1,19 +1,117 @@
-import { Box, Image, Separator, Text, VStack } from "@chakra-ui/react";
-import React from "react";
+import { Box, Image, Separator, Text, VStack, HStack, IconButton } from "@chakra-ui/react";
+import React, { useRef, useState } from "react";
+import { FaChevronRight, FaChevronLeft} from "react-icons/fa";
 import Banner from "../assets/Intersect.png";
+import Banner2 from "../assets/image 2.png";
 import BarangBaru from "../components/home/BarangBaru";
 import BarangRekomendasi from "../components/home/BarangRekomendasi";
 import ReviewScroll from "../components/home/ReviewScroll";
 
 const Home: React.FC = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const totalImages = 2;
+
+  const scroll = (direction: 'left' | 'right') => {
+    const newIndex = direction === 'left' 
+      ? Math.max(0, currentIndex - 1)
+      : Math.min(totalImages - 1, currentIndex + 1);
+    
+    setCurrentIndex(newIndex);
+  };
 
   return (
     <VStack mt={7} overflow={"hidden"} px={{ base: 4, md: 0 }}>
-      <Box>
-        <Image 
-        src={Banner}
-        alt="Banner"
-        />
+      <Box 
+        w={{ base: "100%", md: "95%" }} 
+        h={{ base: "30vh", md: "70vh", lg: "85vh" }} 
+        position="relative"
+        overflow="hidden"
+        borderRadius={{ base: "20px", md: "30px" }}
+        boxShadow="lg"
+      >
+        <IconButton
+          aria-label="Scroll left"
+          position="absolute"
+          left={{ base: 0, md: 2 }}
+          top="50%"
+          transform="translateY(-50%)"
+          zIndex={2}
+          onClick={() => scroll('left')}
+          colorScheme="blackAlpha"
+          rounded="full"
+          size={{ base: "sm", md: "md" }}
+          disabled={currentIndex === 0}
+        >
+          <FaChevronLeft />
+        </IconButton>
+        <IconButton
+          aria-label="Scroll right"
+          position="absolute"
+          right={{ base: 0, md: 2 }}
+          top="50%"
+          transform="translateY(-50%)"
+          zIndex={2}
+          onClick={() => scroll('right')}
+          colorScheme="blackAlpha"
+          rounded="full"
+          size={{ base: "sm", md: "md" }}
+          disabled={currentIndex === totalImages - 1}
+        >
+          <FaChevronRight />
+        </IconButton>
+        <Box 
+          w="100%" 
+          h="100%"
+          position="relative"
+          overflow="hidden"
+          borderRadius="inherit"
+        >
+          <HStack 
+            gap={0}
+            position="absolute"
+            height="100%"
+            width={`${totalImages * 100}%`}
+            transform={`translateX(-${currentIndex * (100 / totalImages)}%)`}
+            transition="transform 0.5s ease-in-out"
+          >
+            <Box 
+              w={`${100 / totalImages}%`}
+              h="100%"
+              borderRadius="inherit"
+              overflow="hidden"
+            >
+              <Image 
+                src={Banner}
+                alt="Banner"
+                objectFit="cover"
+                h="100%"
+                w="100%"
+                transition="transform 0.3s ease"
+                _hover={{
+                  transform: "scale(1.02)"
+                }}
+              />
+            </Box>
+            <Box 
+              w={`${100 / totalImages}%`}
+              h="100%"
+              borderRadius="inherit"
+              overflow="hidden"
+            >
+              <Image 
+                src={Banner2}
+                alt="Banner 2"
+                objectFit="cover"
+                h="100%"
+                w="100%"
+                transition="transform 0.3s ease"
+                _hover={{
+                  transform: "scale(1.02)"
+                }}
+              />
+            </Box>
+          </HStack>
+        </Box>
       </Box>
 
       <Box justifyItems={"center"} textAlign="center">
