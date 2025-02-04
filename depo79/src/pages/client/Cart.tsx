@@ -7,11 +7,12 @@ import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { motion } from 'framer-motion'
 import { EmptyState } from "../../components/ui/empty-state"
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Cart() {
-    const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem } = useCartStore();
+    const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem, cart } = useCartStore();
     const [updatingItems, setUpdatingItems] = useState<{ [key: string]: boolean }>({});
+    const navigate = useNavigate();  // Add this
 
     useEffect(() => {
         fetchCart();
@@ -38,6 +39,19 @@ function Cart() {
             await removeFromCart(productId);
         } catch (error) {
             console.error('Failed to remove item', error);
+        }
+    };
+
+    const handleCheckout = () => {
+        if (cart) {
+            navigate(`/checkout/${cart}`, { 
+                state: { 
+                    cartId: cart._id,
+                    total: total,
+                    singleProduct: false,
+                    items: items
+                } 
+            });
         }
     };
 
@@ -266,22 +280,21 @@ function Cart() {
                             </Text>
                         </HStack>
 
-                        <Link to="/checkout">
-                            <Button
-                                w={'full'}
-                                size={{ base: 'md', md: 'lg' }}
-                                fontSize={{ base: 'sm', md: 'md' }}
-                                colorScheme="blue"
-                                borderRadius="xl"
-                                disabled={items.length === 0}
-                                _hover={{
-                                    transform: 'translateY(-2px)',
-                                    shadow: 'lg',
-                                }}
-                            >
-                                Checkout Now
-                            </Button>
-                        </Link>
+                        <Button
+                            w={'full'}
+                            size={{ base: 'md', md: 'lg' }}
+                            fontSize={{ base: 'sm', md: 'md' }}
+                            colorScheme="blue"
+                            borderRadius="xl"
+                            disabled={items.length === 0}
+                            onClick={handleCheckout}
+                            _hover={{
+                                transform: 'translateY(-2px)',
+                                shadow: 'lg',
+                            }}
+                        >
+                            Checkout Now
+                        </Button>
                     </VStack>
                 </Box>
             </HStack>

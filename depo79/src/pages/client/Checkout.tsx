@@ -13,7 +13,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { total: dialogTotal, singleProduct, productId, quantity, productName } = location.state || {};
+  const { 
+    total: dialogTotal, 
+    singleProduct, 
+    productId, 
+    quantity, 
+    productName,
+    cartId,  // Add this
+    items: cartItems // Add this
+  } = location.state || {};
   const [formData, setFormData] = useState({
     nama_lengkap: '',
     Email: '',
@@ -165,7 +173,7 @@ function Checkout() {
         }
 
         const checkoutData = {
-            cartId: singleProduct ? null : cart._id, // Use null if single product
+            cartId: singleProduct ? null : cartId, // Use cartId from state
             ...formData,
             nama: profile?._id, // Make sure profile is available
             provinsi: selectedProvName,
@@ -173,7 +181,9 @@ function Checkout() {
             kecamatan: selectedKecName,
             kelurahan: selectedKelName,
             total: singleProduct ? dialogTotal : total, // Use dialogTotal if single product
-            items: singleProduct ? [{ product: productId, quantity, price: dialogTotal / quantity, nama: productName }] : items // Add items for single product
+            items: singleProduct 
+                ? [{ product: productId, quantity, price: dialogTotal / quantity, nama: productName }] 
+                : cartItems // Use cartItems from state
         };
 
         // Log the data being sent
