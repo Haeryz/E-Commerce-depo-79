@@ -71,7 +71,7 @@ function BarangBaru() {
                                             </Text>
                                         )}
                                         <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-                                            ${product.harga_jual}
+                                            Rp.{product.harga_jual}
                                         </Text>
                                     </Card.Body>
                                     <Card.Footer gap="2">
