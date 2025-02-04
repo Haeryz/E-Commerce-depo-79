@@ -26,8 +26,9 @@ interface ProductState {
     fetchProducts: () => Promise<void>;
     fetchProductById: (id: string) => Promise<void>;
     fetchProductReviewsPaginated: (id: string, page: number, limit: number) => Promise<void>;
-    adminProducts: Product[];  // Add this line
-    fetchAdminProducts: () => Promise<void>;  // Add this line
+    adminProducts: Product[];
+    fetchAdminProducts: (page?: number, limit?: number) => Promise<void>;
+    totalPages: number;
 }
 
 export const useProductStore = create<ProductState>((set) => ({
@@ -36,7 +37,8 @@ export const useProductStore = create<ProductState>((set) => ({
     productDetail: null,
     loading: false,
     error: null,
-    adminProducts: [],  // Add this line
+    adminProducts: [],
+    totalPages: 1,
 
     fetchProducts: async () => {
         set({ loading: true, error: null });
@@ -107,11 +109,11 @@ export const useProductStore = create<ProductState>((set) => ({
         }
     },
 
-    fetchAdminProducts: async () => {
+    fetchAdminProducts: async (page = 1, limit = 10) => {
         set({ loading: true, error: null });
         try {
-            const response = await fetch("/api/product", {
-                credentials: 'include', // Include credentials for admin authentication
+            const response = await fetch(`/api/product?page=${page}&limit=${limit}`, {
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -123,7 +125,10 @@ export const useProductStore = create<ProductState>((set) => ({
             
             const data = await response.json();
             if (data.success) {
-                set({ adminProducts: data.products });
+                set({ 
+                    adminProducts: data.products,
+                    totalPages: data.pagination.totalPages
+                });
             } else {
                 set({ error: data.message });
             }

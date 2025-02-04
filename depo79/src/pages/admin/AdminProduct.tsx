@@ -11,7 +11,7 @@ import {
   VStack,
   createListCollection,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProductStore } from "../../store/product";
 import { useBeratStore } from "../../store/berat";
 import {
@@ -33,22 +33,23 @@ import {
   FileUploadRoot,
 } from "../../components/ui/file-upload";
 import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "../../components/ui/select";
-import CustomDatePicker from "../../components/main/CustomDatePicker";
+  PaginationItems,
+  PaginationNextTrigger,
+  PaginationPrevTrigger,
+  PaginationRoot,
+} from "../../components/ui/pagination";
 
 const AdminProduct = () => {
-  const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts } = useProductStore();
+  const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts, totalPages: storeTotalPages } = useProductStore();
   const { beratMap, loading: beratLoading, fetchBerat } = useBeratStore();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
+  // Replace the custom fetch function with direct use of fetchAdminProducts
   useEffect(() => {
-    fetchAdminProducts();
+    fetchAdminProducts(currentPage, itemsPerPage);
     fetchBerat();
-  }, [fetchAdminProducts, fetchBerat]);
+  }, [fetchAdminProducts, fetchBerat, currentPage, itemsPerPage]);
 
   if (productsLoading || beratLoading) return <Box p={5}>Loading...</Box>;
   if (productsError) return <Box p={5}>Error: {productsError}</Box>;
@@ -65,33 +66,12 @@ const AdminProduct = () => {
                 Cari
               </Button>
             </HStack>
-            <HStack mt={5} gap={2}>
-              <SelectRoot collection={frameworks} size="sm" width="100px">
-                <SelectTrigger>
-                  <SelectValueText placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {frameworks.items.map((movie) => (
-                    <SelectItem item={movie} key={movie.value}>
-                      {movie.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </SelectRoot>
-              <CustomDatePicker />
-              <Button>
-                
-              </Button>
-            </HStack>
           </HStack>
 
-          <Box px={5}>
-            <Separator variant={"solid"} size={"lg"} mb={5} mt={5} borderColor={"gray.800"} />
-          </Box>
         </Box>
 
         {/* Table Section - Scrollable */}
-        <Box flex="1" overflowY="auto">
+        <Box flex="1" overflowY="hidden">
           <Table.Root variant="line" stickyHeader>
             <Table.Header>
               <Table.Row>
@@ -187,10 +167,21 @@ const AdminProduct = () => {
             </Table.Body>
             <Table.Footer>
               <Table.Row>
-                <Table.Cell colSpan={8} textAlign="center">
-                  <Text fontSize="sm" color="gray.500">
-                    End of Results
-                  </Text>
+                <Table.Cell colSpan={8}>
+                  <Box py={4}>
+                    <PaginationRoot 
+                      count={storeTotalPages} 
+                      pageSize={1} 
+                      defaultPage={1}
+                      onPageChange={(page) => setCurrentPage(page)}
+                    >
+                      <HStack justify="center" gap={4}>
+                        <PaginationPrevTrigger />
+                        <PaginationItems />
+                        <PaginationNextTrigger />
+                      </HStack>
+                    </PaginationRoot>
+                  </Box>
                 </Table.Cell>
               </Table.Row>
             </Table.Footer>
