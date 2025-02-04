@@ -33,7 +33,7 @@ function Navbar2() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { suggestions, fetchSuggestions } = useSearchStore();
+  const { results, fetchSuggestions, clearResults } = useSearchStore();  // Add clearResults
   const [debouncedSearch] = useDebounce(searchQuery, 300);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -43,6 +43,7 @@ function Navbar2() {
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setShowSuggestions(false);
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -64,12 +65,6 @@ function Navbar2() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchQuery(suggestion);
-    setShowSuggestions(false);
-    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
-  };
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
@@ -80,6 +75,13 @@ function Navbar2() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Add cleanup when component unmounts
+  useEffect(() => {
+    return () => {
+      clearResults();
+    };
+  }, [clearResults]);
 
   const handlePesananClick = async () => {
     setIsPopoverOpen(false);
@@ -275,7 +277,7 @@ function Navbar2() {
             />
           </Field>
         </form>
-        {showSuggestions && searchQuery && suggestions.length > 0 && (
+        {showSuggestions && searchQuery && results.length > 0 && (
           <Box
             position="absolute"
             top="100%"
@@ -290,16 +292,34 @@ function Navbar2() {
             overflowY="auto"
           >
             <VStack align="stretch" gap={0}>
-              {suggestions.map((suggestion, index) => (
+              {results.map((result) => (
                 <Box
-                  key={index}
+                  key={result._id}
                   px={4}
                   py={2}
                   cursor="pointer"
                   _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.600' }}
-                  onClick={() => handleSuggestionClick(suggestion)}
+                  onClick={() => {
+                    setSearchQuery(result.nama);
+                    setShowSuggestions(false);
+                    navigate(`/detail-barang/${result._id}`);
+                  }}
                 >
-                  <Text>{suggestion}</Text>
+                  <HStack gap={3}>
+                    <Image
+                      src={result.image}
+                      alt={result.nama}
+                      boxSize="40px"
+                      objectFit="cover"
+                      borderRadius="md"
+                    />
+                    <VStack align="start" gap={0}>
+                      <Text fontWeight="medium">{result.nama}</Text>
+                      <Text fontSize="sm" color="gray.500">
+                        Rp {result.harga_jual.toLocaleString()}
+                      </Text>
+                    </VStack>
+                  </HStack>
                 </Box>
               ))}
             </VStack>

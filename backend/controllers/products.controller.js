@@ -163,3 +163,58 @@ export const deleteProduct = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const searchProducts = async (req, res) => {
+  try {
+    const { q = '' } = req.query;
+
+    if (!q.trim()) {
+      return res.status(200).json({ success: true, products: [] });
+    }
+
+    const searchResults = await Product.aggregate([
+      {
+        $search: {
+          index: "default",
+          text: {
+            query: q,
+            path: {
+              wildcard: "*"  // Search across all indexed fields
+            },
+            fuzzy: {
+              maxEdits: 2
+            }
+          }
+        }
+      },
+      {
+        $limit: 10
+      },
+      {
+        $project: {
+          _id: 1,
+          nama: 1,
+          harga_jual: 1,
+          image: 1,
+          keterangan: 1,
+          score: { $meta: "searchScore" }
+        }
+      },
+      {
+        $sort: { score: -1 }
+      }
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      products: searchResults
+    });
+  } catch (error) {
+    console.error("Search error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Error performing search",
+      error: error.message
+    });
+  }
+};
