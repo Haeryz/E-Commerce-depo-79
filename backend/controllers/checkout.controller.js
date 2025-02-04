@@ -141,12 +141,15 @@ export const createCheckout = async (req, res) => {
 
     await newCheckout.save();
 
-    // Populate the items before sending response
+    // Populate the items and other necessary fields before emitting
     const populatedCheckout = await Checkout.findById(newCheckout._id)
-      .populate('items.product');
+      .populate('items.product')
+      .populate('struk')
+      .lean(); // Use lean() for better performance
 
-    // Emit event after successful checkout creation
-    getIO().emit('newCheckout', populatedCheckout);
+    // Get IO instance and emit
+    const io = getIO();
+    io.emit('newCheckout', populatedCheckout);
 
     return res.status(201).json({
       success: true,
@@ -248,6 +251,7 @@ export const uploadBuktiTransfer = async (req, res) => {
 export const updateCheckout = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
+  let newStruk = null; // Declare newStruk outside the if block
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Checkout not found" });
@@ -289,7 +293,7 @@ export const updateCheckout = async (req, res) => {
       if (status === "Selesai") {
         const strukNumber = `STR-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
         
-        const newStruk = new Struk({
+        newStruk = new Struk({
             nomor_struk: strukNumber,
             checkout: checkout._id,
             items: checkout.items.map(item => ({
@@ -300,7 +304,7 @@ export const updateCheckout = async (req, res) => {
             })),
             total: checkout.grandTotal,
             payment_method: checkout.pembayaran,
-            nama_kasir: req.user.name, // Assuming we have user info in req
+            nama_kasir: 'Fuad', // Changed to hardcoded value 'Fuad'
             customer_name: checkout.nama_lengkap
         });
 
@@ -315,18 +319,20 @@ export const updateCheckout = async (req, res) => {
 
     await checkout.save();
     
-    // Populate the items before sending response
+    // Populate all necessary fields before emitting
     const updatedCheckout = await Checkout.findById(id)
-      .populate('items.product', 'nama harga_jual')
-      .populate('struk'); // Add this to include struk details
+      .populate('items.product')
+      .populate('struk')
+      .lean(); // Use lean() for better performance
       
-    // Emit event after successful update
-    getIO().emit('checkoutUpdated', updatedCheckout);
+    // Get IO instance and emit
+    const io = getIO();
+    io.emit('checkoutUpdated', updatedCheckout);
     
     return res.status(200).json({ 
       success: true, 
       checkout: updatedCheckout,
-      struk: status === "Selesai" ? newStruk : undefined
+      struk: newStruk // Now newStruk will be null if not created
     });
   } catch (error) {
     console.log("Error:", error);

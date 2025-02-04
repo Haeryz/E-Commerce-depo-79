@@ -42,65 +42,71 @@ const getButtonStyles = (color: string) => ({
 });
 
 const AdminOrder = () => {
-  // Remove useDisclosure hook since we're using DialogRoot
-  const { colorMode } = useColorMode()
-  const { checkouts, fetchCheckouts} = useCheckoutStore()
-  const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null)
+  const { colorMode } = useColorMode();
+  const { checkouts, fetchCheckouts } = useCheckoutStore();
+  const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null);
   const [socket, setSocket] = React.useState<Socket | null>(null);
+  const [localCheckouts, setLocalCheckouts] = React.useState(checkouts);
 
   useEffect(() => {
-    // Initial fetch
-    fetchCheckouts();
+    setLocalCheckouts(checkouts);
+  }, [checkouts]);
 
-    // Connect to socket with explicit configuration
-    const socketInstance = io(import.meta.env.VITE_API_URL, {
-      withCredentials: true,
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5
-    });
+  useEffect(() => {
+    const initializeSocket = async () => {
+      try {
+        // Initial fetch
+        await fetchCheckouts();
 
-    // Debug connection
-    socketInstance.on('connect', () => {
-      console.log('Connected to socket server:', socketInstance.id);
-    });
+        const socketInstance = io(import.meta.env.VITE_API_URL, {
+          withCredentials: true,
+          transports: ['websocket', 'polling'],
+          reconnection: true,
+          reconnectionDelay: 1000,
+          reconnectionAttempts: 5,
+          timeout: 20000
+        });
 
-    socketInstance.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
-    });
+        socketInstance.on('connect', () => {
+          console.log('Connected to socket server:', socketInstance.id);
+        });
 
-    // Listen for new checkouts
-    socketInstance.on('newCheckout', (newCheckout) => {
-      console.log('New checkout received:', newCheckout);
-      useCheckoutStore.setState(state => ({
-        checkouts: [...state.checkouts, newCheckout]
-      }));
-    });
+        socketInstance.on('connect_error', (error) => {
+          console.error('Socket connection error:', error);
+          socketInstance.io.opts.transports = ['polling', 'websocket'];
+        });
 
-    // Listen for checkout updates
-    socketInstance.on('checkoutUpdated', (updatedCheckout) => {
-      console.log('Checkout update received:', updatedCheckout);
-      useCheckoutStore.setState(state => ({
-        checkouts: state.checkouts.map(checkout =>
-          checkout._id === updatedCheckout._id ? updatedCheckout : checkout
-        )
-      }));
-      
-      setSelectedCheckout(prev => 
-        prev?._id === updatedCheckout._id ? updatedCheckout : prev
-      );
-    });
+        socketInstance.on('newCheckout', async (newCheckout) => {
+          console.log('New checkout received:', newCheckout);
+          await fetchCheckouts(); // Fetch fresh data
+          setLocalCheckouts(prev => [newCheckout, ...prev]);
+        });
 
-    setSocket(socketInstance);
+        socketInstance.on('checkoutUpdated', async (updatedCheckout) => {
+          console.log('Checkout update received:', updatedCheckout);
+          await fetchCheckouts(); // Fetch fresh data
+          setLocalCheckouts(prev => 
+            prev.map(checkout => 
+              checkout._id === updatedCheckout._id ? updatedCheckout : checkout
+            )
+          );
+          
+          if (selectedCheckout?._id === updatedCheckout._id) {
+            setSelectedCheckout(updatedCheckout);
+          }
+        });
 
-    // Cleanup
-    return () => {
-      if (socketInstance) {
-        console.log('Disconnecting socket...');
-        socketInstance.disconnect();
+        setSocket(socketInstance);
+
+        return () => {
+          socketInstance.disconnect();
+        };
+      } catch (error) {
+        console.error('Error initializing socket:', error);
       }
     };
+
+    initializeSocket();
   }, []);
 
   // Format date helper function
@@ -190,12 +196,15 @@ const AdminOrder = () => {
   };
 
   // Filter checkouts to exclude 'Selesai' and 'Ditolak' if updated today
-  const filteredCheckouts = checkouts.filter(checkout => {
-    const today = new Date();
-    const updatedAt = new Date(checkout.updatedAt);
-    const isToday = updatedAt.toDateString() === today.toDateString();
-    return !(checkout.status === 'Selesai' || checkout.status === 'Ditolak') || isToday;
-  });
+  const filteredCheckouts = React.useMemo(() => {
+    console.log('Filtering checkouts:', localCheckouts.length); // Debug log
+    return localCheckouts.filter(checkout => {
+      const today = new Date();
+      const updatedAt = new Date(checkout.updatedAt);
+      const isToday = updatedAt.toDateString() === today.toDateString();
+      return !(checkout.status === 'Selesai' || checkout.status === 'Ditolak') || isToday;
+    });
+  }, [localCheckouts]); // Add forceUpdate as dependency
 
   return (
     <Box display="flex" height="100vh" p={4} w={'85%'} gap={4}>
@@ -245,7 +254,10 @@ const AdminOrder = () => {
               </Table.Header>
               <Table.Body>
                 {filteredCheckouts.map((checkout) => (
-                  <Table.Row key={checkout._id} onClick={() => handleRowClick(checkout)}>
+                  <Table.Row 
+                    key={`${checkout._id}-${checkout.updatedAt}-${Math.random()}`} // Force re-render with random key
+                    onClick={() => handleRowClick(checkout)}
+                  >
                     <Table.Cell>#{checkout._id.slice(-6)}</Table.Cell>
                     <Table.Cell>{checkout.nama_lengkap}</Table.Cell>
                     <Table.Cell>{checkout.pembayaran}</Table.Cell>

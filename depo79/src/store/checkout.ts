@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import axios from "axios";
 import { useProfileStore } from "./profile"; // Add this import
 
 // Enhanced interfaces to match backend models
@@ -82,6 +83,8 @@ interface CheckoutState {
     clearError: () => void;
     initializeCheckout: (data: InitialCheckoutData) => Promise<string>;
     fetchProfileCheckouts: (profileId: string) => Promise<void>; // Add this line
+    addNewCheckout: (checkout: Checkout) => void; // Add this line
+    updateCheckoutInStore: (updatedCheckout: Checkout) => void; // Add this line
 }
 
 const useCheckoutStore = create<CheckoutState>((set, get) => ({
@@ -90,15 +93,47 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
     loading: false,
     error: null,
 
+    // Add new methods to update store
+    addNewCheckout: (checkout) => {
+        set((state) => {
+            const exists = state.checkouts.some(c => c._id === checkout._id);
+            if (exists) {
+                return state;
+            }
+            const newCheckouts = [checkout, ...state.checkouts];
+            return {
+                checkouts: newCheckouts,
+                loading: false,
+                error: null
+            };
+        });
+    },
+
+    updateCheckoutInStore: (updatedCheckout) => {
+        set((state) => {
+            const newCheckouts = state.checkouts.map((checkout) =>
+                checkout._id === updatedCheckout._id ? updatedCheckout : checkout
+            );
+            return {
+                checkouts: newCheckouts,
+                currentCheckout: state.currentCheckout?._id === updatedCheckout._id 
+                    ? updatedCheckout 
+                    : state.currentCheckout,
+                loading: false,
+                error: null
+            };
+        });
+    },
+
     fetchCheckouts: async () => {
         set({ loading: true, error: null });
         try {
-            const response = await fetch(`/api/checkout`);
-            const data = await response.json();
-            if (!data.success) throw new Error(data.message);
-            set({ checkouts: data.checkouts });
-        } catch (error) {
-            set({ error: error instanceof Error ? error.message : 'Failed to fetch checkouts' });
+            const response = await axios.get("/api/checkout");
+            if (response.data.success) {
+                set({ checkouts: response.data.checkouts });
+            }
+        } catch (error: any) {
+            set({ error: error.message });
         } finally {
             set({ loading: false });
         }
