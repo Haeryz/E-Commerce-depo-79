@@ -221,11 +221,10 @@ function Navbar2() {
                         <Button
                             colorScheme="blue"
                             size="sm"
-                            isLoading={isSubmittingReview}
                             onClick={handleSubmitReview}
-                            isDisabled={!rating || !review.trim()}
+                            disabled={!rating || !review.trim() || isSubmittingReview}
                         >
-                            Submit Review
+                            {isSubmittingReview ? "Loading..." : "Submit Review"}
                         </Button>
                     </VStack>
                 </TimelineContent>

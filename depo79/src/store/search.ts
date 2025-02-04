@@ -4,6 +4,13 @@ interface SearchResult {
   _id: string;
   nama: string;
   harga_jual: number;
+  harga_beli: number; // Add this
+  stok: number; // Add this
+  diskon: number; // Add this
+  berat: {    // Add this
+    value: number;
+    unit: string;
+  };
   image: string;
   keterangan?: string;
   score: number;
@@ -45,10 +52,26 @@ export const useSearchStore = create<SearchState>((set) => ({
       
       const data = await response.json();
       if (data.success) {
-        const results = data.products as SearchResult[];
+        // Transform and validate the search results
+        const results = data.products.map((product: any) => ({
+          _id: product._id || '',
+          nama: product.nama || '',
+          harga_jual: product.harga_jual || 0,
+          harga_beli: product.harga_beli || 0,
+          stok: product.stok || 0,
+          diskon: product.diskon || 0,
+          berat: {
+            value: product.berat?.value || 0,
+            unit: product.berat?.unit || ''
+          },
+          image: product.image || '',
+          keterangan: product.keterangan || '',
+          score: product.score || 0,
+          highlights: product.highlights || []
+        }));
+
         set({ 
           results,
-          // Extract suggestions from highlighted matches
           suggestions: results.map(result => result.nama)
         });
       } else {
