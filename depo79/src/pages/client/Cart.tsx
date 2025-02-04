@@ -146,14 +146,14 @@ function Cart() {
                         </HStack>
 
                         {/* Product Items */}
-                        {items.map((item) => (
+                        {items?.filter(item => item && item._id).map((item) => (
                             <VStack key={item._id} w="full" gap={{ base: 3, md: 4 }} px={{ base: 2, sm: 4 }}>
                                 <motion.div
                                     whileHover={{ scale: 1.02 }}
                                     transition={{ duration: 0.2 }}
                                     style={{
                                         width: '100%',
-                                        opacity: updatingItems[item.product._id] ? 0.7 : 1,
+                                        opacity: updatingItems[item.product?._id] ? 0.7 : 1,
                                         transition: 'opacity 0.2s'
                                     }}
                                 >
@@ -161,11 +161,11 @@ function Cart() {
                                         <HStack justifyContent={'space-between'} w={'full'} flexDir={{ base: 'column', sm: 'row' }} gap={{ base: 3, md: 4 }}>
                                             <Checkbox>
                                                 <HStack gap={{ base: 3, md: 6 }}>
-                                                    <Image src={item.product.image} alt={item.product.nama} w={{ base: '70px', sm: '80px', md: '100px' }} h={{ base: '70px', sm: '80px', md: '100px' }} objectFit="cover" borderRadius="xl" shadow="md" />
+                                                    <Image src={item.product?.image} alt={item.product?.nama} w={{ base: '70px', sm: '80px', md: '100px' }} h={{ base: '70px', sm: '80px', md: '100px' }} objectFit="cover" borderRadius="xl" shadow="md" />
                                                     <VStack align="start" gap={1}>
-                                                        <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} fontWeight="bold">{item.product.nama}</Text>
+                                                        <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} fontWeight="bold">{item.product?.nama}</Text>
                                                         <Text color={'blue.500'} fontSize="sm">
-                                                            {item.product.stok > 0 ? 'In Stock' : 'Out of Stock'}
+                                                            {item.product?.stok > 0 ? 'In Stock' : 'Out of Stock'}
                                                         </Text>
                                                     </VStack>
                                                 </HStack>
@@ -175,24 +175,27 @@ function Cart() {
                                                     <HStack gap={4}>
                                                         <IconButton
                                                             aria-label="Decrease quantity"
-                                                            onClick={() => handleQuantityChange(item.product._id, Math.max(1, item.quantity - 1))}
+                                                            onClick={() => item.product && handleQuantityChange(item.product._id, Math.max(1, item.quantity - 1))}
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            disabled={item.quantity <= 1}
+                                                            disabled={!item.product || item.quantity <= 1}
                                                         >
                                                             <FaMinus />
                                                         </IconButton>
                                                         <Text minW="20px" textAlign="center" fontWeight="medium" fontSize={{ base: 'sm', sm: 'md' }} lineHeight={{ base: 'short', md: 'shorter' }}>
-                                                            {item.quantity}
+                                                            {item.quantity || 0}
                                                         </Text>
                                                         <IconButton
                                                             aria-label="Increase quantity"
-                                                            onClick={() => handleQuantityChange(item.product._id, Math.min(item.product.stok, item.quantity + 1))}
+                                                            onClick={() => item.product && handleQuantityChange(
+                                                                item.product._id, 
+                                                                Math.min(item.product.stok || 0, item.quantity + 1)
+                                                            )}
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            disabled={item.quantity >= item.product.stok}
+                                                            disabled={!item.product || !item.product.stok || item.quantity >= (item.product.stok || 0)}
                                                         >
                                                             <FaPlus />
                                                         </IconButton>
@@ -203,14 +206,15 @@ function Cart() {
                                                     variant="ghost"
                                                     colorScheme="red"
                                                     size="sm"
-                                                    onClick={() => handleRemoveItem(item.product._id)}
+                                                    onClick={() => item.product && handleRemoveItem(item.product._id)}
+                                                    disabled={!item.product}
                                                 >
                                                     <FaTrashAlt />
                                                 </IconButton>
                                             </HStack>
 
                                             <Text fontWeight="" fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color="blue.600" mt={{ base: 2, md: 0 }}>
-                                                Rp.{(item.product.harga_jual * item.quantity).toLocaleString()}
+                                                Rp.{((item.product?.harga_jual || 0) * (item.quantity || 0)).toLocaleString()}
                                             </Text>
                                         </HStack>
                                     </Box>
@@ -262,13 +266,14 @@ function Cart() {
                             </Text>
                         </HStack>
 
-                        <Link to={`/checkout/${items[0]?._id}`}>  {/* Update this line */}
+                        <Link to="/checkout">
                             <Button
                                 w={'full'}
                                 size={{ base: 'md', md: 'lg' }}
                                 fontSize={{ base: 'sm', md: 'md' }}
                                 colorScheme="blue"
                                 borderRadius="xl"
+                                disabled={items.length === 0}
                                 _hover={{
                                     transform: 'translateY(-2px)',
                                     shadow: 'lg',
