@@ -86,7 +86,7 @@ const Home: React.FC = () => {
                 objectFit="cover"
                 h="100%"
                 w="100%"
-                transition="transform 0.3s ease"
+                transition="transform 0.5s ease"
                 _hover={{
                   transform: "scale(1.02)"
                 }}
@@ -104,7 +104,7 @@ const Home: React.FC = () => {
                 objectFit="cover"
                 h="100%"
                 w="100%"
-                transition="transform 0.3s ease"
+                transition="transform 0.5s ease"
                 _hover={{
                   transform: "scale(1.02)"
                 }}

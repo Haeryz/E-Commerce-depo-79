@@ -37,7 +37,9 @@ function BarangBaru() {
                 {isLoading
                     ? Array.from({ length: itemsPerPage }).map((_, index) => (
                         <Stack key={index} gap="6" maxW="sm">
-                            <Skeleton height="200px" />
+                            <Box position="relative" paddingBottom="100%"> {/* Creates 1:1 ratio container */}
+                                <Skeleton position="absolute" top="0" left="0" right="0" bottom="0" />
+                            </Box>
                             <SkeletonText noOfLines={2} />
                             <SkeletonText noOfLines={1} width="50%" />
                         </Stack>
@@ -53,10 +55,15 @@ function BarangBaru() {
                         >
                             <Link to={`/detail-barang/${product._id}`}>
                                 <Card.Root maxW="sm" overflow="hidden">
-                                    <Box position="relative" height="200px" width="100%" overflow="hidden">
+                                    <Box position="relative" paddingBottom="100%"> {/* Creates 1:1 ratio container */}
                                         <Image
                                             src={product.image}
                                             alt={product.nama}
+                                            position="absolute"
+                                            top="0"
+                                            left="0"
+                                            width="100%"
+                                            height="100%"
                                             objectFit="cover"
                                         />
                                     </Box>
@@ -74,10 +81,6 @@ function BarangBaru() {
                                             Rp.{product.harga_jual}
                                         </Text>
                                     </Card.Body>
-                                    <Card.Footer gap="2">
-                                        <Button variant="solid" size={{ base: "sm", md: "md" }}>Beli</Button>
-                                        <Button variant="ghost" size={{ base: "sm", md: "md" }}>Tambahkan ke Keranjang</Button>
-                                    </Card.Footer>
                                 </Card.Root>
                             </Link>
                         </Box>
