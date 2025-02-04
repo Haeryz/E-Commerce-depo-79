@@ -3,25 +3,31 @@ import Product from "../models/products.model.js";
 import Review from "../models/review.model.js";  // Add this import
 
 export const getProducts = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
   try {
+    // Get total count first
+    const totalProducts = await Product.countDocuments();
+    
+    // Then get paginated data
     const products = await Product.find()
-      .skip(skip) // Skip the records based on the current page
-      .limit(Number(limit)); // Limit the number of records per page
-
-    const totalProducts = await Product.countDocuments(); // Total count of products for pagination info
+      .sort({ createdAt: -1 }) // Optional: sort by creation date
+      .skip(skip)
+      .limit(limit);
 
     return res.status(200).json({
       success: true,
       products,
       pagination: {
-        total: totalProducts,
-        page: Number(page),
+        currentPage: page,
         totalPages: Math.ceil(totalProducts / limit),
-        limit: Number(limit),
-      },
+        totalItems: totalProducts,
+        itemsPerPage: limit,
+        hasNextPage: skip + limit < totalProducts,
+        hasPrevPage: page > 1
+      }
     });
   } catch (error) {
     console.log("Error:", error);
