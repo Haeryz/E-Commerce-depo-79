@@ -170,8 +170,16 @@ function DetailBarang() {
                             {/* Add to Cart Button */}
                             <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
                                 <DialogTrigger asChild>
-                                    <Button colorScheme="teal" borderRadius="full" w="full">
-                                        Tambahkan Ke Keranjang
+                                    <Button 
+                                        colorScheme="teal" 
+                                        borderRadius="full" 
+                                        w="full"
+                                        disabled={!productDetail?.stok || productDetail.stok <= 0}
+                                    >
+                                        {!productDetail?.stok || productDetail.stok <= 0 
+                                            ? 'Out of Stock' 
+                                            : 'Tambahkan Ke Keranjang'
+                                        }
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent>
@@ -208,8 +216,16 @@ function DetailBarang() {
                             </DialogRoot>
                             <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
                                 <DialogTrigger asChild>
-                                    <Button colorScheme="teal" borderRadius="full" w="full">
-                                        Beli Sekarang
+                                    <Button 
+                                        colorScheme="teal" 
+                                        borderRadius="full" 
+                                        w="full"
+                                        disabled={!productDetail?.stok || productDetail.stok <= 0}
+                                    >
+                                        {!productDetail?.stok || productDetail.stok <= 0 
+                                            ? 'Out of Stock' 
+                                            : 'Beli Sekarang'
+                                        }
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent>
