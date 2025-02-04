@@ -67,13 +67,13 @@ const AdminProduct = () => {
 
   return (
     <Box w={"85%"} p={5} h={"100vh"}>
-      <Box borderRadius={"md"} boxShadow={"md"} bg="white" h="100%" display="flex" flexDirection="column">
+      <Box borderRadius={"md"} boxShadow={"md"} h="100%" display="flex" flexDirection="column">
         {/* Search and Filter Section - Fixed */}
         <Box>
-          <HStack gap={4} p={5} borderBottom="1px" borderColor="gray.200" bg="white" flexWrap="wrap">
+          <HStack gap={4} p={5} borderBottom="1px" flexWrap="wrap">
             <HStack w="full" gap={2}>
               <Input placeholder="Cari Barang" borderRadius={"md"} w="90%" />
-              <Button colorScheme="blackAlpha" bg="black" color="white" w="10%">
+              <Button colorScheme="blackAlpha" w="10%">
                 Cari
               </Button>
             </HStack>
