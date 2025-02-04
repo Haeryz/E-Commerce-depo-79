@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon } from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon, Textarea } from '@chakra-ui/react';
 import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { useColorMode } from '../ui/color-mode';
 import { Field } from '../ui/field';
@@ -9,7 +9,7 @@ import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger 
 import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogRoot, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../ui/dialog';
 import { useCartStore } from "../../store/cart"; // Add this import at the top with other imports
 import LogoCompany from "../../assets/LogoCompany.png"
 import { useSearchStore } from "../../store/search";
@@ -20,6 +20,7 @@ import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, 
 import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu'; // Add LuXCircle
 import useCheckoutStore from '../../store/checkout'; // Add this import
 import { useProfileStore } from '../../store/profile'; // Add this import
+import { FaStar } from "react-icons/fa";
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -39,6 +40,9 @@ function Navbar2() {
   const searchRef = useRef<HTMLDivElement>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isPesananOpen, setIsPesananOpen] = useState(false);
+  const [review, setReview] = useState('');
+  const [rating, setRating] = useState(0);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -106,6 +110,21 @@ function Navbar2() {
         minute: '2-digit'
     })
   }
+
+  const handleSubmitReview = async () => {
+    setIsSubmittingReview(true);
+    try {
+      // Here you would implement the API call to submit the review
+      console.log('Submitting review:', { orderId: selectedOrderId, rating, review });
+      // Reset form after successful submission
+      setReview('');
+      setRating(0);
+    } catch (error) {
+      console.error('Error submitting review:', error);
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const getTimelineItems = () => {
     const items = [];
@@ -175,6 +194,40 @@ function Navbar2() {
                 <TimelineContent>
                     <TimelineTitle>Order Delivered</TimelineTitle>
                     <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
+                    <VStack align="stretch" mt={4} gap={3}>
+                        <Text fontWeight="medium">Add Your Review</Text>
+                        <HStack gap={2}>
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <Icon
+                                    key={star}
+                                    color={star <= rating ? "yellow.400" : "gray.300"}
+                                    cursor="pointer"
+                                    onClick={() => setRating(star)}
+                                    w={6}
+                                    h={6}
+                                >
+                                <FaStar />
+                                </Icon>
+                            ))}
+                        </HStack>
+                        <Textarea
+                            placeholder="Write your review here..."
+                            value={review}
+                            onChange={(e) => setReview(e.target.value)}
+                            size="sm"
+                            resize="vertical"
+                            maxLength={500}
+                        />
+                        <Button
+                            colorScheme="blue"
+                            size="sm"
+                            isLoading={isSubmittingReview}
+                            onClick={handleSubmitReview}
+                            isDisabled={!rating || !review.trim()}
+                        >
+                            Submit Review
+                        </Button>
+                    </VStack>
                 </TimelineContent>
             </TimelineItem>
         );
