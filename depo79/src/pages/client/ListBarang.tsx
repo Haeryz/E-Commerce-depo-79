@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useProductStore } from "../../store/Barang";
+import { useSearchStore } from "../../store/search";  // Change this import
 import { Box, SimpleGrid, Text, Stack, VStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { Skeleton, SkeletonText } from "../../components/ui/skeleton";
@@ -9,29 +9,20 @@ import { HiColorSwatch } from "react-icons/hi";
 
 function ListBarang() {
   const [searchParams] = useSearchParams();
-  const { products, loading: productLoading, error: productError, fetchProducts } = useProductStore();
+  const { results, loading, error, fetchSuggestions } = useSearchStore();  // Use search store
   const searchQuery = searchParams.get('q') || '';
 
   useEffect(() => {
-    fetchProducts(1, 10); // Fetch the first 10 products
-  }, [fetchProducts]);
+    if (searchQuery) {
+      fetchSuggestions(searchQuery);  // Fetch results when search query changes
+    }
+  }, [searchQuery, fetchSuggestions]);
 
-  const isLoading = productLoading;
-  const isError = productError;
-
-  if (isError) return <Box>Error: {productError}</Box>;
-
-  // Filter products based on the search query from URL
-  const filteredProducts = searchQuery
-    ? products.filter((product) =>
-      product.nama.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    : products;
+  if (error) return <Box>Error: {error}</Box>;
 
   return (
     <Box p={{ base: 4, md: 5 }}>
-      {/* Product Listing */}
-      {isLoading ? (
+      {loading ? (
         <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
           {Array.from({ length: 10 }).map((_, index) => (
             <Stack key={index} gap="6" maxW="sm">
@@ -41,9 +32,9 @@ function ListBarang() {
             </Stack>
           ))}
         </SimpleGrid>
-      ) : filteredProducts.length > 0 ? (
+      ) : results.length > 0 ? (
         <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
-          {filteredProducts.map((product) => (
+          {results.map((product) => (
             <Box
               maxW="sm"
               overflow="hidden"
@@ -51,12 +42,11 @@ function ListBarang() {
               boxShadow="xl"
               key={product._id}
               _hover={{
-                transform: "scale(1.05)", // Slightly enlarge the card
-                boxShadow: "lg", // Optional: add shadow effect
+                transform: "scale(1.05)",
+                boxShadow: "lg",
               }}
               transition="transform 0.2s ease, box-shadow 0.2s ease"
             >
-              {/* Make the card clickable for product detail */}
               <Link to={`/detail-barang/${product._id}`}>
                 <Box position="relative" height="200px" width="100%" overflow="hidden">
                   <img
@@ -74,13 +64,12 @@ function ListBarang() {
                   <Text fontSize="sm" color="gray.500">
                     {product.keterangan || "No description available"}
                   </Text>
-                  <Text mt={2} fontWeight="medium" fontSize="lg">Rp.{product.harga_jual}</Text>
+                  <Text mt={2} fontWeight="medium" fontSize="lg">
+                    Rp.{product.harga_jual.toLocaleString()}
+                  </Text>
                   <Text color={'gray.400'}>Klik disini untuk info lebih lanjut</Text>
                 </Box>
               </Link>
-              {/* Keep the buttons outside the Link to make them independently clickable */}
-              <Box p={4} display="flex" gap={2}>
-              </Box>
             </Box>
           ))}
         </SimpleGrid>
