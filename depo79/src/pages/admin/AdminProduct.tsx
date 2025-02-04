@@ -20,8 +20,8 @@ import {
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
-  DialogHeader,
   DialogRoot,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
@@ -39,8 +39,13 @@ import {
   PaginationRoot,
 } from "../../components/ui/pagination";
 
+// Add this interface for PageChangeDetails
+interface PageChangeDetails {
+  page: number;
+}
+
 const AdminProduct = () => {
-  const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts, totalPages: storeTotalPages } = useProductStore();
+  const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts, totalPages: storeTotalPages, currentPage: storeCurrentPage } = useProductStore();
   const { beratMap, loading: beratLoading, fetchBerat } = useBeratStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -50,6 +55,12 @@ const AdminProduct = () => {
     fetchAdminProducts(currentPage, itemsPerPage);
     fetchBerat();
   }, [fetchAdminProducts, fetchBerat, currentPage, itemsPerPage]);
+
+  const handlePageChange = (details: PageChangeDetails) => {
+    const newPage = details.page;
+    setCurrentPage(newPage);
+    fetchAdminProducts(newPage, itemsPerPage);
+  };
 
   if (productsLoading || beratLoading) return <Box p={5}>Loading...</Box>;
   if (productsError) return <Box p={5}>Error: {productsError}</Box>;
@@ -172,8 +183,8 @@ const AdminProduct = () => {
                     <PaginationRoot 
                       count={storeTotalPages} 
                       pageSize={1} 
-                      defaultPage={1}
-                      onPageChange={(page) => setCurrentPage(page)}
+                      page={currentPage} // Use controlled page prop instead of defaultPage
+                      onPageChange={handlePageChange}
                     >
                       <HStack justify="center" gap={4}>
                         <PaginationPrevTrigger />

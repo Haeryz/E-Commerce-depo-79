@@ -29,6 +29,7 @@ interface ProductState {
     adminProducts: Product[];
     fetchAdminProducts: (page?: number, limit?: number) => Promise<void>;
     totalPages: number;
+    currentPage: number;
 }
 
 export const useProductStore = create<ProductState>((set) => ({
@@ -39,6 +40,7 @@ export const useProductStore = create<ProductState>((set) => ({
     error: null,
     adminProducts: [],
     totalPages: 1,
+    currentPage: 1,
 
     fetchProducts: async () => {
         set({ loading: true, error: null });
@@ -127,7 +129,8 @@ export const useProductStore = create<ProductState>((set) => ({
             if (data.success) {
                 set({ 
                     adminProducts: data.products,
-                    totalPages: data.pagination.totalPages
+                    totalPages: data.pagination.totalPages,
+                    currentPage: page // Use the page parameter directly
                 });
             } else {
                 set({ error: data.message });
