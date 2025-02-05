@@ -21,7 +21,7 @@ interface AuthState {
         role: "customer" | "admin"
     ) => Promise<{ otpRequired: boolean; email: string }>; // Update return type
     verifyOtp: (email: string, otp: string) => Promise<{ success: boolean; error?: string }>;
-    loginUser: (email: string, password: string, turnstileToken: string) => Promise<void>;
+    loginUser: (email: string, password: string, turnstileToken: string) => Promise<{ success: boolean; role: string }>;
 }
 
 export const useAuthStore = create<AuthState>((set) => {
@@ -109,19 +109,13 @@ export const useAuthStore = create<AuthState>((set) => {
                     set({ token: data.token });
                     Cookies.set("authToken", data.token, { expires: 1 });
                     Cookies.set("user", JSON.stringify(data.user), { expires: 1 });
-                    alert("Login successful");
                     
-                    // Redirect based on user role
-                    if (data.user.role === 'admin') {
-                        window.location.href = '/admin';
-                    } else {
-                        window.location.href = '/';
-                    }
+                    return { success: true, role: data.user.role };
                 } else {
-                    alert("Invalid credentials");
+                    throw new Error(data.message || "Invalid credentials");
                 }
             } catch (error) {
-                alert("An error occurred during login.: " + error);
+                throw new Error("An error occurred during login: " + error);
             }
         },
     };

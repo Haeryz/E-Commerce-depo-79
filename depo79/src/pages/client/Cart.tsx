@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCartStore } from '../../store/cart';
 import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Box, Button, HStack, IconButton, Image, Separator, Spinner, Text, VStack } from '@chakra-ui/react'
@@ -7,11 +7,12 @@ import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { motion } from 'framer-motion'
 import { EmptyState } from "../../components/ui/empty-state"
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Cart() {
-    const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem } = useCartStore();
+    const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem, cart } = useCartStore();
     const [updatingItems, setUpdatingItems] = useState<{ [key: string]: boolean }>({});
+    const navigate = useNavigate();  // Add this
 
     useEffect(() => {
         fetchCart();
@@ -19,20 +20,20 @@ function Cart() {
 
     const handleQuantityChange = async (productId: string, quantity: number) => {
         setUpdatingItems(prev => ({ ...prev, [productId]: true }));
-        
+
         // Immediately update the UI
         updateLocalQuantity(productId, quantity);
-        
+
         // Sync with server in the background
         await syncWithServer(productId, quantity);
-        
+
         setUpdatingItems(prev => ({ ...prev, [productId]: false }));
     };
 
     const handleRemoveItem = async (productId: string) => {
         // Optimistically update UI
         removeLocalItem(productId);
-        
+
         // Sync with server in background
         try {
             await removeFromCart(productId);
@@ -41,11 +42,24 @@ function Cart() {
         }
     };
 
+    const handleCheckout = () => {
+        if (cart) {
+            navigate(`/checkout/${cart}`, { 
+                state: { 
+                    cartId: cart._id,
+                    total: total,
+                    singleProduct: false,
+                    items: items
+                } 
+            });
+        }
+    };
+
     if (loading) {
         return (
             <Box textAlign="center" mt={10}>
                 <Spinner size="xl" />
-                <Text mt={4}>Loading cart...</Text>
+                <Text mt={4} fontSize={{ base: 'md', sm: 'lg' }}>Loading cart...</Text>
             </Box>
         );
     }
@@ -71,58 +85,57 @@ function Cart() {
     }
 
     return (
-        <VStack 
-            align={'stretch'} 
-            w="full" 
-            bg="gray.50" 
-            minH="100vh" 
+        <VStack
+            align={'stretch'}
+            w="full"
+            bg="gray.50"
+            minH="100vh"
             py={{ base: 4, md: 8 }}
             px={{ base: 2, sm: 4, md: 6, lg: 8 }}
+            maxW={{ base: 'full', xl: '7xl' }}  // added
+            mx="auto"                           // added
         >
-            <BreadcrumbRoot 
-                display={{ base: 'none', sm: 'flex' }}
-                mb={{ base: 3, md: 5 }} 
-                alignSelf={'flex-start'}
-            >
-                <BreadcrumbLink href="/detail-barang">Detail</BreadcrumbLink>
-                <BreadcrumbLink>Cart</BreadcrumbLink>
-                <BreadcrumbCurrentLink>Payments</BreadcrumbCurrentLink>
+            <BreadcrumbRoot fontWeight="bold" ml={[4, 6, 10]} mb={5} alignSelf="flex-start">
+                <BreadcrumbCurrentLink fontSize={{ base: 'md', md: 'lg' }}>
+                    cart
+                </BreadcrumbCurrentLink>
             </BreadcrumbRoot>
-            
-            <HStack 
-                justifyContent={'space-between'} 
-                w={'full'} 
+
+            <HStack
+                justifyContent={'space-between'}
+                w={'full'}
                 direction={{ base: 'column', lg: 'row' }}
-                gap={{ base: 4, sm: 6, lg: 8 }}  
+                gap={{ base: 4, sm: 6, lg: 8 }}
                 alignItems="flex-start"
                 as={VStack}
+                flexWrap={{ base: 'wrap', md: 'nowrap' }} // added
             >
                 {/* Cart Section */}
-                <Box 
-                    bg="white" 
+                <Box
+                    bg="white"
                     shadow={{ base: 'md', md: 'xl' }}
                     borderRadius={{ base: 'lg', md: '2xl' }}
-                    w={{ base: '100%', lg: '70%' }} 
+                    w={{ base: '100%', lg: '70%' }}
                     mb={{ base: 3, md: 5 }}
                 >
-                    <VStack gap={{ base: 4, md: 6 }}>  
-                        <HStack 
-                            justifyContent={'space-between'} 
-                            w={'full'} 
+                    <VStack gap={{ base: 4, md: 6 }}>
+                        <HStack
+                            justifyContent={'space-between'}
+                            w={'full'}
                             p={{ base: 4, sm: 6, md: 8 }}
                             bg="gray.50"
                             flexWrap={{ base: 'wrap', sm: 'nowrap' }}
                         >
-                            <Text 
-                                fontWeight="extrabold" 
-                                fontSize={{ base: 'xl', sm: '2xl', md: '3xl' }}
+                            <Text
+                                fontWeight="extrabold"
+                                fontSize={{ base: 'lg', sm: '2xl', md: '3xl' }}
                                 bgGradient="linear(to-r, blue.500, purple.500)"
                                 bgClip="text"
                             >
                                 Shopping Cart
                             </Text>
-                            <Button 
-                                size={{ base: 'sm', md: 'md' }}
+                            <Button
+                                size={{ base: 'xs', md: 'md' }} // changed
                                 colorScheme="red"
                                 variant="ghost"
                                 _hover={{ bg: 'red.50' }}
@@ -133,9 +146,9 @@ function Cart() {
                         </HStack>
 
                         {/* Products Header */}
-                        <HStack 
-                            justifyContent={'space-between'} 
-                            w={'full'} 
+                        <HStack
+                            justifyContent={'space-between'}
+                            w={'full'}
                             px={8}
                             display={{ base: 'none', sm: 'flex' }}
                             color="gray.500"
@@ -147,14 +160,14 @@ function Cart() {
                         </HStack>
 
                         {/* Product Items */}
-                        {items.map((item) => (
+                        {items?.filter(item => item && item._id).map((item) => (
                             <VStack key={item._id} w="full" gap={{ base: 3, md: 4 }} px={{ base: 2, sm: 4 }}>
-                                <motion.div 
-                                    whileHover={{ scale: 1.02 }} 
+                                <motion.div
+                                    whileHover={{ scale: 1.02 }}
                                     transition={{ duration: 0.2 }}
-                                    style={{ 
-                                        width: '100%', 
-                                        opacity: updatingItems[item.product._id] ? 0.7 : 1,
+                                    style={{
+                                        width: '100%',
+                                        opacity: updatingItems[item.product?._id] ? 0.7 : 1,
                                         transition: 'opacity 0.2s'
                                     }}
                                 >
@@ -162,38 +175,41 @@ function Cart() {
                                         <HStack justifyContent={'space-between'} w={'full'} flexDir={{ base: 'column', sm: 'row' }} gap={{ base: 3, md: 4 }}>
                                             <Checkbox>
                                                 <HStack gap={{ base: 3, md: 6 }}>
-                                                    <Image src={item.product.image} alt={item.product.nama} w={{ base: '70px', sm: '80px', md: '100px' }} h={{ base: '70px', sm: '80px', md: '100px' }} objectFit="cover" borderRadius="xl" shadow="md" />
+                                                    <Image src={item.product?.image} alt={item.product?.nama} w={{ base: '70px', sm: '80px', md: '100px' }} h={{ base: '70px', sm: '80px', md: '100px' }} objectFit="cover" borderRadius="xl" shadow="md" />
                                                     <VStack align="start" gap={1}>
-                                                        <Text fontSize="lg" fontWeight="bold">{item.product.nama}</Text>
+                                                        <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} fontWeight="bold">{item.product?.nama}</Text>
                                                         <Text color={'blue.500'} fontSize="sm">
-                                                            {item.product.stok > 0 ? 'In Stock' : 'Out of Stock'}
+                                                            {item.product?.stok > 0 ? 'In Stock' : 'Out of Stock'}
                                                         </Text>
                                                     </VStack>
                                                 </HStack>
                                             </Checkbox>
-                                            <HStack gap={{ base: 2, md: 4 }} alignSelf={{ base: 'flex-start', sm: 'center' }} ml={{ base: 4, sm: 8, md: 0 }}>
+                                            <HStack gap={{ base: 2, md: 4 }} alignSelf='center' ml={{ base: 4, sm: 8, md: 0 }}>
                                                 <Box bg="white" shadow="md" borderRadius="full" px={4} py={2}>
                                                     <HStack gap={4}>
                                                         <IconButton
                                                             aria-label="Decrease quantity"
-                                                            onClick={() => handleQuantityChange(item.product._id, Math.max(1, item.quantity - 1))}
+                                                            onClick={() => item.product && handleQuantityChange(item.product._id, Math.max(1, item.quantity - 1))}
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            disabled={item.quantity <= 1}
+                                                            disabled={!item.product || item.quantity <= 1}
                                                         >
                                                             <FaMinus />
                                                         </IconButton>
-                                                        <Text minW="20px" textAlign="center" fontWeight="medium">
-                                                            {item.quantity}
+                                                        <Text minW="20px" textAlign="center" fontWeight="medium" fontSize={{ base: 'sm', sm: 'md' }} lineHeight={{ base: 'short', md: 'shorter' }}>
+                                                            {item.quantity || 0}
                                                         </Text>
                                                         <IconButton
                                                             aria-label="Increase quantity"
-                                                            onClick={() => handleQuantityChange(item.product._id, Math.min(item.product.stok, item.quantity + 1))}
+                                                            onClick={() => item.product && handleQuantityChange(
+                                                                item.product._id, 
+                                                                Math.min(item.product.stok || 0, item.quantity + 1)
+                                                            )}
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            disabled={item.quantity >= item.product.stok}
+                                                            disabled={!item.product || !item.product.stok || item.quantity >= (item.product.stok || 0)}
                                                         >
                                                             <FaPlus />
                                                         </IconButton>
@@ -204,14 +220,15 @@ function Cart() {
                                                     variant="ghost"
                                                     colorScheme="red"
                                                     size="sm"
-                                                    onClick={() => handleRemoveItem(item.product._id)}
+                                                    onClick={() => item.product && handleRemoveItem(item.product._id)}
+                                                    disabled={!item.product}
                                                 >
-                                                <FaTrashAlt />
+                                                    <FaTrashAlt />
                                                 </IconButton>
                                             </HStack>
 
-                                            <Text fontWeight="bold" fontSize={{ base: 'md', md: 'lg' }} color="blue.600">
-                                                Rp.{(item.product.harga_jual * item.quantity).toLocaleString()}
+                                            <Text fontWeight="" fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color="blue.600" mt={{ base: 2, md: 0 }}>
+                                                Rp.{((item.product?.harga_jual || 0) * (item.quantity || 0)).toLocaleString()}
                                             </Text>
                                         </HStack>
                                     </Box>
@@ -223,8 +240,8 @@ function Cart() {
                 </Box>
 
                 {/* Summary Section */}
-                <Box 
-                    bg="white" 
+                <Box
+                    bg="white"
                     shadow={{ base: 'md', md: 'xl' }}
                     borderRadius={{ base: 'lg', md: '2xl' }}
                     w={{ base: '100%', lg: '30%' }}
@@ -232,10 +249,10 @@ function Cart() {
                     top={{ lg: '20px' }}
                     p={{ base: 4, md: 6 }}
                 >
-                    <VStack gap={{ base: 3, md: 4 }}>  
+                    <VStack gap={{ base: 3, md: 4 }}>
                         <Text
                             w="full"
-                            fontSize={{ base: 'lg', md: 'xl' }}
+                            fontSize={{ base: 'md', md: 'lg' }}
                             fontWeight="bold"
                             pb={{ base: 3, md: 4 }}
                             borderBottom="1px"
@@ -243,41 +260,41 @@ function Cart() {
                         >
                             Order Summary
                         </Text>
-                        
+
                         <HStack justifyContent={'space-between'} w={'full'}>
-                            <Text color={'gray.600'}>Subtotal</Text>
+                            <Text color={'gray.600'} fontSize={{ base: 'sm', md: 'md' }}>Subtotal</Text>
                             <Text fontWeight="medium">Rp.{total.toLocaleString()}</Text>
                         </HStack>
-                        
+
                         <HStack justifyContent={'space-between'} w={'full'}>
-                            <Text color={'gray.600'}>Discount</Text>
+                            <Text color={'gray.600'} fontSize={{ base: 'sm', md: 'md' }}>Discount</Text>
                             <Text fontWeight="medium" color="green.500">- Rp.0</Text>
                         </HStack>
-                        
+
                         <Box w="full" h="1px" bg="gray.100" my={2} />
-                        
+
                         <HStack justifyContent={'space-between'} w={'full'}>
                             <Text fontWeight="bold">Total</Text>
-                            <Text fontWeight="bold" fontSize="xl" color="blue.600">
+                            <Text fontWeight="bold" fontSize={{ base: 'md', md: 'lg' }} color="blue.600">
                                 Rp.{total.toLocaleString()}
                             </Text>
                         </HStack>
-                        
-                        <Link to={`/checkout/${items[0]?._id}`}>  {/* Update this line */}
-                            <Button 
-                                w={'full'} 
-                                size={{ base: 'md', md: 'lg' }}
-                                fontSize={{ base: 'sm', md: 'md' }}
-                                colorScheme="blue"
-                                borderRadius="xl"
-                                _hover={{
-                                    transform: 'translateY(-2px)',
-                                    shadow: 'lg',
-                                }}
-                            >
-                                Checkout Now
-                            </Button>
-                        </Link>
+
+                        <Button
+                            w={'full'}
+                            size={{ base: 'md', md: 'lg' }}
+                            fontSize={{ base: 'sm', md: 'md' }}
+                            colorScheme="blue"
+                            borderRadius="xl"
+                            disabled={items.length === 0}
+                            onClick={handleCheckout}
+                            _hover={{
+                                transform: 'translateY(-2px)',
+                                shadow: 'lg',
+                            }}
+                        >
+                            Checkout Now
+                        </Button>
                     </VStack>
                 </Box>
             </HStack>

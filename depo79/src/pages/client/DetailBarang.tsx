@@ -14,6 +14,7 @@ import { Rating } from '../../components/ui/rating';
 import { DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogRoot } from '../../components/ui/dialog';
 import { useCartStore } from '../../store/cart';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 // Add interface for CustomNumberInput props
 interface CustomNumberInputProps {
@@ -76,6 +77,7 @@ function DetailBarang() {
     const { profileMap, fetchProfileReviews } = useProfileStore();
     const { addToCart, loading: cartLoading } = useCartStore();
     const [quantity, setQuantity] = useState(1);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (id) {
@@ -101,6 +103,12 @@ function DetailBarang() {
                     type: "error"    // Changed from variant to type
                 });
             }
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (id) {
+            navigate(`/checkout/${id}`, { state: { total: (productDetail?.harga_jual || 0) * quantity, singleProduct: true, productId: id, quantity, productName: productDetail?.nama } });
         }
     };
 
@@ -135,16 +143,45 @@ function DetailBarang() {
     return (
         <>
             <Box p={5} mr={5} ml={5}>
-                <VStack>
-                    <HStack align="start" w={'100%'}>
-                        {/* Left Section */}
-                        <VStack align="start" w="50%">
+                <VStack gap={6} align="stretch">
+                    {/* Stack direction changes based on screen size */}
+                    <Box 
+                        display="flex" 
+                        flexDirection={{ base: 'column', md: 'row' }} 
+                        gap={6}
+                        w={'100%'}
+                    >
+                        {/* Image Section - Full width on mobile, right side on desktop */}
+                        <Box 
+                            width={{ base: '100%', md: '50%' }}
+                            order={{ base: 1, md: 2 }}
+                        >
+                            <Image
+                                src={productDetail.image || '/placeholder-image.png'}
+                                alt={productDetail.nama}
+                                borderRadius="lg"
+                                shadow="md"
+                                w="full"
+                                h="auto"
+                                objectFit="cover"
+                                aspectRatio={3 / 2}
+                            />
+                        </Box>
+
+                        {/* Product Details Section - Full width on mobile, left side on desktop */}
+                        <VStack 
+                            align="start" 
+                            width={{ base: '100%', md: '50%' }}
+                            order={{ base: 2, md: 1 }}
+                            gap={4}
+                        >
                             <Text fontWeight="bold" fontSize="2xl">{productDetail.nama}</Text>
                             <Text>{productDetail.terjual || 0} Sold</Text>
                             <Text fontWeight="bold" fontSize="xl">Rp. {productDetail.harga_jual.toLocaleString()}</Text>
+                            
                             {/* Product Info */}
                             <Box borderWidth="1px" borderRadius="lg" p={4} w="full" bg="gray.50">
-                                <VStack align="start" >
+                                <VStack align="start" gap={3}>
                                     <HStack>
                                         <GiWeight />
                                         <Text>Weight: {beratName}</Text>
@@ -159,91 +196,117 @@ function DetailBarang() {
                                     </HStack>
                                 </VStack>
                             </Box>
-                            {/* Add to Cart Button */}
-                            <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
-                                <DialogTrigger asChild>
-                                    <Button colorScheme="teal" borderRadius="full" w="full">
-                                        Tambahkan Ke Keranjang
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Dialog Title</DialogTitle>
-                                    </DialogHeader>
-                                    <DialogBody>
-                                        <VStack gap={4}>
-                                            <HStack>
-                                                <Text>Quantity:</Text>
-                                                <CustomNumberInput
-                                                    value={quantity}
-                                                    onChange={setQuantity}
-                                                    min={1}
-                                                    max={productDetail?.stok || 1}
-                                                />
-                                            </HStack>
-                                            <Text>Total: Rp. {(productDetail?.harga_jual || 0) * quantity}</Text>
-                                        </VStack>
-                                    </DialogBody>
-                                    <DialogFooter>
-                                        <DialogActionTrigger asChild>
-                                            <Button variant="outline">Cancel</Button>
-                                        </DialogActionTrigger>
+
+                            {/* Buttons */}
+                            <VStack width="100%" gap={3}>
+                                <DialogRoot placement={'center'} size={{ base: 'full', md: 'lg' }}>
+                                    <DialogTrigger asChild>
                                         <Button 
-                                            isLoading={cartLoading}
-                                            onClick={handleAddToCart}
+                                            colorScheme="teal" 
+                                            borderRadius="full" 
+                                            w="full"
+                                            disabled={!productDetail?.stok || productDetail.stok <= 0}
                                         >
-                                            Add to Cart
+                                            {!productDetail?.stok || productDetail.stok <= 0 
+                                                ? 'Out of Stock' 
+                                                : 'Tambahkan Ke Keranjang'
+                                            }
                                         </Button>
-                                    </DialogFooter>
-                                    <DialogCloseTrigger />
-                                </DialogContent>
-                            </DialogRoot>
-                            <DialogRoot placement={'center'} size={{ base: 'sm', md: 'lg' }}>
-                                <DialogTrigger asChild>
-                                    <Button colorScheme="teal" borderRadius="full" w="full">
-                                        Beli Sekarang
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Dialog Title</DialogTitle>
-                                    </DialogHeader>
-                                    <DialogBody>
-
-                                    </DialogBody>
-                                    <DialogFooter>
-                                        <DialogActionTrigger asChild>
-                                            <Button variant="outline">Cancel</Button>
-                                        </DialogActionTrigger>
-                                        <Button>Save</Button>
-                                    </DialogFooter>
-                                    <DialogCloseTrigger />
-                                </DialogContent>
-                            </DialogRoot>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Dialog Title</DialogTitle>
+                                        </DialogHeader>
+                                        <DialogBody>
+                                            <VStack gap={4}>
+                                                <HStack>
+                                                    <Text>Quantity:</Text>
+                                                    <CustomNumberInput
+                                                        value={quantity}
+                                                        onChange={setQuantity}
+                                                        min={1}
+                                                        max={productDetail?.stok || 1}
+                                                    />
+                                                </HStack>
+                                                <Text>Total: Rp. {(productDetail?.harga_jual || 0) * quantity}</Text>
+                                            </VStack>
+                                        </DialogBody>
+                                        <DialogFooter>
+                                            <DialogActionTrigger asChild>
+                                                <Button variant="outline">Cancel</Button>
+                                            </DialogActionTrigger>
+                                            <Button 
+                                                isLoading={cartLoading}
+                                                onClick={handleAddToCart}
+                                            >
+                                                Add to Cart
+                                            </Button>
+                                        </DialogFooter>
+                                        <DialogCloseTrigger />
+                                    </DialogContent>
+                                </DialogRoot>
+                                <DialogRoot placement={'center'} size={{ base: 'full', md: 'lg' }}>
+                                    <DialogTrigger asChild>
+                                        <Button 
+                                            colorScheme="teal" 
+                                            borderRadius="full" 
+                                            w="full"
+                                            disabled={!productDetail?.stok || productDetail.stok <= 0}
+                                        >
+                                            {!productDetail?.stok || productDetail.stok <= 0 
+                                                ? 'Out of Stock' 
+                                                : 'Beli Sekarang'
+                                            }
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Confirm Purchase</DialogTitle>
+                                        </DialogHeader>
+                                        <DialogBody>
+                                            <VStack gap={4}>
+                                                <HStack>
+                                                    <Text>Quantity:</Text>
+                                                    <CustomNumberInput
+                                                        value={quantity}
+                                                        onChange={setQuantity}
+                                                        min={1}
+                                                        max={productDetail?.stok || 1}
+                                                    />
+                                                </HStack>
+                                                <Text>Total: Rp. {(productDetail?.harga_jual || 0) * quantity}</Text>
+                                            </VStack>
+                                        </DialogBody>
+                                        <DialogFooter>
+                                            <DialogActionTrigger asChild>
+                                                <Button variant="outline">Cancel</Button>
+                                            </DialogActionTrigger>
+                                            <Button onClick={handleBuyNow}>
+                                                Beli
+                                            </Button>
+                                        </DialogFooter>
+                                        <DialogCloseTrigger />
+                                    </DialogContent>
+                                </DialogRoot>
+                            </VStack>
                         </VStack>
+                    </Box>
 
-                        {/* Right Section */}
-                        <Box flex="1">
-                            <Image
-                                src={productDetail.image || '/placeholder-image.png'}
-                                alt={productDetail.nama}
-                                borderRadius="lg"
-                                shadow="md"
-                                w="full"
-                                h="auto"
-                                objectFit="cover"
-                                aspectRatio={3 / 2}
-                            />
-                        </Box>
-                    </HStack>
-                    <Box w={'100%'} bg="bg" shadow="md" borderRadius="md" mb={5} boxShadow="0px 2px 10px 2px rgba(0, 0, 0, 0.1)" mt={5}>
+                    {/* Reviews Section */}
+                    <Box 
+                        w={'100%'} 
+                        bg="bg" 
+                        shadow="md" 
+                        borderRadius="md" 
+                        mb={5} 
+                        boxShadow="0px 2px 10px 2px rgba(0, 0, 0, 0.1)"
+                    >
                         <Text ml={5} mt={5}>Lihat Semua Review</Text>
                         {productDetail.reviews?.length ? (
                             <VStack align="start" m={5}>
                                 {productDetail.reviews.map((review) => (
                                     <Box key={review._id} p={3} borderWidth="1px" borderRadius="md" w="full">
                                         <Text>By User: {profileMap[review.user._id]?.nama || review.user._id}</Text>
-                                        <Image src={review.image} alt="Review Image" w="100px" h="100px" objectFit="cover" borderRadius="md" my={2} />
                                         <Rating readOnly defaultValue={review.rating} size="sm" />
                                         <Text>Comment: {review.comment}</Text>
                                     </Box>
