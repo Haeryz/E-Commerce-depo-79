@@ -61,7 +61,7 @@ import { useCartStore } from '../../store/cart';
 import { useSearchStore } from '../../store/search';
 import useCheckoutStore from '../../store/checkout';
 import { useProfileStore } from '../../store/profile';
-import Pesanan from '../navbar/Pesanan';
+import Pesanan from '../navbar/pesanan';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -515,7 +515,7 @@ function Navbar2() {
             </PopoverRoot>
 
             <DialogRoot open={isPesananOpen} onOpenChange={(e) => setIsPesananOpen(e.open)}>
-              <Pesanan 
+              <Pesanan
                 isPesananOpen={isPesananOpen}
                 setIsPesananOpen={setIsPesananOpen}
               />
