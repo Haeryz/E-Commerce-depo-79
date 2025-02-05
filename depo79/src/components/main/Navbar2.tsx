@@ -1,60 +1,24 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
-import { 
-  Button, 
-  HStack, 
-  IconButton, 
-  Text, 
-  Spacer, 
-  Input, 
-  Image, 
-  VStack, 
-  Box, 
-  Icon,
-} from '@chakra-ui/react';
-
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon,} from '@chakra-ui/react';
 // Icons
 import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { FaMoon, FaSun } from 'react-icons/fa';
-
 // Components
 import { useColorMode } from '../ui/color-mode';
 import { Field } from '../ui/field';
 import { Switch } from '../ui/switch';
-import { 
-  PopoverArrow, 
-  PopoverBody, 
-  PopoverContent, 
-  PopoverRoot, 
-  PopoverTrigger 
-} from '../ui/popover';
-import { 
-  DrawerBackdrop, 
-  DrawerRoot, 
-  DrawerTrigger 
-} from '../ui/drawer';
-import { 
-  DialogBody, 
-  DialogCloseTrigger, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogRoot, 
-  DialogTrigger 
-} from '../ui/dialog';
-
+import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
+import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../ui/dialog';
 // Pages & Components
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
-
 // Assets
 import LogoCompany from '../../assets/LogoCompany.png';
-
 // Navigation
 import { Link, useNavigate } from 'react-router-dom';
-
 // Hooks
 import { useDebounce } from 'use-debounce';
-
 // Store
 import { useAuthStore } from '../../store/auth';
 import { useCartStore } from '../../store/cart';
@@ -62,6 +26,7 @@ import { useSearchStore } from '../../store/search';
 import useCheckoutStore from '../../store/checkout';
 import { useProfileStore } from '../../store/profile';
 import Pesanan from '../navbar/pesanan';
+import ProfilePopover from '../navbar/ProfilePopover';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -456,63 +421,13 @@ function Navbar2() {
         )}
         {isAuthenticated && user ? (
           <>
-            <PopoverRoot
-              open={isPopoverOpen}
-              onOpenChange={(e) => setIsPopoverOpen(e.open)}
-            >
-              <PopoverTrigger asChild>
-                <Button borderRadius={40}>
-                  {userName.charAt(0).toUpperCase()}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                borderRadius="md"
-                boxShadow="lg"
-                backgroundColor={colorMode === "light" ? "white" : "gray.700"}
-              >
-                <PopoverArrow />
-                <PopoverBody>
-                  <VStack>
-                    <Text mb="0">{userName}</Text>
-                    <Button
-                      pl={10}
-                      pr={10}
-                      onClick={(e) =>
-                        handleNavigateToTop(e, "/profile/profile-sidebar")
-                      }
-                    >
-                      Setting
-                    </Button>
-                    <Button
-                      pl={6}
-                      pr={7}
-                      onClick={(e) => handleNavigateToTop(e, "/profile")}
-                    >
-                      Buy History
-                    </Button>
-                    <Button onClick={(e) => handleNavigateToTop(e, "/profile")}>
-                      Review History
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePesananClick}
-                    >
-                      Pesanan
-                    </Button>
-                    <Button
-                      color={colorMode === "light" ? "white" : "black"}
-                      backgroundColor={colorMode === "light" ? "red" : "pink"}
-                      onClick={() =>
-                        useAuthStore.getState().logout(() => navigate("/"))
-                      }
-                    >
-                      Logout
-                    </Button>
-                  </VStack>
-                </PopoverBody>
-              </PopoverContent>
-            </PopoverRoot>
+            <ProfilePopover
+              userName={userName}
+              isPopoverOpen={isPopoverOpen}
+              setIsPopoverOpen={setIsPopoverOpen}
+              handlePesananClick={handlePesananClick}
+              handleNavigateToTop={handleNavigateToTop}
+            />
 
             <DialogRoot open={isPesananOpen} onOpenChange={(e) => setIsPesananOpen(e.open)}>
               <Pesanan
