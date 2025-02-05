@@ -10,13 +10,11 @@ import {
   VStack, 
   Box, 
   Icon,
-  Textarea
 } from '@chakra-ui/react';
 
 // Icons
 import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
-import { FaMoon, FaSun, FaStar } from 'react-icons/fa';
-import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu';
+import { FaMoon, FaSun } from 'react-icons/fa';
 
 // Components
 import { useColorMode } from '../ui/color-mode';
@@ -43,19 +41,10 @@ import {
   DialogRoot, 
   DialogTrigger 
 } from '../ui/dialog';
-import { 
-  TimelineConnector, 
-  TimelineContent, 
-  TimelineDescription, 
-  TimelineItem, 
-  TimelineRoot, 
-  TimelineTitle 
-} from '../ui/timeline';
 
 // Pages & Components
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
-import Pesanan from '../navbar/pesanan';
 
 // Assets
 import LogoCompany from '../../assets/LogoCompany.png';
@@ -72,13 +61,14 @@ import { useCartStore } from '../../store/cart';
 import { useSearchStore } from '../../store/search';
 import useCheckoutStore from '../../store/checkout';
 import { useProfileStore } from '../../store/profile';
+import Pesanan from '../navbar/Pesanan';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
   const { user, isAuthenticated } = useAuthStore((state) => state); // Access user and authentication state
   const navigate = useNavigate();
   const cartItemsCount = useCartStore((state) => state.items.length); // Add this near other hooks
-  const { checkouts, fetchProfileCheckouts } = useCheckoutStore();
+  const { fetchProfileCheckouts } = useCheckoutStore();
   const { profile } = useProfileStore(); // Single profile declaration
 
   const [isScrolled, setIsScrolled] = useState(false);
