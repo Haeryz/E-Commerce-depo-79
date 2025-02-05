@@ -13,18 +13,25 @@ import cartRoutes from "./routes/cart.route.js";
 import cors from 'cors';
 import checkoutRoute from "./routes/checkout.route.js";
 import { createServer } from 'http';
-import { initSocket } from './services/socket.service.js';
+import { initSocket } from './socket.js'; // Make sure path is correct
 import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
+import path from "path";
+import strukRoute from "./routes/struk.route.js";
 
 dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
 
-// Initialize socket.io
-initSocket(httpServer);
+// Initialize Socket.IO before routes
+const io = initSocket(httpServer);
 
-app.use(cors());
+// Enable CORS with credentials
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true
+}));
+
 app.use(express.json());
 
 //routes
@@ -38,6 +45,14 @@ app.use("/api/alamat", alamatRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoute);
+app.use("/api/struk", strukRoute);
+
+if(process.env === 'production'){
+  app.use(express.static(path.join(__dirname, "/depo79/dist")))
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "depo79", "dist", "index.html"));
+  })
+}
 
 // Add test endpoint for Cloudinary
 app.post('/api/upload-image', async (req, res) => {
@@ -60,8 +75,9 @@ app.use((err, req, res, next) => {
   });
 });
 
+
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
     connectDB();
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });

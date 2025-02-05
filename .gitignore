@@ -25,3 +25,4 @@ dist-ssr
 *.sw?
 
 generate-admin-key.js
+backend/scripts

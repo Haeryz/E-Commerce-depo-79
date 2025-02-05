@@ -7,15 +7,14 @@ import { Skeleton, SkeletonText } from "../ui/skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function BarangRekomendasi() {
-    const { products, loading: productLoading, error: productError, fetchProducts } = useProductStore();
+    const { products, loading: productLoading, error: productError } = useProductStore();
     const { beratMap, loading: beratLoading, error: beratError, fetchBerat } = useBeratStore();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
     useEffect(() => {
-        fetchProducts();
         fetchBerat();
-    }, [fetchProducts, fetchBerat]);
+    }, [fetchBerat]);
 
     const isLoading = productLoading || beratLoading;
     const isError = productError || beratError;
@@ -37,17 +36,24 @@ function BarangRekomendasi() {
                 {isLoading
                     ? Array.from({ length: 8 }).map((_, index) => (
                         <Stack key={index} gap="6" maxW="sm">
-                            <Skeleton height="200px" />
+                            <Box position="relative" paddingBottom="100%"> {/* Creates 1:1 ratio container */}
+                                <Skeleton position="absolute" top="0" left="0" right="0" bottom="0" />
+                            </Box>
                             <SkeletonText noOfLines={2} />
                             <SkeletonText noOfLines={1} width="50%" />
                         </Stack>
                     ))
                     : currentProducts.map((product) => (
                         <Card.Root key={product._id} maxW="sm" overflow="hidden">
-                            <Box position="relative" height="200px" width="100%" overflow="hidden">
+                            <Box position="relative" paddingBottom="100%"> {/* Creates 1:1 ratio container */}
                                 <Image
                                     src={product.image}
                                     alt={product.nama}
+                                    position="absolute"
+                                    top="0"
+                                    left="0"
+                                    width="100%"
+                                    height="100%"
                                     objectFit="cover"
                                 />
                             </Box>
@@ -62,13 +68,9 @@ function BarangRekomendasi() {
                                     </Text>
                                 )}
                                 <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-                                    ${product.harga_jual}
+                                    Rp.{product.harga_jual}
                                 </Text>
                             </Card.Body>
-                            <Card.Footer gap="2">
-                                <Button variant="solid">Beli</Button>
-                                <Button variant="ghost">Tambahkan ke Keranjang</Button>
-                            </Card.Footer>
                         </Card.Root>
                     ))}
             </SimpleGrid>
