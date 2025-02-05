@@ -1,14 +1,9 @@
 import mongoose from "mongoose";
 
-const reviewSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Profile", 
-        required: true
-    },
+const productReviewSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product", 
+        ref: "Product",
         required: true
     },
     rating: {
@@ -25,7 +20,24 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: false
     }
-}, { timestamps: true }); 
+});
+
+const reviewSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile",
+        required: true
+    },
+    checkout: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Checkout",
+        required: true
+    },
+    productReviews: [productReviewSchema]
+}, { timestamps: true });
+
+// Add compound index to prevent multiple reviews for same checkout
+reviewSchema.index({ user: 1, checkout: 1 }, { unique: true });
 
 const Review = mongoose.model("Review", reviewSchema);
 export default Review;
