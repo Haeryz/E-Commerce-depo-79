@@ -5,7 +5,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Field } from "../components/ui/field";
 import { PasswordInput } from "../components/ui/password-input";
 import { useAuthStore } from "../store/auth";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import { useColorModeValue } from "../components/ui/color-mode";
 import Turnstile from "react-turnstile";
 import { toaster } from "../components/ui/toaster";
@@ -74,14 +74,16 @@ const Login: React.FC = () => {
                     <Field label="Email">
                         <Input
                             value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value.replace(/\s/g, ''))}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setEmail(e.target.value.replace(/\s/g, ""))
+                            }
                             placeholder="Enter Email"
                             borderRadius="30px"
                             padding="8px 16px"
                             backgroundColor={inputBgColor}
                             _selection={{
-                                backgroundColor: '#2563eb',
-                                color: 'white'
+                                backgroundColor: "#2563eb",
+                                color: "white",
                             }}
                         />
                     </Field>
@@ -89,17 +91,39 @@ const Login: React.FC = () => {
                     <Field label="Password">
                         <PasswordInput
                             value={password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setPassword(e.target.value)
+                            }
                             placeholder="Enter password"
                             borderRadius="30px"
                             padding="8px 16px"
                             backgroundColor={inputBgColor}
                             _selection={{
-                                backgroundColor: '#2563eb',
-                                color: 'white'
+                                backgroundColor: "#2563eb",
+                                color: "white",
                             }}
                         />
                     </Field>
+
+                    <Box display="flex" justifyContent="center" width="100%">
+                        <Turnstile
+                            sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
+                            onSuccess={(token) => setTurnstileToken(token)}
+                        />
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" width="full">
+                        <Button
+                            type="submit"
+                            colorScheme="blue"
+                            width="l"
+                            borderRadius="50px"
+                            pl={10}
+                            pr={10}
+                        >
+                            Submit
+                        </Button>
+                    </Box>
 
                     <Box display="flex" justifyContent="center" width="full">
                         <Text>
@@ -110,20 +134,6 @@ const Login: React.FC = () => {
                                 </Text>
                             </Link>
                         </Text>
-                    </Box>
-
-                    <Box display="flex" justifyContent="center" width="100%">
-                        <Turnstile
-                            sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
-                            onSuccess={(token) => setTurnstileToken(token)}
-                        />
-
-                    </Box>
-
-                    <Box display="flex" justifyContent="center" width="full">
-                        <Button type="submit" colorScheme="blue" width="l" borderRadius="50px" pl={10} pr={10}>
-                            Submit
-                        </Button>
                     </Box>
                 </Stack>
             </form>

@@ -1,11 +1,21 @@
-import React from 'react';
-import { Button, HStack, IconButton, Text, VStack, Separator, Image, Input, Stack } from '@chakra-ui/react';
-import { MdOutlineDarkMode } from 'react-icons/md';
+import {
+  Button,
+  HStack,
+  IconButton,
+  Text,
+  VStack,
+  Separator,
+  Image,
+  Input,
+  Stack,
+  Flex,
+} from "@chakra-ui/react";
+import { MdOutlineDarkMode } from "react-icons/md";
 import { FaRegCopyright } from "react-icons/fa";
-import { useColorMode } from '../ui/color-mode';
-import { Link } from 'react-router-dom';
-import { Field } from '../ui/field';
-import LogoCompany from "../../assets/LogoCompany.png"
+import { useColorMode } from "../ui/color-mode";
+import { Link } from "react-router-dom";
+import { Field } from "../ui/field";
+import LogoCompany from "../../assets/LogoCompany.png";
 
 function Footer() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -14,182 +24,187 @@ function Footer() {
     <Stack
       direction="column"
       gap={6}
-      bg={colorMode === 'light' ? 'white' : 'gray.800'}
-      p={[4, 6, 8]}
+      bg={colorMode === "light" ? "white" : "gray.800"}
+      p={[4, 5, 8]}
     >
       {/* Main Footer Content */}
-      <Stack
-        direction={['column', 'column', 'row']}
+      <Flex
+        direction={["column", "column", "row"]}
         w="full"
-        gap={[8, 8, 10]}
+        gap={[8, 10, 10]}
         px={[4, 6, 10]}
+        align="start"
+        justify="space-between"
       >
-        {/* Newsletter Section */}
-        <VStack
-          alignItems="flex-start"
-          gap={4}
-          w={['full', 'full', '400px']}
-        >
+        {/* Logo and Company Description Section */}
+        <VStack alignItems="flex-start" gap={3} w={["full", "full", "320px"]}>
           <Link to="/">
-          <Image
-            src={LogoCompany}
-            w={'24'}
-          />
-        </Link>
-          <Text fontSize={['sm', 'md']}>
-            Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk semua item
+            <Image src={LogoCompany} w={"24"} />
+          </Link>
+          <Text fontSize={["sm", "md"]} maxW={["full", "full", "320px"]}>
+            Depo79 adalah penyedia bahan bangunan terkemuka yang menyediakan
+            berbagai produk berkualitas tinggi untuk memenuhi kebutuhan
+            konstruksi dan renovasi Anda. Kami berkomitmen untuk memberikan
+            layanan terbaik dan harga yang kompetitif.
           </Text>
-          <Stack
-            direction={['column', 'row']}
-            w="full"
-            gap={3}
-          >
+        </VStack>
+
+        {/* Shortcut Section */}
+        <VStack alignItems="flex-start" gap={2}>
+          <Text fontWeight="bold" fontSize={["sm", "md"]}>
+            SHORTCUT
+          </Text>
+          <Link to="/">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              About Us
+            </Text>
+          </Link>
+          <Link to="/">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              FAQs
+            </Text>
+          </Link>
+        </VStack>
+
+        {/* Sosmed Section */}
+        <VStack alignItems="flex-start" gap={2}>
+          <Text fontWeight="bold" fontSize={["sm", "md"]}>
+            SOSMED
+          </Text>
+          <Link to="https://www.instagram.com/azkagroup.inc" target="_blank">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              Instagram
+            </Text>
+          </Link>
+          <Link to="https://wa.me/6285232668032" target="_blank">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              Whatsapp
+            </Text>
+          </Link>
+        </VStack>
+
+        {/* Contact Us Section */}
+        <VStack alignItems="flex-start" gap={2}>
+          <Text fontWeight="bold" fontSize={["sm", "md"]}>
+            CONTACT US
+          </Text>
+          <Link to="https://maps.app.goo.gl/zRsej2BJ1LGNvrFQ7" target="_blank">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              Jl. Raya Tulus Ayu No.171, Tulus Ayu, Tulusbesar, Kec. Tumpang,
+              Kabupaten Malang, Jawa Timur 65156
+            </Text>
+          </Link>
+          <a href="mailto:info@depo79.com">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              info@depo79.com
+            </Text>
+          </a>
+        </VStack>
+
+        {/* Email Subscription Section */}
+        <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
+          <Text fontSize={["sm", "md"]}>
+            Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk
+            semua item
+          </Text>
+          <Stack direction={["column", "row"]} w="full" gap={3}>
             <Field
-              w={['full', '295px']}
+              w={["full", "240px"]}
               borderRadius="15px"
-              outline="1px solid black"
+              outline="1px solid"
               border="none"
-              _focus={{ outline: '1px solid black', borderRadius: '50px' }}
+              borderColor={colorMode === "dark" ? "white" : "black"}
+              _focus={{
+                outline: "1px solid",
+                borderRadius: "50px",
+                borderColor: colorMode === "dark" ? "white" : "black",
+              }}
             >
               <Input
                 placeholder="Your Email"
                 border="none"
-                _focus={{ outline: 'none', boxShadow: 'none' }}
-                _selection={{
-                  backgroundColor: '#2563eb',
-                  color: 'white'
-              }}
+                _focus={{
+                  outline: "none",
+                  boxShadow: "none",
+                }}
+                _selection={{ backgroundColor: "#2563eb", color: "white" }}
+                aria-label="Enter your email"
               />
             </Field>
             <Button
               borderRadius="15px"
-              w={['full', 'auto']}
-              minW={['full', '100px']}
+              w={["full", "auto"]}
+              minW={["full", "100px"]}
+              _hover={{ bg: "blue.500", color: "white" }}
+              aria-label="Send email subscription request"
             >
               Kirim
             </Button>
           </Stack>
         </VStack>
-
-        {/* Links Sections */}
-        <Stack
-          direction={['column', 'column', 'row']}
-          gap={[6, 8, 10]}
-          w={['full', 'full', 'auto']}
-          ml={[0, 0, 'auto']}
-        >
-          {/* Product Section */}
-          <Stack direction={['row', 'row', 'row']} gap={[8, 10, 12]}>
-            <VStack alignItems="flex-start" gap={2}>
-              <Text fontWeight="bold" fontSize={['md', 'lg']}>Product</Text>
-              {["Kayu", "Semen", "Paku", "Cat", "Keramik"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-
-            <VStack alignItems="flex-start" gap={2} mt={[0, 0, '32px']}>
-              {["Elektrik", "Kaca", "Alumunium", "Pipa"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-            
-            {/* Social Media Section */}
-            <VStack alignItems="flex-start" gap={2}>
-              <Text fontWeight="bold" fontSize={['md', 'lg']}>Sosmed</Text>
-              {["Facebook", "Twitter", "Instagram", "LinkedIn", "YouTube"].map((item) => (
-                <Button
-                  key={item}
-                  variant="ghost"
-                  height="32px"
-                  justifyContent="flex-start"
-                  px={2}
-                  color="gray.400"
-                  _hover={{ bg: 'transparent', color: colorMode === 'light' ? 'black' : 'white' }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </VStack>
-          </Stack>
-        </Stack>
-      </Stack>
+      </Flex>
 
       <Separator />
 
       {/* Bottom Footer */}
       <Stack
-        direction={['column', 'column', 'row']}
+        direction={["column", "column", "row"]}
         w="full"
         justify="space-between"
-        align={['center', 'center', 'center']}
+        align={["center", "center", "center"]}
         gap={[4, 4, 0]}
         px={[4, 6, 10]}
         py={2}
       >
-        <Stack
-          direction={['column', 'row']}
-          align="center"
-          gap={[2, 4]}
-        >
-          <HStack>
-            <IconButton
-              aria-label="Copyright"
-              variant="ghost"
-              size="xs"
-              colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
-            >
-              <FaRegCopyright />
-            </IconButton>
-            <Text fontSize={['sm', 'md']}>2025 Depo79 Production</Text>
-          </HStack>
-          <HStack gap={2}>
-            <Button
-              variant="ghost"
-              size={['sm', 'md']}
-              color={colorMode === 'light' ? 'black' : 'white'}
-            >
-              Diskon
-            </Button>
-            <Button
-              variant="ghost"
-              size={['sm', 'md']}
-              color={colorMode === 'light' ? 'black' : 'white'}
-            >
-              Alamat
-            </Button>
-          </HStack>
-        </Stack>
-
-        <Stack
-          direction={['column', 'row']}
-          align="center"
-          gap={[2, 4]}
-        >
+        {/* Left side - Privacy, Terms, and Dark Mode */}
+        <Stack direction={["column", "row"]} align="center" gap={[2, 4]}>
           <IconButton
             aria-label="Toggle theme"
             variant="ghost"
-            size={['md', 'lg']}
-            colorScheme={colorMode === 'light' ? 'teal' : 'orange'}
+            size={["md", "lg"]}
+            colorScheme={colorMode === "light" ? "teal" : "orange"}
             onClick={toggleColorMode}
           >
             <MdOutlineDarkMode />
@@ -197,25 +212,40 @@ function Footer() {
           <HStack gap={2}>
             <Button
               variant="ghost"
-              size={['sm', 'md']}
-              color={colorMode === 'light' ? 'black' : 'white'}
+              size={["sm", "md"]}
+              color={colorMode === "light" ? "black" : "white"}
             >
               Privacy Policy
             </Button>
             <Button
               variant="ghost"
-              size={['sm', 'md']}
-              color={colorMode === 'light' ? 'black' : 'white'}
+              size={["sm", "md"]}
+              color={colorMode === "light" ? "black" : "white"}
             >
               Cookie
             </Button>
             <Button
               variant="ghost"
-              size={['sm', 'md']}
-              color={colorMode === 'light' ? 'black' : 'white'}
+              size={["sm", "md"]}
+              color={colorMode === "light" ? "black" : "white"}
             >
               Terms
             </Button>
+          </HStack>
+        </Stack>
+
+        {/* Right side - Copyright */}
+        <Stack direction={["column", "row"]} align="center" gap={[2, 4]}>
+          <HStack>
+            <IconButton
+              aria-label="Copyright"
+              variant="ghost"
+              size="xs"
+              colorScheme={colorMode === "light" ? "teal" : "orange"}
+            >
+              <FaRegCopyright />
+            </IconButton>
+            <Text fontSize={["sm", "md"]}>2025 Depo79 Production</Text>
           </HStack>
         </Stack>
       </Stack>
