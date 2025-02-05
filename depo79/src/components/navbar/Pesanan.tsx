@@ -12,7 +12,7 @@ interface PesananProps {
     setIsPesananOpen: (open: boolean) => void;
 }
 
-const Pesanan = ({  }: PesananProps) => {
+const Pesanan = ({ isPesananOpen, setIsPesananOpen }: PesananProps) => {
     const { colorMode } = useColorMode();
     const { checkouts, currentCheckout, fetchCheckoutById } = useCheckoutStore();
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
