@@ -10,6 +10,19 @@ import { BsTelephoneFill } from "react-icons/bs";
 import { Box, createListCollection, HStack, Input, Separator, Table, Text, VStack } from '@chakra-ui/react'
 import useCheckoutStore from '../../store/checkout'
 import { format } from 'date-fns' // Add this import
+import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
+import { Image } from '@chakra-ui/react'
+
+interface CheckoutItem {
+  _id: string;
+  product: {
+    _id: string;
+    nama: string;
+    harga_jual: number;
+  };
+  quantity: number;
+  price: number;
+}
 
 // Define the formatDate helper function
 const formatDate = (dateString: string) => {
@@ -19,6 +32,17 @@ const formatDate = (dateString: string) => {
 const AdminHistory = () => {
   const { colorMode } = useColorMode()
   const { checkouts } = useCheckoutStore();
+  const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null);
+
+  // Calculate total for all items
+  const calculateTotal = (items: CheckoutItem[]) => {
+    return items.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+  }
+
+  // Handle row click to show details in side panel
+  const handleRowClick = (checkout: typeof checkouts[0]) => {
+    setSelectedCheckout(checkout)
+  }
 
   // Filter checkouts to include only 'Selesai' and 'Ditolak' if updated before today
   const filteredCheckouts = checkouts.filter(checkout => {
@@ -78,7 +102,7 @@ const AdminHistory = () => {
               </Table.Header>
               <Table.Body>
                 {filteredCheckouts.map((checkout) => (
-                  <Table.Row key={checkout._id}>
+                  <Table.Row key={checkout._id} onClick={() => handleRowClick(checkout)}>
                     <Table.Cell>#{checkout._id.slice(-6)}</Table.Cell>
                     <Table.Cell>{checkout.nama_lengkap}</Table.Cell>
                     <Table.Cell>{checkout.pembayaran}</Table.Cell>
@@ -102,50 +126,79 @@ const AdminHistory = () => {
         boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
       >
         <VStack align="stretch" height="100%" w={'100%'}>
-          <Text>Admin Order</Text>
-          {/* Add your content here */}
+          <Text>Order Details</Text>
           <Separator />
 
-          <HStack w={'100%'} justifyContent={'space-between'}>
-            <Text>Semen Gresik Tiga Roda</Text>
-            <Text>#128394</Text>
-          </HStack>
-          <Text fontWeight={'bold'}>1 X Rp. 30.000.000,00</Text>
-
-          <HStack w={'100%'} justifyContent={'space-between'}>
-            <Text>Semen Mantap Jaya</Text>
-            <Text>#128938</Text>
-          </HStack>
-          <Text fontWeight={'bold'}>3 X Rp. 30.000.000,00</Text>
-
-          <HStack w={'100%'} justifyContent={'space-between'}>
-            <Text>Semen Mantap Jaya</Text>
-            <Text>#128938</Text>
-          </HStack>
-          <Text fontWeight={'bold'}>2 X Rp. 30.000.000,00</Text>
+          {selectedCheckout?.items.map((item) => (
+            <React.Fragment key={item._id}>
+              <HStack w={'100%'} justifyContent={'space-between'}>
+                <Text>Nama Product: {item.product?.nama || 'N/A'}</Text>
+                <Text>#{item._id.slice(-6)}</Text>
+              </HStack>
+              <Text fontWeight={'bold'}>
+                {item.quantity} X Rp. {item.price.toLocaleString()}
+              </Text>
+            </React.Fragment>
+          ))}
 
           <Separator />
-          <Text> Total </Text>
-          <Text fontWeight={'bold'} mb={10}> Rp. 180.000.000,00</Text>
-          <HStack>
-            <IoPersonSharp />
-            <Text>Harizz Lisukun</Text>
-          </HStack>
-          <HStack w={'100%'} alignSelf={'flex-start'}>
-            <FaLocationDot />
-            <Text>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            </Text>
-          </HStack>
-          <HStack>
-            <BsTelephoneFill />
-            <Text>
-              +62 812 3456 7890
-            </Text>
-          </HStack>
-          <Button w={'100%'} bg={'gray.400'} >
-            Lihat Bukti Bayar
-          </Button>
+          <Text>Total</Text>
+          <Text fontWeight={'bold'} mb={10}>
+            Rp. {selectedCheckout ? calculateTotal(selectedCheckout.items).toLocaleString() : '0'}
+          </Text>
+
+          {selectedCheckout && (
+            <>
+              <HStack>
+                <IoPersonSharp />
+                <Text>{selectedCheckout.nama_lengkap}</Text>
+              </HStack>
+              <VStack w={'100%'} alignSelf={'flex-start'} align={'start'}>
+                <HStack>
+                  <FaLocationDot />
+                  <Text>{selectedCheckout.alamat_lengkap}</Text>
+                </HStack>
+                <Text ml={6}>{selectedCheckout.provinsi}</Text>
+                <Text ml={6}>{selectedCheckout.kota}</Text>
+                <Text ml={6}>{selectedCheckout.kecamatan}</Text>
+                <Text ml={6}>{selectedCheckout.kelurahan}</Text>
+                <Text ml={6}>{selectedCheckout.kodepos}</Text>
+              </VStack>
+              <HStack>
+                <BsTelephoneFill />
+                <Text>{selectedCheckout.nomor_telefon}</Text>
+              </HStack>
+              <DialogRoot>
+                <DialogTrigger asChild>
+                  <Button 
+                    w={'100%'} 
+                    disabled={!selectedCheckout?.buktiTransfer}
+                    bg={'blue'}
+                  >
+                    Cek Bukti Bayar
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Bukti Transfer</DialogTitle>
+                  </DialogHeader>
+                  <DialogBody>
+                    {selectedCheckout?.buktiTransfer ? (
+                      <Image
+                        src={selectedCheckout.buktiTransfer}
+                        alt="Bukti Transfer"
+                        w="100%"
+                        borderRadius="md"
+                      />
+                    ) : (
+                      <Text>No bukti transfer available</Text>
+                    )}
+                  </DialogBody>
+                  <DialogCloseTrigger />
+                </DialogContent>
+              </DialogRoot>
+            </>
+          )}
         </VStack>
       </Box>
     </Box>
