@@ -40,11 +40,15 @@ export const useReviewStore = create<ReviewStore>((set) => ({
             } else {
                 throw new Error(response.data.message || "Failed to fetch reviews");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching reviews:", error);
+            let message = "Failed to fetch reviews";
+            if (error instanceof Error) {
+                message = error.message;
+            }
             set({
                 loading: false,
-                error: error.message || "Failed to fetch reviews",
+                error: message,
                 reviews: [], // Reset reviews on error
             });
         }
