@@ -31,7 +31,7 @@ function SidebarAlamat() {
         <VStack
           mt={10}
           align="start"
-          spacing={4}
+          gap={4}
           width={["100%", "70%", "100%"]}
         >
           <Field label="Provinsi" maxW="100%">
