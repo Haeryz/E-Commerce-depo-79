@@ -7,7 +7,6 @@ import { FaMoon, FaSun } from 'react-icons/fa';
 import { useColorMode } from '../ui/color-mode';
 import { Field } from '../ui/field';
 import { Switch } from '../ui/switch';
-import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
 import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../ui/dialog';
 // Pages & Components
@@ -25,7 +24,7 @@ import { useCartStore } from '../../store/cart';
 import { useSearchStore } from '../../store/search';
 import useCheckoutStore from '../../store/checkout';
 import { useProfileStore } from '../../store/profile';
-import Pesanan from '../navbar/pesanan';
+import Pesanan from '../navbar/Pesanan';
 import ProfilePopover from '../navbar/ProfilePopover';
 
 function Navbar2() {
