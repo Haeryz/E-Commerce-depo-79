@@ -11,62 +11,6 @@ import Turnstile from "react-turnstile";
 import { toaster } from "../components/ui/toaster";
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-
-    const loginUser = useAuthStore((state) => state.loginUser); // Get the loginUser action
-    const navigate = useNavigate(); // Initialize the useNavigate hook
-
-    const bgColor = useColorModeValue("gray.100", "gray.800"); // Light and dark mode bg
-    const textColor = useColorModeValue("black", "white"); // Light and dark mode text color
-    const inputBgColor = useColorModeValue("gray.200", "gray.700"); // Light and dark mode input background
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        if (!turnstileToken) {
-            toaster.create({ title: "Turnstile token is required", type: "error" });
-            return;
-        }
-
-        try {
-            const result = await loginUser(email, password, turnstileToken);
-            
-            if (result.success) {
-                // Show success toast
-                toaster.create({ 
-                    title: "Login Successful", 
-                    type: "success",
-                });
-                
-                if (result.role === 'admin') {
-                    navigate('/admin');
-                } else {
-                    navigate('/');
-                }    
-            }
-        } catch (error) {
-            toaster.create({ title: error as string, type: "error" });
-        }
-    };
-
-    return (
-        <Box
-            mt={185}
-            mb={500}
-            w="md"
-            mx="auto"
-            p={6}
-            borderWidth={2}
-            borderRadius="30px"
-            border="1px solid #000"
-            boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
-            bg={bgColor}
-            color={textColor}
-        >
-            <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
-                Login
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -87,22 +31,33 @@ const Login: React.FC = () => {
     }
 
     try {
-      await loginUser(email, password, turnstileToken); // Send Turnstile token
+      const result = await loginUser(email, password, turnstileToken);
 
-      navigate("/");
+      if (result.success) {
+        // Show success toast
+        toaster.create({
+          title: "Login Successful",
+          type: "success",
+        });
+
+        if (result.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }
     } catch (error) {
-      alert(error);
+      toaster.create({ title: error as string, type: "error" });
     }
   };
 
   return (
     <Box
-      mt={185}
+      mt={{ base: 100, md: 185 }} // Adjust margin-top for mobile
       mb={500}
-      w="md"
+      w={{ base: "90%", sm: "80%", md: "md" }} // Set width to 90% for mobile, keep md for larger screens
       mx="auto"
       p={6}
-      borderWidth={2}
       borderRadius="30px"
       boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
       bg={bgColor}
@@ -111,7 +66,6 @@ const Login: React.FC = () => {
       <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
         Login
       </Text>
-
       <form onSubmit={handleSubmit}>
         <Stack gap="4" align="flex-start">
           <Field label="Email">
@@ -159,7 +113,7 @@ const Login: React.FC = () => {
             <Button
               type="submit"
               colorScheme="blue"
-              width="l"
+              width="full"
               borderRadius="50px"
               pl={10}
               pr={10}
@@ -169,7 +123,7 @@ const Login: React.FC = () => {
           </Box>
 
           <Box display="flex" justifyContent="center" width="full">
-            <Text>
+            <Text textAlign="center">
               Belum memiliki akun ? Registrasi{" "}
               <Link to="/register">
                 <Text as="span" color="blue.500" cursor="pointer">
