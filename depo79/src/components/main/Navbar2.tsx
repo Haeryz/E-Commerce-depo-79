@@ -1,76 +1,76 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon, Textarea } from '@chakra-ui/react';
+import { 
+  Button, 
+  HStack, 
+  IconButton, 
+  Text, 
+  Spacer, 
+  Input, 
+  Image, 
+  VStack, 
+  Box, 
+  Icon,
+  Textarea
+} from '@chakra-ui/react';
+
+// Icons
 import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
+import { FaMoon, FaSun, FaStar } from 'react-icons/fa';
+import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu';
+
+// Components
 import { useColorMode } from '../ui/color-mode';
 import { Field } from '../ui/field';
-import { useAuthStore } from "../../store/auth"; // Import the auth store
-import { Link, useNavigate } from 'react-router-dom';
-import { PopoverArrow, PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from '../ui/popover';
-import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from '../ui/drawer';
+import { Switch } from '../ui/switch';
+import { 
+  PopoverArrow, 
+  PopoverBody, 
+  PopoverContent, 
+  PopoverRoot, 
+  PopoverTrigger 
+} from '../ui/popover';
+import { 
+  DrawerBackdrop, 
+  DrawerRoot, 
+  DrawerTrigger 
+} from '../ui/drawer';
+import { 
+  DialogBody, 
+  DialogCloseTrigger, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogRoot, 
+  DialogTrigger 
+} from '../ui/dialog';
+import { 
+  TimelineConnector, 
+  TimelineContent, 
+  TimelineDescription, 
+  TimelineItem, 
+  TimelineRoot, 
+  TimelineTitle 
+} from '../ui/timeline';
+
+// Pages & Components
 import Chat from '../../pages/client/Chat';
 import MobileDrawer from '../mobile/MobileDrawer';
-import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../ui/dialog';
-import { useEffect, useState, FormEvent, useRef } from "react";
-import {
-  Button,
-  HStack,
-  IconButton,
-  Text,
-  Spacer,
-  Input,
-  Image,
-  VStack,
-  Box,
-  Icon,
-} from "@chakra-ui/react";
-import { MdOutlineShoppingCart, MdChat } from "react-icons/md";
-import { useColorMode } from "../ui/color-mode";
-import { Field } from "../ui/field";
-import { useAuthStore } from "../../store/auth"; // Import the auth store
-import { Link, useNavigate } from "react-router-dom";
-import {
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverRoot,
-  PopoverTrigger,
-} from "../ui/popover";
-import { DrawerBackdrop, DrawerRoot, DrawerTrigger } from "../ui/drawer";
-import Chat from "../../pages/client/Chat";
-import MobileDrawer from "../mobile/MobileDrawer";
-import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import { useCartStore } from "../../store/cart"; // Add this import at the top with other imports
-import LogoCompany from "../../assets/LogoCompany.png";
-import { useSearchStore } from "../../store/search";
+
+// Assets
+import LogoCompany from '../../assets/LogoCompany.png';
+
+// Navigation
+import { Link, useNavigate } from 'react-router-dom';
+
+// Hooks
 import { useDebounce } from 'use-debounce';
-import { Switch } from '../ui/switch';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline';
-import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu'; // Add LuXCircle
-import useCheckoutStore from '../../store/checkout'; // Add this import
-import { useProfileStore } from '../../store/profile'; // Add this import
-import { FaStar } from "react-icons/fa";
-import { useDebounce } from "use-debounce";
-import { Switch } from "../ui/switch";
-import { FaMoon, FaSun } from "react-icons/fa";
-import {
-  TimelineConnector,
-  TimelineContent,
-  TimelineDescription,
-  TimelineItem,
-  TimelineRoot,
-  TimelineTitle,
-} from "../ui/timeline";
-import { LuCheck, LuPackage, LuShip } from "react-icons/lu";
-import { useProfileStore } from "../../store/profile";
+
+// Store
+import { useAuthStore } from '../../store/auth';
+import { useCartStore } from '../../store/cart';
+import { useSearchStore } from '../../store/search';
+import useCheckoutStore from '../../store/checkout';
+import { useProfileStore } from '../../store/profile';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -78,15 +78,13 @@ function Navbar2() {
   const navigate = useNavigate();
   const cartItemsCount = useCartStore((state) => state.items.length); // Add this near other hooks
   const { checkouts, fetchProfileCheckouts, currentCheckout, fetchCheckoutById } = useCheckoutStore();
-  const { profile } = useProfileStore();
+  const { profile } = useProfileStore(); // Single profile declaration
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Single searchQuery declaration
   const { results, fetchSuggestions, clearResults } = useSearchStore();  // Add clearResults
-  const [searchQuery, setSearchQuery] = useState("");
-  const { suggestions, fetchSuggestions } = useSearchStore();
   const [debouncedSearch] = useDebounce(searchQuery, 300);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -96,7 +94,6 @@ function Navbar2() {
   const [rating, setRating] = useState(0);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-  const { profile, updateProfileName } = useProfileStore(); // Ambil profil dan fungsi update
   const userName = profile?.nama || "Guest";
 
   const handleSearch = (e: FormEvent) => {
@@ -127,11 +124,6 @@ function Navbar2() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchQuery(suggestion);
-    setShowSuggestions(false);
-    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
-  };
 
   // useEffect to detect scroll
   useEffect(() => {
@@ -462,8 +454,7 @@ function Navbar2() {
       <Box position="relative" ref={searchRef}>
         <form onSubmit={handleSearch}>
           <Field
-            maxW={{ base: '120px', sm: '150px', md: '2xs' }}
-            maxW={{ base: "full", sm: "200px", md: "4xs" }}
+            maxW={{ base: '120px', sm: '150px', md: '2xs' }} // Single maxW declaration
             borderRadius="15px"
             outline="1px solid"
             border="none"
@@ -523,10 +514,6 @@ function Navbar2() {
                     setShowSuggestions(false);
                     navigate(`/detail-barang/${result._id}`);
                   }}
-                  _hover={{
-                    bg: colorMode === "light" ? "gray.100" : "gray.600",
-                  }}
-                  onClick={() => handleSuggestionClick(suggestion)}
                 >
                   <HStack gap={3}>
                     <Image
@@ -738,50 +725,6 @@ function Navbar2() {
                     </TimelineRoot>
                   </VStack>
                 )}
-            <DialogRoot
-              open={isPesananOpen}
-              onOpenChange={(e) => setIsPesananOpen(e.open)}
-            >
-              <DialogContent p={10}>
-                <TimelineRoot maxW="400px">
-                  <TimelineItem>
-                    <TimelineConnector>
-                      <LuShip />
-                    </TimelineConnector>
-                    <TimelineContent>
-                      <TimelineTitle>Product Shipped</TimelineTitle>
-                      <TimelineDescription>13th May 2021</TimelineDescription>
-                      <Text textStyle="sm">
-                        We shipped your product via <strong>FedEx</strong> and
-                        it should arrive within 3-5 business days.
-                      </Text>
-                    </TimelineContent>
-                  </TimelineItem>
-                  <TimelineItem>
-                    <TimelineConnector>
-                      <LuCheck />
-                    </TimelineConnector>
-                    <TimelineContent>
-                      <TimelineTitle textStyle="sm">
-                        Order Confirmed
-                      </TimelineTitle>
-                      <TimelineDescription>18th May 2021</TimelineDescription>
-                    </TimelineContent>
-                  </TimelineItem>
-                  <TimelineItem>
-                    <TimelineConnector>
-                      <LuPackage />
-                    </TimelineConnector>
-                    <TimelineContent>
-                      <TimelineTitle textStyle="sm">
-                        Order Delivered
-                      </TimelineTitle>
-                      <TimelineDescription>
-                        20th May 2021, 10:30am
-                      </TimelineDescription>
-                    </TimelineContent>
-                  </TimelineItem>
-                </TimelineRoot>
                 <DialogCloseTrigger />
               </DialogContent>
             </DialogRoot>
