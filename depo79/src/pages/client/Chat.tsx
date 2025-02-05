@@ -10,8 +10,8 @@ import {
 import { Button } from "../../components/ui/button";
 import { useProfileStore } from "../../store/profile";
 import { Input, VStack, HStack, Box, Text } from "@chakra-ui/react";
-import { useAuthStore } from "../../store/auth";
-import { useNavigate } from "react-router-dom";
+// import { useAuthStore } from "../../store/auth";
+// import { useNavigate } from "react-router-dom";
 
 // Socket connection setup:
 const socket = io("http://localhost:5000", {
@@ -20,8 +20,8 @@ const socket = io("http://localhost:5000", {
 
 function Chat() {
   const { profile, fetchProfile } = useProfileStore();
-  const { user } = useAuthStore();
-  const navigate = useNavigate();
+  // const { user } = useAuthStore();
+  // const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<
     Array<{ content: string; sender: string; timestamp: Date }>
@@ -155,7 +155,7 @@ function Chat() {
 
       <DrawerFooter>
         <HStack w="full" spacing={4} align="center">
-          {/* Message Input (Form chat berada di kiri) */}
+    
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -163,12 +163,12 @@ function Chat() {
             onKeyPress={(e) => e.key === "Enter" && sendMessage()}
             h={14}
             resize="none"
-            flex={1} // Make sure it takes all available space
+            flex={1} 
           />
 
-          {/* Buttons section: Upload and Send button (di sebelah kanan) */}
+        
           <HStack spacing={4}>
-            {/* Upload Button */}
+           
             <Button
               variant="link"
               onClick={() => fileInputRef.current?.click()}
@@ -182,7 +182,6 @@ function Chat() {
               ></i>
             </Button>
 
-            {/* Send Button */}
             <Button
               variant="link"
               onClick={sendMessage}
@@ -192,14 +191,14 @@ function Chat() {
               isDisabled={!message.trim()}
             >
               <i
-                className="bx bx-up-arrow-alt"
+                className="bx bx-right-arrow-alt"
                 style={{ fontSize: "24px" }}
               ></i>
             </Button>
           </HStack>
         </HStack>
 
-        {/* Hidden file input for selecting files */}
+        
         <input
           type="file"
           ref={fileInputRef}
