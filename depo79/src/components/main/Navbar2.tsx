@@ -61,7 +61,7 @@ import { useCartStore } from '../../store/cart';
 import { useSearchStore } from '../../store/search';
 import useCheckoutStore from '../../store/checkout';
 import { useProfileStore } from '../../store/profile';
-import Pesanan from '../navbar/pesanan';
+import Pesanan from '../navbar/Pesanan';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
