@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Frontend dependency updates
+  # React frontend dependency updates
   - package-ecosystem: "npm"
     directory: "/depo79"
     schedule:
@@ -20,9 +20,9 @@ updates:
     reviewers:
       - "haeryz"
 
-  # Backend dependency updates
+  # Root project dependencies (including backend)
   - package-ecosystem: "npm"
-    directory: "/backend"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
