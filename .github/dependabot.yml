@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # React frontend dependency updates
+  # Frontend dependencies
   - package-ecosystem: "npm"
     directory: "/depo79"
     schedule:
@@ -13,16 +13,15 @@ updates:
       - "dependencies"
       - "frontend"
     commit-message:
-      prefix: "npm"
-      prefix-development: "dev"
+      prefix: "chore"
       include: "scope"
     open-pull-requests-limit: 10
     reviewers:
       - "haeryz"
-
-  # Root project dependencies (including backend)
+      
+  # Backend dependencies  
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/backend"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -30,22 +29,21 @@ updates:
       timezone: "Asia/Jakarta"
     target-branch: "main"
     labels:
-      - "dependencies"
+      - "dependencies" 
       - "backend"
     commit-message:
-      prefix: "npm"
-      prefix-development: "dev"
+      prefix: "chore"
       include: "scope"
     open-pull-requests-limit: 10
     reviewers:
       - "haeryz"
 
-  # GitHub Actions dependency updates
+  # GitHub Actions dependencies  
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
+      day: "monday" 
       time: "09:00"
       timezone: "Asia/Jakarta"
     target-branch: "main"
@@ -53,5 +51,5 @@ updates:
       - "dependencies"
       - "github-actions"
     commit-message:
-      prefix: "github-actions"
+      prefix: "ci"
       include: "scope"
