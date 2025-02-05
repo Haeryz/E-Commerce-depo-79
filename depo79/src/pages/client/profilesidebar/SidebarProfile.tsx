@@ -1,28 +1,12 @@
-import {
-  Box,
-  HStack,
-  Input,
-  Text,
-  VStack,
-  Button as ChakraButton,
+import {Box, HStack, Input, Text, VStack, Button as ChakraButton,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MdPerson } from "react-icons/md";
 import { Avatar } from "../../../components/ui/avatar";
 import { Field } from "../../../components/ui/field";
 import { useAuthStore } from "../../../store/auth";
 import { useProfileStore } from "../../../store/profile";
-import {
-  DialogActionTrigger,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "../../../components/ui/dialog";
+import {DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger} from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
 
 function SidebarProfile() {
@@ -47,21 +31,6 @@ function SidebarProfile() {
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
-
-  // Populate form with current profile data when dialog is opened
-  // const handleDialogOpen = () => {
-  //   setName(profile?.nama || "");
-  //   setPhone(profile?.nomorhp || "");
-  //   setGender(profile?.jeniskelamin || "");
-  // };
-
-  // Reset create form fields
-  const handleCreateDialogOpen = () => {
-    setNewName("");
-    setNewPhone("");
-    setNewGender("");
-    setIsCreateDialogOpen(false);
-  };
 
   // Submit updated data
   const handleUpdate = async () => {
@@ -101,7 +70,7 @@ function SidebarProfile() {
 
   return (
     <Box px={[4, 6, 10]} py={5} width="100%">
-      <VStack align="start" spacing={[4, 6, 8]}>
+      <VStack align="start" gap={[4, 6, 8]}>
         {/* Header */}
         <HStack gapX={4} wrap="wrap">
           <MdPerson size={40} />
@@ -157,7 +126,7 @@ function SidebarProfile() {
         </VStack>
 
         {/* Button Edit Profile dan Create Account */}
-        <HStack spacing={4} mt={4} width={["100%", "80%", "50%"]}>
+        <HStack gap={4} mt={4} width={["100%", "80%", "50%"]}>
           <DialogRoot
             open={isDialogOpen}
             onOpenChange={(details) => setIsDialogOpen(details.open)}
