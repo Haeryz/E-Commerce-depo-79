@@ -14,6 +14,9 @@ const router = express.Router();
 // GET unreviewed products
 router.get("/unreviewed/:checkoutId", getUnreviewedProducts);
 
+// Add this new route for fetching all reviews with populated data
+router.get("/all", getReviews);
+
 // Standard CRUD routes
 router.post("/", upload.single('image'), createReview);
 router.get("/", getReviews);

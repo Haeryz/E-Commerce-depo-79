@@ -4,29 +4,27 @@ import { uploadImage } from "../services/cloudinary.service.js";
 
 export const getReviews = async (req, res) => {
   try {
-    const query = req.params.id ? { _id: req.params.id } : {};
-    
-    const reviews = await Review.find(query)
-      .populate('user', 'name email')
+    const reviews = await Review.find()
+      .populate({
+        path: 'user',
+        select: 'nama nomorhp',  // Include any profile fields you want
+        model: 'Profile'  // Explicitly specify Profile model
+      })
       .populate({
         path: 'product',
-        model: 'Product',
-        select: 'nama harga_jual'
+        select: 'nama',
+        model: 'Product'  // Explicitly specify Product model
       })
-      .populate('checkout');
-
-    if (req.params.id && !reviews.length) {
-      return res.status(404).json({
-        success: false,
-        message: "Review not found"
-      });
-    }
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
-      reviews: req.params.id ? reviews[0] : reviews
+      reviews: reviews.map(review => ({
+        ...review.toObject(),
+        userName: review.user?.nama || 'Anonymous',
+        productName: review.product?.nama || 'Unknown Product'
+      }))
     });
-
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
