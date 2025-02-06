@@ -15,6 +15,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
+    "debounce": "^2.2.0",
     "depo79": "file:",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

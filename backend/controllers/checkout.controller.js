@@ -377,3 +377,136 @@ export const getCheckoutsByProfile = async (req, res) => {
     });
   }
 };
+
+export const searchCheckouts = async (req, res) => {
+  try {
+    const {
+      query,
+      status,
+      payment,
+      startDate,
+      endDate,
+      minTotal,
+      maxTotal
+    } = req.query;
+
+    // Build the search pipeline
+    const searchPipeline = {
+      index: "checkout_index", // replace with your index name if different
+      compound: {
+        should: [],
+        must: [],
+        filter: []
+      }
+    };
+
+    // Add text search if query exists
+    if (query) {
+      searchPipeline.compound.should.push(
+        {
+          text: {
+            query: query,
+            path: "nama_lengkap",
+            fuzzy: { maxEdits: 1 }
+          }
+        },
+        {
+          text: {
+            query: query,
+            path: "Email",
+            fuzzy: { maxEdits: 1 }
+          }
+        },
+        {
+          text: {
+            query: query,
+            path: "alamat_lengkap",
+            fuzzy: { maxEdits: 1 }
+          }
+        },
+        {
+          text: {
+            query: query,
+            path: "nomor_telefon"
+          }
+        }
+      );
+    }
+
+    // Add status filter
+    if (status) {
+      searchPipeline.compound.must.push({
+        text: {
+          query: status,
+          path: "status"
+        }
+      });
+    }
+
+    // Add payment method filter
+    if (payment) {
+      searchPipeline.compound.must.push({
+        text: {
+          query: payment,
+          path: "pembayaran"
+        }
+      });
+    }
+
+    // Add date range filter
+    if (startDate || endDate) {
+      const dateFilter = {
+        range: {
+          path: "createdAt",
+          gte: startDate ? new Date(startDate) : null,
+          lte: endDate ? new Date(endDate) : null
+        }
+      };
+      searchPipeline.compound.filter.push(dateFilter);
+    }
+
+    // Add total amount range filter
+    if (minTotal !== undefined || maxTotal !== undefined) {
+      const totalFilter = {
+        range: {
+          path: "grandTotal",
+          gte: minTotal ? parseFloat(minTotal) : null,
+          lte: maxTotal ? parseFloat(maxTotal) : null
+        }
+      };
+      searchPipeline.compound.filter.push(totalFilter);
+    }
+
+    // Execute the search
+    const result = await Checkout.aggregate([
+      {
+        $search: searchPipeline
+      },
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $limit: 50 // Adjust limit as needed
+      }
+    ]);
+
+    // Populate the results
+    const populatedResults = await Checkout.populate(result, {
+      path: 'items.product',
+      select: 'nama harga_jual'
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: result.length,
+      checkouts: populatedResults
+    });
+
+  } catch (error) {
+    console.error('Search error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
