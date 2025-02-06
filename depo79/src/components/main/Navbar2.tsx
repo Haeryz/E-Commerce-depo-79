@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon,} from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon, } from '@chakra-ui/react';
 // Icons
 import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { FaMoon, FaSun } from 'react-icons/fa';
@@ -26,6 +26,7 @@ import useCheckoutStore from '../../store/checkout';
 import { useProfileStore } from '../../store/profile';
 import Pesanan from '../navbar/Pesanan';
 import ProfilePopover from '../navbar/ProfilePopover';
+import Map from '../maps/Map';
 
 function Navbar2() {
   const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -98,7 +99,7 @@ function Navbar2() {
   const handlePesananClick = async () => {
     setIsPopoverOpen(false);
     if (profile?._id) {
-        await fetchProfileCheckouts(profile._id);
+      await fetchProfileCheckouts(profile._id);
     }
     setIsPesananOpen(true);
   };
@@ -121,6 +122,8 @@ function Navbar2() {
       });
     }, 150); // A small delay to allow navigation to complete
   };
+
+  const DEPO79_LOCATION: [number, number] = [-8.017783, 112.761155]; // Replace with actual coordinates
 
   return (
     <HStack
@@ -213,7 +216,7 @@ function Navbar2() {
 
         {/* Alamat Button */}
         <DialogRoot
-          size="cover"
+          size="xl"
           placement="center"
           motionPreset="slide-in-bottom"
         >
@@ -252,12 +255,19 @@ function Navbar2() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Dialog Title</DialogTitle>
+              <DialogTitle>Lokasi Depo79</DialogTitle>
               <DialogCloseTrigger />
             </DialogHeader>
             <DialogBody>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              <VStack gap={4} align="stretch">
+                <Text>
+                  Jl. Raya Tulus Ayu No.171, Tulus Ayu, Tulusbesar, Kec. Tumpang,
+                  Kabupaten Malang, Jawa Timur 65156
+                </Text>
+                <Box borderRadius="md" overflow="hidden">
+                  <Map position={DEPO79_LOCATION} />
+                </Box>
+              </VStack>
             </DialogBody>
           </DialogContent>
         </DialogRoot>
@@ -458,3 +468,6 @@ function Navbar2() {
 }
 
 export default Navbar2;
+
+
+
