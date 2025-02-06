@@ -35,6 +35,7 @@ function Footer() {
         px={[4, 6, 10]}
         align="start"
         justify="space-between"
+        flexWrap="wrap"
       >
         {/* Logo and Company Description Section */}
         <VStack alignItems="flex-start" gap={3} w={["full", "full", "320px"]}>
