@@ -77,7 +77,7 @@ const AdminHistory = () => {
               </SelectContent>
             </SelectRoot>
             <CustomDatePicker />
-            <Field w={'80%'}>
+            <Field w={'60%'}>
               <Input placeholder="Nama Customer" />
             </Field>
             <Button>
@@ -207,8 +207,12 @@ const AdminHistory = () => {
 
 const frameworks = createListCollection({
   items: [
-    { label: "Dibayar", value: "react" },
-    { label: "Belum Dibayar", value: "vue" },
+    { label: "Pending", value: "react" },
+    { label: "Menunggu Konfirmasi", value: "vue" },
+    { label: "Diterima", value: "ts" },
+    { label: "Ditolak", value: "js" },
+    { label: "Dikirim", value: "c" },
+    { label: "Selesai", value: "C++" },
   ],
 })
 
