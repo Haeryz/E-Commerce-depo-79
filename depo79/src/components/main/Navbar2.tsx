@@ -439,10 +439,12 @@ function Navbar2() {
           <Button
             onClick={() => navigate("/login")}
             colorScheme="blue"
-            borderRadius="full"
             height="40px" // Adjust the height to make it more compact
             paddingX="8" // Reduced padding for a more compact look
             fontSize="sm" // Adjust font size if necessary
+            _hover={{
+              borderRadius: "full", // Change borderRadius to full on hover
+            }}
           >
             Login
           </Button>
