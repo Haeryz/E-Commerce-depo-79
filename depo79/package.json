@@ -12,7 +12,7 @@
   "dependencies": {
     "@chakra-ui/react": "^3.5.1",
     "@emotion/react": "^11.14.0",
-    "@types/jsonwebtoken": "^9.0.7",
+    "@types/jsonwebtoken": "^9.0.8",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
     "debounce": "^2.2.0",
