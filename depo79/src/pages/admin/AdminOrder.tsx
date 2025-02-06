@@ -14,6 +14,8 @@ import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitl
 import { io, Socket } from 'socket.io-client'
 import * as XLSX from 'xlsx';
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
+import { useCheckoutSearchStore } from '../../store/checkoutSearch';
+import debounce from 'lodash/debounce';  // Add this import
 
 interface CheckoutItem {
   _id: string;
@@ -48,6 +50,42 @@ const AdminOrder = () => {
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null);
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [localCheckouts, setLocalCheckouts] = React.useState(checkouts);
+  const { searchParams, setSearchParams, searchCheckouts, searchResults, isLoading } = useCheckoutSearchStore();
+  const [searchInput, setSearchInput] = React.useState('');
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
+
+  // Add debounced search
+  const debouncedSearch = React.useCallback(
+    debounce(() => {
+      searchCheckouts();
+    }, 500),
+    []
+  );
+
+  // Handle search input change
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    setSearchParams({ query: value });
+    debouncedSearch();
+  };
+
+  // Handle status change
+  const handleStatusChange = (value: string) => {
+    setSearchParams({ status: value });
+    debouncedSearch();
+  };
+
+  // Handle date change
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    if (date) {
+      setSearchParams({
+        startDate: format(date, 'yyyy-MM-dd'),
+        endDate: format(date, 'yyyy-MM-dd')
+      });
+      debouncedSearch();
+    }
+  };
 
   useEffect(() => {
     setLocalCheckouts(checkouts);
@@ -221,23 +259,39 @@ const AdminOrder = () => {
       >
         <VStack align="stretch" height="100%" gap={4}>
           <HStack gap={4} align="stretch" width="100%">
-            <SelectRoot collection={frameworks} size="sm" width="100px">
+            <SelectRoot
+              value={searchParams.status ? [searchParams.status] : undefined}
+              onChange={(value) => handleStatusChange(value[0])}
+              collection={frameworks}
+              size="sm"
+              width="100px"
+            >
               <SelectTrigger>
                 <SelectValueText placeholder='Status' />
               </SelectTrigger>
               <SelectContent>
-                {frameworks.items.map((movie) => (
-                  <SelectItem item={movie} key={movie.value}>
-                    {movie.label}
+                {frameworks.items.map((item) => (
+                  <SelectItem item={item} key={item.value}>
+                    {item.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </SelectRoot>
-            <CustomDatePicker />
+            <CustomDatePicker 
+              selectedDate={selectedDate}
+              onChange={handleDateChange}
+            />
             <Field w={'60%'}>
-              <Input placeholder="Nama Customer" />
+              <Input 
+                placeholder="Search orders..." 
+                value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)}
+              />
             </Field>
-            <Button>
+            <Button
+              isLoading={isLoading}
+              onClick={() => searchCheckouts()}
+            >
               Search
             </Button>
             <Button
@@ -266,7 +320,7 @@ const AdminOrder = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {filteredCheckouts.map((checkout) => (
+                {(searchResults.length > 0 ? searchResults : filteredCheckouts).map((checkout) => (
                   <Table.Row
                     key={`${checkout._id}-${checkout.updatedAt}-${Math.random()}`} // Force re-render with random key
                     onClick={() => handleRowClick(checkout)}
