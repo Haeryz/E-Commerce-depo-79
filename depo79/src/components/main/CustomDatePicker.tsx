@@ -1,6 +1,7 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Input } from '@chakra-ui/react'; // Add this import
 
 interface CustomDatePickerProps {
   selectedDate: Date | null;
@@ -12,9 +13,9 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onCha
     <DatePicker
       selected={selectedDate}
       onChange={onChange}
-      dateFormat="dd/MM/yyyy"
+      dateFormat="yyyy/MM/dd"
       placeholderText="Select date..."
-      className="date-picker"
+      customInput={<Input placeholder="Select date..." />}
     />
   );
 };

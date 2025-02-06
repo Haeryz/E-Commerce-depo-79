@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Box, Input } from '@chakra-ui/react';
@@ -36,7 +36,8 @@ const RangeDatePicker = () => {
         selectsRange
         customInput={
           <Input 
-            width="100%" 
+            width="100%"
+            h={'100%'} 
             value={`${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`} 
             placeholder="Select date range" 
           />
