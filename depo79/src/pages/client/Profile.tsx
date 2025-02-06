@@ -8,31 +8,31 @@ function Profile() {
 
   return (
     <Flex
-      p={10}
-      gap={10}
-      minH="70vh"
-      alignItems="flex-start"
+      direction={["column","row"]}
+      p={[4,6,10]}
+      gap={[4,6,10]}
+      alignItems="stretch"
+      height="auto"
     >
       <Box
-        flex="0 0 25%"
-        maxW="25%"
+        w={["100%","25%"]}
+        h={["100%","25%"]}
         bg={colorMode === 'light' ? 'white' : 'gray.800'}
         color={colorMode === 'light' ? 'black' : 'white'}
         boxShadow="md"
         borderRadius="10px"
         p={5}
-        minH="70vh"
+        height="auto"
       >
         <ProfileSidebar />
       </Box>
       <Box
-        flex="1"
+        w={["100%","75%"]}
         bg={colorMode === 'light' ? 'white' : 'gray.800'}
         color={colorMode === 'light' ? 'black' : 'white'}
         boxShadow="md"
         p={8}
         borderRadius="10px"
-        minH="70vh"
       >
         <Outlet />
       </Box>

@@ -69,7 +69,7 @@ function SidebarProfile() {
   };
 
   return (
-    <Box px={[4, 6, 10]} py={5} width="100%">
+    <Box px={[4, 6, 10]} py={[4, 5, 6]} width="100%" height="auto">
       <VStack align="start" gap={[4, 6, 8]}>
         {/* Header */}
         <HStack gapX={4} wrap="wrap">
@@ -85,6 +85,7 @@ function SidebarProfile() {
           // px={[2, 4, ]}
           gapX={[4, 6, 8]}
           wrap="wrap"
+          direction={["column","row"]}
           justify={["start"]}
           alignItems="center"
         >

@@ -254,7 +254,7 @@ const AdminOrder = () => {
           {/* Updated table container with overflow handling */}
           <Box flex={1} overflow="auto" borderRadius="md">
             <Table.Root>
-              <Table.Header position="sticky" top={0} bg={colorMode === 'light' ? 'gray.100' : 'gray.700'} zIndex={1}>
+              <Table.Header top={0} bg={colorMode === 'light' ? 'gray.100' : 'gray.700'} zIndex={1}>
                 <Table.Row>
                   <Table.ColumnHeader>Order</Table.ColumnHeader>
                   <Table.ColumnHeader>Customer</Table.ColumnHeader>
