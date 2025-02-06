@@ -231,9 +231,6 @@ const MobileDrawer = () => {
                                         Settings
                                     </Button>
                                     <Button variant="ghost" onClick={() => handleNavigation("/profile")}>
-                                        Buy History
-                                    </Button>
-                                    <Button variant="ghost" onClick={() => handleNavigation("/profile")}>
                                         Review History
                                     </Button>
                                     <Button variant="ghost" onClick={handlePesananClick}>
