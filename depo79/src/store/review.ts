@@ -28,6 +28,14 @@ interface ReviewStore {
     error: string | null;
     fetchReviews: () => Promise<void>;
     fetchReviewById: (id: string) => Promise<Review | null>;
+    fetchUnreviewedProducts: (checkoutId: string, userId: string) => Promise<any>; // Add this line
+    createReview: (data: {
+        user: string;
+        checkout: string;
+        product: string;
+        rating: number;
+        comment: string;
+    }) => Promise<Review>;
 }
 
 export const useReviewStore = create<ReviewStore>((set) => ({
@@ -78,4 +86,66 @@ export const useReviewStore = create<ReviewStore>((set) => ({
             return null;
         }
     },
+
+    // Fetch unreviewed products for a specific checkout
+    fetchUnreviewedProducts: async (checkoutId: string, userId: string) => {
+        set({ loading: true, error: null });
+        try {
+            console.log('Fetching unreviewed:', checkoutId, userId); // Debug log
+            const response = await fetch(`/api/review/unreviewed/${checkoutId}?userId=${userId}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch unreviewed products');
+            }
+            
+            if (!data.success) {
+                throw new Error(data.message);
+            }
+            
+            set({ loading: false });
+            return data.unreviewedProducts;
+        } catch (error) {
+            console.error("Error fetching unreviewed products:", error);
+            set({
+                loading: false,
+                error: error instanceof Error ? error.message : "Failed to fetch unreviewed products",
+            });
+            return [];
+        }
+    },
+
+    // Create a new review
+    createReview: async (data) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await fetch('/api/review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.message || 'Failed to create review');
+            }
+
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+
+            set({ loading: false });
+            return result.review;
+        } catch (error) {
+            console.error("Error creating review:", error);
+            set({
+                loading: false,
+                error: error instanceof Error ? error.message : "Failed to create review"
+            });
+            throw error;
+        }
+    }
 }));

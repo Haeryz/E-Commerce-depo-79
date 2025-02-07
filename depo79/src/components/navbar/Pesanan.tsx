@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Text, VStack, Box, HStack, Icon, Textarea } from '@chakra-ui/react';
 import { DialogContent, DialogCloseTrigger } from '../ui/dialog';
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline';
@@ -6,23 +6,42 @@ import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu';
 import { FaStar } from "react-icons/fa";
 import { useColorMode } from '../ui/color-mode';
 import useCheckoutStore from '../../store/checkout';
+import { useReviewStore } from '../../store/review';
 
 interface PesananProps {
     isPesananOpen: boolean;
     setIsPesananOpen: (open: boolean) => void;
 }
 
-const Pesanan = ({ isPesananOpen, setIsPesananOpen }: PesananProps) => {
+const Pesanan = ({ }: PesananProps) => {
     const { colorMode } = useColorMode();
     const { checkouts, currentCheckout, fetchCheckoutById } = useCheckoutStore();
+    const reviewStore = useReviewStore(); // Get the entire store
+    const { createReview } = useReviewStore();
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [review, setReview] = useState('');
     const [rating, setRating] = useState(0);
     const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+    const [unreviewedProducts, setUnreviewedProducts] = useState<{ product: { _id: string; nama: string } }[]>([]);
+    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
     const handleOrderClick = async (orderId: string) => {
-        await fetchCheckoutById(orderId);
-        setSelectedOrderId(orderId);
+        try {
+            await fetchCheckoutById(orderId);
+            setSelectedOrderId(orderId);
+            
+            // Wait for currentCheckout to be updated
+            if (currentCheckout?.nama) {
+                console.log('Fetching unreviewed products for:', orderId, currentCheckout.nama);
+                const products = await reviewStore.fetchUnreviewedProducts(orderId, currentCheckout.nama);
+                console.log('Received products:', products);
+                setUnreviewedProducts(products || []);
+            } else {
+                console.error('No user ID found in current checkout');
+            }
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+        }
     };
 
     const formatDateTime = (dateString: string) => {
@@ -39,11 +58,31 @@ const Pesanan = ({ isPesananOpen, setIsPesananOpen }: PesananProps) => {
     const handleSubmitReview = async () => {
         setIsSubmittingReview(true);
         try {
-            console.log('Submitting review:', { orderId: selectedOrderId, rating, review });
+            if (!currentCheckout?.nama || !selectedOrderId || !selectedProductId || !rating || !review.trim()) {
+                throw new Error('Missing required fields');
+            }
+
+            await createReview({
+                user: currentCheckout.nama,
+                checkout: selectedOrderId,
+                product: selectedProductId,
+                rating,
+                comment: review.trim()
+            });
+
+            // Refresh the unreviewed products list
+            const updatedProducts = await reviewStore.fetchUnreviewedProducts(selectedOrderId, currentCheckout.nama);
+            setUnreviewedProducts(updatedProducts || []);
+
+            // Reset form
             setReview('');
             setRating(0);
+            setSelectedProductId(null);
+
+            // Show success message or toast here if you want
         } catch (error) {
             console.error('Error submitting review:', error);
+            // Show error message or toast here if you want
         } finally {
             setIsSubmittingReview(false);
         }
@@ -118,37 +157,67 @@ const Pesanan = ({ isPesananOpen, setIsPesananOpen }: PesananProps) => {
                         <TimelineTitle>Order Delivered</TimelineTitle>
                         <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
                         <VStack align="stretch" mt={4} gap={3}>
-                            <Text fontWeight="medium">Add Your Review</Text>
-                            <HStack gap={2}>
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <Icon
-                                        key={star}
-                                        color={star <= rating ? "yellow.400" : "gray.300"}
-                                        cursor="pointer"
-                                        onClick={() => setRating(star)}
-                                        w={6}
-                                        h={6}
+                            {unreviewedProducts.length > 0 ? (
+                                <>
+                                    <Text fontWeight="medium">Add Your Review</Text>
+                                    {unreviewedProducts.map(product => (
+                                        <Box key={product.product._id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+                                            <Text fontWeight="medium">{product.product.nama}</Text>
+                                            <HStack gap={2} mt={2}>
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <Icon
+                                                        key={star}
+                                                        color={star <= rating ? "yellow.400" : "gray.300"}
+                                                        cursor="pointer"
+                                                        onClick={() => {
+                                                            setRating(star);
+                                                            setSelectedProductId(product.product._id);
+                                                        }}
+                                                        w={6}
+                                                        h={6}
+                                                    >
+                                                        <FaStar />
+                                                    </Icon>
+                                                ))}
+                                            </HStack>
+                                            <Textarea
+                                                placeholder="Write your review here..."
+                                                value={review}
+                                                onChange={(e) => setReview(e.target.value)}
+                                                size="sm"
+                                                resize="vertical"
+                                                maxLength={500}
+                                                mt={2}
+                                            />
+                                            <Button
+                                                colorScheme="blue"
+                                                size="sm"
+                                                onClick={handleSubmitReview}
+                                                disabled={!rating || !review.trim() || isSubmittingReview || selectedProductId !== product.product._id}
+                                                mt={2}
+                                            >
+                                                {isSubmittingReview ? "Loading..." : "Submit Review"}
+                                            </Button>
+                                        </Box>
+                                    ))}
+                                </>
+                            ) : (
+                                <Box 
+                                    p={4} 
+                                    borderRadius="md" 
+                                    bg="green.50" 
+                                    borderColor="green.200" 
+                                    borderWidth="1px"
+                                >
+                                    <Text 
+                                        color="green.600" 
+                                        fontWeight="medium" 
+                                        textAlign="center"
                                     >
-                                        <FaStar />
-                                    </Icon>
-                                ))}
-                            </HStack>
-                            <Textarea
-                                placeholder="Write your review here..."
-                                value={review}
-                                onChange={(e) => setReview(e.target.value)}
-                                size="sm"
-                                resize="vertical"
-                                maxLength={500}
-                            />
-                            <Button
-                                colorScheme="blue"
-                                size="sm"
-                                onClick={handleSubmitReview}
-                                disabled={!rating || !review.trim() || isSubmittingReview}
-                            >
-                                {isSubmittingReview ? "Loading..." : "Submit Review"}
-                            </Button>
+                                        Terimakasih telah menambahkan review!
+                                    </Text>
+                                </Box>
+                            )}
                         </VStack>
                     </TimelineContent>
                 </TimelineItem>
