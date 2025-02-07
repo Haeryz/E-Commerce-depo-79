@@ -157,47 +157,67 @@ const Pesanan = ({ }: PesananProps) => {
                         <TimelineTitle>Order Delivered</TimelineTitle>
                         <TimelineDescription>{formatDateTime(currentCheckout?.updatedAt || '')}</TimelineDescription>
                         <VStack align="stretch" mt={4} gap={3}>
-                            <Text fontWeight="medium">Add Your Review</Text>
-                            {unreviewedProducts.map(product => (
-                                <Box key={product.product._id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
-                                    <Text fontWeight="medium">{product.product.nama}</Text>
-                                    <HStack gap={2} mt={2}>
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <Icon
-                                                key={star}
-                                                color={star <= rating ? "yellow.400" : "gray.300"}
-                                                cursor="pointer"
-                                                onClick={() => {
-                                                    setRating(star);
-                                                    setSelectedProductId(product.product._id);
-                                                }}
-                                                w={6}
-                                                h={6}
+                            {unreviewedProducts.length > 0 ? (
+                                <>
+                                    <Text fontWeight="medium">Add Your Review</Text>
+                                    {unreviewedProducts.map(product => (
+                                        <Box key={product.product._id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+                                            <Text fontWeight="medium">{product.product.nama}</Text>
+                                            <HStack gap={2} mt={2}>
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <Icon
+                                                        key={star}
+                                                        color={star <= rating ? "yellow.400" : "gray.300"}
+                                                        cursor="pointer"
+                                                        onClick={() => {
+                                                            setRating(star);
+                                                            setSelectedProductId(product.product._id);
+                                                        }}
+                                                        w={6}
+                                                        h={6}
+                                                    >
+                                                        <FaStar />
+                                                    </Icon>
+                                                ))}
+                                            </HStack>
+                                            <Textarea
+                                                placeholder="Write your review here..."
+                                                value={review}
+                                                onChange={(e) => setReview(e.target.value)}
+                                                size="sm"
+                                                resize="vertical"
+                                                maxLength={500}
+                                                mt={2}
+                                            />
+                                            <Button
+                                                colorScheme="blue"
+                                                size="sm"
+                                                onClick={handleSubmitReview}
+                                                disabled={!rating || !review.trim() || isSubmittingReview || selectedProductId !== product.product._id}
+                                                mt={2}
                                             >
-                                                <FaStar />
-                                            </Icon>
-                                        ))}
-                                    </HStack>
-                                    <Textarea
-                                        placeholder="Write your review here..."
-                                        value={review}
-                                        onChange={(e) => setReview(e.target.value)}
-                                        size="sm"
-                                        resize="vertical"
-                                        maxLength={500}
-                                        mt={2}
-                                    />
-                                    <Button
-                                        colorScheme="blue"
-                                        size="sm"
-                                        onClick={handleSubmitReview}
-                                        disabled={!rating || !review.trim() || isSubmittingReview || selectedProductId !== product.product._id}
-                                        mt={2}
+                                                {isSubmittingReview ? "Loading..." : "Submit Review"}
+                                            </Button>
+                                        </Box>
+                                    ))}
+                                </>
+                            ) : (
+                                <Box 
+                                    p={4} 
+                                    borderRadius="md" 
+                                    bg="green.50" 
+                                    borderColor="green.200" 
+                                    borderWidth="1px"
+                                >
+                                    <Text 
+                                        color="green.600" 
+                                        fontWeight="medium" 
+                                        textAlign="center"
                                     >
-                                        {isSubmittingReview ? "Loading..." : "Submit Review"}
-                                    </Button>
+                                        Terimakasih telah menambahkan review!
+                                    </Text>
                                 </Box>
-                            ))}
+                            )}
                         </VStack>
                     </TimelineContent>
                 </TimelineItem>
