@@ -22,9 +22,33 @@ export const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
+    // Input validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        error: "All fields are required" 
+      });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid email format" 
+      });
+    }
+
+    // Use $eq operator for safe comparison
+    const existingUser = await User.findOne({
+      email: { $eq: email.toLowerCase().trim() }
+    });
+
     if (existingUser) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({ 
+        success: false,
+        error: "Email already exists" 
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -52,7 +76,10 @@ export const registerUser = async (req, res) => {
     res.status(200).json({ message: "OTP sent to email for verification." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error during registration." });
+    res.status(500).json({ 
+      success: false,
+      error: "Error during registration" 
+    });
   }
 };
 
@@ -104,6 +131,23 @@ export const verifyOtpAndRegister = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password, turnstileToken } = req.body;
 
+  // Input validation
+  if (!email || !password || !turnstileToken) {
+    return res.status(400).json({
+      success: false,
+      error: "All fields are required"
+    });
+  }
+
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid email format"
+    });
+  }
+
   // Verify the Turnstile token with Cloudflare's API
   const secretKey = process.env.CLOUDFLARE_SECRET_KEY; // Use your secret key from environment variables
 
@@ -131,8 +175,17 @@ export const loginUser = async (req, res) => {
 
   // Proceed with login logic after successful Turnstile verification
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    // Use $eq operator for safe comparison
+    const user = await User.findOne({
+      email: { $eq: email.toLowerCase().trim() }
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found"
+      });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
@@ -147,7 +200,10 @@ export const loginUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Error during login:", err);
-    res.status(500).json({ error: "Error logging in" });
+    res.status(500).json({
+      success: false,
+      error: "Error logging in"
+    });
   }
 };
 
@@ -155,8 +211,36 @@ export const registerAdmin = async (req, res) => {
   const { nama, email, password } = req.body;  // Changed from 'name' to 'nama'
 
   try {
-    // Check total number of existing admins
-    const adminCount = await User.countDocuments({ role: 'admin' });
+    // Input validation
+    if (!nama || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "All fields are required"
+      });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email format"
+      });
+    }
+
+    // Password strength validation
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: "Password must be at least 8 characters long"
+      });
+    }
+
+    // Use $eq operator for role count
+    const adminCount = await User.countDocuments({
+      role: { $eq: 'admin' }
+    });
+
     if (adminCount >= 3) {
       return res.status(403).json({
         success: false,
@@ -164,22 +248,30 @@ export const registerAdmin = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    // Use $eq operator for existing user check
+    const existingUser = await User.findOne({
+      email: { $eq: email.toLowerCase().trim() }
+    });
+
     if (existingUser) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({
+        success: false,
+        error: "Email already exists"
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create admin user with 'nama' instead of 'name'
-    const newAdmin = new User({
-      name: nama,  // Use 'nama' as the value for 'name'
-      email,
+    // Sanitize input data
+    const sanitizedData = {
+      name: nama.trim(),
+      email: email.toLowerCase().trim(),
       password: hashedPassword,
       role: 'admin'
-    });
+    };
 
+    const newAdmin = new User(sanitizedData);
     await newAdmin.save();
 
     res.status(201).json({ 
@@ -188,6 +280,9 @@ export const registerAdmin = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error creating admin user" });
+    res.status(500).json({
+      success: false,
+      error: "Error creating admin user"
+    });
   }
 };
