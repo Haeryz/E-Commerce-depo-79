@@ -56,13 +56,15 @@ export const useLokasiStore = create<LokasiState>((set) => ({
         try {
             const response = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
             const data = await response.json();
-            const mappedData = data.map((item: any) => ({
+            const mappedData = data.map((item: { id: string; name: string }) => ({
                 _id: parseInt(item.id),
                 nama: item.name
             }));
             set({ provinsi: mappedData, loading: false });
         } catch (error) {
-            set({ error: 'Failed to fetch provinsi', loading: false });
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch provinsi';
+            console.error('Error in fetchProvinsi:', error);
+            set({ error: errorMessage, loading: false });
         }
     },
 
@@ -71,14 +73,16 @@ export const useLokasiStore = create<LokasiState>((set) => ({
         try {
             const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinsiId}.json`);
             const data = await response.json();
-            const mappedData = data.map((item: any) => ({
+            const mappedData = data.map((item: { id: string; province_id: string; name: string }) => ({
                 _id: parseInt(item.id),
                 provinsiId: parseInt(item.province_id),
                 nama: item.name
             }));
             set({ kota: mappedData, loading: false });
         } catch (error) {
-            set({ error: 'Failed to fetch kota', loading: false });
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch kota';
+            console.error('Error in fetchKota:', error);
+            set({ error: errorMessage, loading: false });
         }
     },
 
@@ -88,7 +92,7 @@ export const useLokasiStore = create<LokasiState>((set) => ({
             // Changed API URL structure
             const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${kotaId}.json`);
             const data = await response.json();
-            const mappedData = data.map((item: any) => ({
+            const mappedData = data.map((item: { id: string; regency_id: string; name: string; }) => ({
                 _id: parseInt(item.id),
                 kotaId: parseInt(item.regency_id),
                 nama: item.name
@@ -96,8 +100,9 @@ export const useLokasiStore = create<LokasiState>((set) => ({
             set({ kecamatan: mappedData, loading: false });
             console.log('Fetched kecamatan:', mappedData); // Add logging for debugging
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch kecamatan';
             console.error('Error in fetchKecamatan:', error); // Add error logging
-            set({ error: 'Failed to fetch kecamatan', loading: false });
+            set({ error: errorMessage, loading: false });
         }
     },
 
@@ -106,14 +111,16 @@ export const useLokasiStore = create<LokasiState>((set) => ({
         try {
             const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${kecamatanId}.json`);
             const data = await response.json();
-            const mappedData = data.map((item: any) => ({
+            const mappedData = data.map((item: { id: string; districts_id: string; name: string; }) => ({
                 _id: parseInt(item.id),
                 kecamatanId: parseInt(item.districts_id),
                 nama: item.name
             }));
             set({ kelurahan: mappedData, loading: false });
         } catch (error) {
-            set({ error: 'Failed to fetch kelurahan', loading: false });
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch kelurahan';
+            console.error('Error in fetchKelurahan:', error);
+            set({ error: errorMessage, loading: false });
         }
     },
 
@@ -125,7 +132,9 @@ export const useLokasiStore = create<LokasiState>((set) => ({
             if (!data.success) throw new Error(data.message);
             set({ kodepos: data.kodepos, loading: false });
         } catch (error) {
-            set({ error: 'Failed to fetch kodepos', loading: false });
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch kodepos';
+            console.error('Error in fetchKodePos:', error);
+            set({ error: errorMessage, loading: false });
         }
     },
 }));
