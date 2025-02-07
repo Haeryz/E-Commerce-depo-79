@@ -4,7 +4,7 @@ import { uploadImage } from "../services/cloudinary.service.js";
 
 export const getReviews = async (req, res) => {
   try {
-    const reviews = await Review.find()
+    const reviews = await Review.find({})  // Using empty object instead of undefined
       .populate({
         path: 'user',
         select: 'nama nomorhp',  // Include any profile fields you want
@@ -35,6 +35,33 @@ export const createReview = async (req, res) => {
   const { user, checkout, product, rating, comment } = req.body;
 
   try {
+    // Validate ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(user) ||
+        !mongoose.Types.ObjectId.isValid(checkout) ||
+        !mongoose.Types.ObjectId.isValid(product)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format"
+      });
+    }
+
+    // Validate rating is a number between 1 and 5
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating must be a number between 1 and 5"
+      });
+    }
+
+    // Sanitize comment
+    const sanitizedComment = comment.trim();
+    if (!sanitizedComment || sanitizedComment.length > 1000) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment must be between 1 and 1000 characters"
+      });
+    }
+
     // Log the review attempt
     console.log(`Review attempt - User: ${user}, Checkout: ${checkout}, Product: ${product}`);
 
@@ -92,11 +119,13 @@ export const createReview = async (req, res) => {
       price: purchasedItem.price
     });
 
-    // Check for existing review
+    // Use $eq operator for safe comparison
     const existingReview = await Review.findOne({
-      user,
-      checkout,
-      product
+      $and: [
+        { user: { $eq: user } },
+        { checkout: { $eq: checkout } },
+        { product: { $eq: product } }
+      ]
     });
 
     if (existingReview) {
@@ -130,7 +159,7 @@ export const createReview = async (req, res) => {
       checkout,
       product,
       rating,
-      comment,
+      comment: sanitizedComment,
       image: imageUrl
     });
 
@@ -184,16 +213,54 @@ export const updateReview = async (req, res) => {
   const { rating, comment } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Review not found" });
+    return res.status(404).json({ 
+      success: false, 
+      message: "Invalid review ID" 
+    });
+  }
+
+  // Validate rating
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return res.status(400).json({
+      success: false,
+      message: "Rating must be a number between 1 and 5"
+    });
+  }
+
+  // Sanitize comment
+  const sanitizedComment = comment.trim();
+  if (!sanitizedComment || sanitizedComment.length > 1000) {
+    return res.status(400).json({
+      success: false,
+      message: "Comment must be between 1 and 1000 characters"
+    });
   }
 
   const updatedReview = { rating, comment, _id: id };
 
   try {
-    await Review.findByIdAndUpdate(id, updatedReview, { new: true });
-    return res.status(200).json({ success: true, review: updatedReview });
+    const updatedReview = await Review.findOneAndUpdate(
+      { _id: { $eq: id } },
+      { 
+        $set: { 
+          rating: rating,
+          comment: sanitizedComment
+        } 
+      },
+      { new: true }
+    );
+
+    if (!updatedReview) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found"
+      });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      review: updatedReview 
+    });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
@@ -297,6 +364,15 @@ export const getUnreviewedProducts = async (req, res) => {
       });
     }
 
+    // Validate ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(checkoutId) ||
+        !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format"
+      });
+    }
+
     // First, get the raw checkout document
     const rawCheckout = await mongoose.model('Checkout').findById(checkoutId);
     console.log('Raw checkout items before population:', 
@@ -304,12 +380,12 @@ export const getUnreviewedProducts = async (req, res) => {
     );
 
     // Get the checkout with explicit population
-    const checkout = await mongoose.model('Checkout')
-      .findById(checkoutId)
-      .populate({
-        path: 'items.product',
-        model: 'Product'
-      });
+    const checkout = await mongoose.model('Checkout').findOne({
+      _id: { $eq: checkoutId }
+    }).populate({
+      path: 'items.product',
+      model: 'Product'
+    });
 
     if (!checkout) {
       console.log('Checkout not found:', checkoutId);
@@ -331,10 +407,12 @@ export const getUnreviewedProducts = async (req, res) => {
 
     console.log('Valid items found:', validItems.length);
 
-    // Get existing reviews
+    // Use $and and $eq for safe comparison
     const existingReviews = await Review.find({
-      checkout: checkoutId,
-      user: userId
+      $and: [
+        { checkout: { $eq: checkoutId } },
+        { user: { $eq: userId } }
+      ]
     });
 
     console.log('Existing reviews:', existingReviews.length);
