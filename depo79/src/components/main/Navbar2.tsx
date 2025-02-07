@@ -104,6 +104,7 @@ function Navbar2() {
     setIsPesananOpen(true);
   };
 
+
   // General function to handle navigation and scroll to the top
   const handleNavigateToTop = (
     e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>,

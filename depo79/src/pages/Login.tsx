@@ -11,45 +11,45 @@ import Turnstile from "react-turnstile";
 import { toaster } from "../components/ui/toaster";
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-    const loginUser = useAuthStore((state) => state.loginUser); // Get the loginUser action
-    const navigate = useNavigate(); // Initialize the useNavigate hook
+  const loginUser = useAuthStore((state) => state.loginUser); // Get the loginUser action
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
-    const bgColor = useColorModeValue("gray.100", "gray.800"); // Light and dark mode bg
-    const textColor = useColorModeValue("black", "white"); // Light and dark mode text color
-    const inputBgColor = useColorModeValue("gray.200", "gray.700"); // Light and dark mode input background
+  const bgColor = useColorModeValue("gray.100", "gray.800"); // Light and dark mode bg
+  const textColor = useColorModeValue("black", "white"); // Light and dark mode text color
+  const inputBgColor = useColorModeValue("gray.200", "gray.700"); // Light and dark mode input background
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-        if (!turnstileToken) {
-            toaster.create({ title: "Turnstile token is required", type: "error" });
-            return;
+    if (!turnstileToken) {
+      toaster.create({ title: "Turnstile token is required", type: "error" });
+      return;
+    }
+
+    try {
+      const result = await loginUser(email, password, turnstileToken);
+
+      if (result.success) {
+        // Show success toast
+        toaster.create({
+          title: "Login Successful",
+          type: "success",
+        });
+
+        if (result.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
         }
-
-        try {
-            const result = await loginUser(email, password, turnstileToken);
-            
-            if (result.success) {
-                // Show success toast
-                toaster.create({ 
-                    title: "Login Successful", 
-                    type: "success",
-                });
-                
-                if (result.role === 'admin') {
-                    navigate('/admin');
-                } else {
-                    navigate('/');
-                }    
-            }
-        } catch (error) {
-            toaster.create({ title: error as string, type: "error" });
-        }
-    };
+      }
+    } catch (error) {
+      toaster.create({ title: error as string, type: "error" });
+    }
+  };
 
     return (
         <Box

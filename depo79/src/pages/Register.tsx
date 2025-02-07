@@ -49,12 +49,11 @@ const Register: React.FC = () => {
 
   return (
     <Box
-      mt={135}
+      mt={{ base: 100, md: 135 }} // Adjust margin-top for mobile
       mb={232}
-      w="md"
+      w={{ base: "90%", sm: "80%", md: "md" }} // Set width to 90% for mobile, keep md for larger screens
       mx="auto"
       p={6}
-      borderWidth={2}
       borderRadius="30px"
       boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
       bg={bgColor}
@@ -137,7 +136,7 @@ const Register: React.FC = () => {
       )}
 
       <Box display="flex" justifyContent="center" width="full" mt={4}>
-        <Text>
+        <Text textAlign="center">
           Sudah Punya Akun?{" "}
           <Link to="/login">
             <Text as="span" color="blue.500" cursor="pointer">
