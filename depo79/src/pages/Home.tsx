@@ -1,5 +1,5 @@
 import { Box, Image, Separator, Text, VStack, HStack, IconButton } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { FaChevronRight, FaChevronLeft} from "react-icons/fa";
 import Banner from "../assets/Intersect.png";
 import Banner2 from "../assets/image 2.png";

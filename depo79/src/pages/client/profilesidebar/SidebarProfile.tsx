@@ -55,13 +55,13 @@ function SidebarProfile() {
   //   setGender(profile?.jeniskelamin || "");
   // };
 
-  // Reset create form fields
-  const handleCreateDialogOpen = () => {
-    setNewName("");
-    setNewPhone("");
-    setNewGender("");
-    setIsCreateDialogOpen(false);
-  };
+  // // Reset create form fields
+  // const handleCreateDialogOpen = () => {
+  //   setNewName("");
+  //   setNewPhone("");
+  //   setNewGender("");
+  //   setIsCreateDialogOpen(false);
+  // };
 
   // Submit updated data
   const handleUpdate = async () => {

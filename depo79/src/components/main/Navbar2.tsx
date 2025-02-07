@@ -68,7 +68,7 @@ function Navbar2() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isPesananOpen, setIsPesananOpen] = useState(false);
 
-  const { profile, updateProfileName } = useProfileStore(); // Ambil profil dan fungsi update
+  const { profile } = useProfileStore(); // Ambil profil dan fungsi update
   const userName = profile?.nama || "Guest";
 
   const handleSearch = (e: FormEvent) => {
