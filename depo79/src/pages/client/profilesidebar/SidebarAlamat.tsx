@@ -20,7 +20,7 @@ function SidebarAlamat() {
   }
 
   return (
-    <Box px={[4, 6, 10]} py={5} height="100%">
+    <Box px={[4, 6, 10]} py={[4, 6, 8]} height="auto">
       <VStack align="start" height="100%">
         <HStack gapX={4} wrap="wrap">
           <LuMapPin size={40} />
@@ -31,7 +31,7 @@ function SidebarAlamat() {
         <VStack
           mt={10}
           align="start"
-          spacing={4}
+          gap={4}
           width={["100%", "70%", "100%"]}
         >
           <Field label="Provinsi" maxW="100%">

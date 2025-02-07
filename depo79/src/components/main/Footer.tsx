@@ -34,10 +34,11 @@ function Footer() {
         gap={[8, 10, 10]}
         px={[4, 6, 10]}
         align="start"
-        justify="flex-start"
+        justify="space-between"
+        flexWrap="wrap"
       >
         {/* Logo and Company Description Section */}
-        <VStack alignItems="flex-start" gap={3} w={["full", "full", "auto"]}>
+        <VStack alignItems="flex-start" gap={3} w={["full", "full", "320px"]}>
           <Link to="/">
             <Image src={LogoCompany} w={"24"} />
           </Link>
@@ -60,7 +61,7 @@ function Footer() {
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                color: colorMode === "dark" ? "white" : "black",
               }}
             >
               About Us
@@ -72,7 +73,7 @@ function Footer() {
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                color: colorMode === "dark" ? "white" : "black",
               }}
             >
               FAQs
@@ -91,49 +92,22 @@ function Footer() {
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                color: colorMode === "dark" ? "white" : "black",
               }}
             >
               Instagram
             </Text>
           </Link>
-
           <Link to="https://wa.me/6285232668032" target="_blank">
             <Text
               fontSize={["sm", "md"]}
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                color: colorMode === "dark" ? "white" : "black",
               }}
             >
               Whatsapp
-            </Text>
-          </Link>
-
-          <Link to="https://www.facebook.com" target="_blank">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              Facebook
-            </Text>
-          </Link>
-
-          <Link to="https://www.linkedin.com" target="_blank">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              LinkedIn
             </Text>
           </Link>
         </VStack>
@@ -149,60 +123,29 @@ function Footer() {
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                color: colorMode === "dark" ? "white" : "black",
               }}
             >
               Jl. Raya Tulus Ayu No.171, Tulus Ayu, Tulusbesar, Kec. Tumpang,
               Kabupaten Malang, Jawa Timur 65156
             </Text>
           </Link>
-
-          <a
-            href="https://wa.me/6285232668032"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="mailto:info@depo79.com">
             <Text
               fontSize={["sm", "md"]}
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                color: colorMode === "dark" ? "white" : "black",
               }}
             >
-              +6285232668032
+              info@depo79.com
             </Text>
           </a>
-
-          <Link to="mailto:lab.informatika@umm.ac.id">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              lab.informatika@umm.ac.id
-            </Text>
-          </Link>
-
-          <Link to="mailto:lab.informatika.umm@gmail.com">
-            <Text
-              fontSize={["sm", "md"]}
-              color="gray.400"
-              _hover={{
-                cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
-              }}
-            >
-              lab.informatika.umm@gmail.com
-            </Text>
-          </Link>
         </VStack>
 
         {/* Email Subscription Section */}
-        <VStack alignItems="flex-start" gap={2} w={["full", "full", "300px"]}>
+        <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
           <Text fontSize={["sm", "md"]}>
             Dapatkan Kabar Terbaru dan terupdate produk kami dan diskon untuk
             semua item
@@ -211,14 +154,22 @@ function Footer() {
             <Field
               w={["full", "240px"]}
               borderRadius="15px"
-              outline="1px solid black"
+              outline="1px solid"
               border="none"
-              _focus={{ outline: "1px solid black", borderRadius: "50px" }}
+              borderColor={colorMode === "dark" ? "white" : "black"}
+              _focus={{
+                outline: "1px solid",
+                borderRadius: "50px",
+                borderColor: colorMode === "dark" ? "white" : "black",
+              }}
             >
               <Input
                 placeholder="Your Email"
                 border="none"
-                _focus={{ outline: "none", boxShadow: "none" }}
+                _focus={{
+                  outline: "none",
+                  boxShadow: "none",
+                }}
                 _selection={{ backgroundColor: "#2563eb", color: "white" }}
                 aria-label="Enter your email"
               />
@@ -236,11 +187,7 @@ function Footer() {
         </VStack>
       </Flex>
 
-      <Separator
-        orientation="horizontal" // Menentukan garis pemisah horizontal
-        borderColor={colorMode === "light" ? "gray.200" : "gray.600"} // Sesuaikan warna garis berdasarkan mode
-        my={2} // Margin vertikal (top & bottom) untuk memberi jarak antar elemen
-      />
+      <Separator />
 
       {/* Bottom Footer */}
       <Stack

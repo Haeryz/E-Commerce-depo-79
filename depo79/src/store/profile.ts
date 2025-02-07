@@ -3,214 +3,226 @@ import { useAuthStore } from "./auth";
 import { Alamat } from "./alamat";
 
 interface Profile {
-    _id: string;
-    nama: string;
-    nomorhp: string;
-    alamat: Alamat;
-    jeniskelamin: string;
+  _id: string;
+  nama: string;
+  nomorhp: string;
+  alamat: Alamat;
+  jeniskelamin: string;
 }
 
 interface CreateProfileData {
-    nama: string;
-    nomorhp: string;
-    jeniskelamin: string;
+  nama: string;
+  nomorhp: string;
+  jeniskelamin: string;
 }
 
 interface ProfileState {
-    profile: Profile | null;
-    profileMap: Record<string, Profile>;
-    loading: boolean;
-    error: string | null;
-    fetchProfile: () => Promise<void>;
-    fetchProfiles: () => Promise<void>;
-    fetchProfileReviews: () => Promise<void>;
-    createProfile: (profileData: CreateProfileData) => Promise<void>;
-    updateProfile: (profile: Profile) => Promise<void>;
+  profile: Profile | null;
+  profileMap: Record<string, Profile>;
+  loading: boolean;
+  error: string | null;
+  fetchProfile: () => Promise<void>;
+  fetchProfiles: () => Promise<void>;
+  fetchProfileReviews: () => Promise<void>;
+  createProfile: (profileData: CreateProfileData) => Promise<void>;
+  updateProfile: (profile: Profile) => Promise<void>;
+  updateProfileName: (name: string) => void; // Function to update profile name
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
-    profile: null,
-    profileMap: {},
-    loading: false,
-    error: null,
+  profile: null,
+  profileMap: {},
+  loading: false,
+  error: null,
 
-    fetchProfile: async () => {
-        const { token } = useAuthStore.getState();
-        if (!token) {
-            console.log("User not authenticated");
-            set({ error: "User not authenticated", loading: false });
-            return;
-        }
+  // Update profile name in store
+  updateProfileName: (name) => {
+    set((state) => {
+      if (state.profile) {
+        return {
+          profile: {
+            ...state.profile, // Retain the existing profile data
+            nama: name, // Update the name
+          },
+        };
+      }
+      return {}; // If profile doesn't exist, return empty object
+    });
+  },
 
-        set({ loading: true, error: null });
+  // Fetch the user's profile
+  fetchProfile: async () => {
+    const { token } = useAuthStore.getState();
+    if (!token) {
+      console.log("User not authenticated");
+      set({ error: "User not authenticated", loading: false });
+      return;
+    }
 
-        try {
-            const response = await fetch("/api/profile/account", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+    set({ loading: true, error: null });
 
-            if (!response.ok) throw new Error("Failed to fetch profile data");
+    try {
+      const response = await fetch("/api/profile/account", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-            const data = await response.json();
-            if (data.success) {
-                console.log("Profile data fetched:", data.profile);
-                set({ profile: data.profile });
-            } else {
-                console.log("Error fetching profile:", data.message);
-                set({ error: data.message });
-            }
-        } catch (error: unknown) {
-            console.log("Error during profile fetch:", error instanceof Error ? error.message : String(error));
-            set({ error: error instanceof Error ? error.message : String(error) });
-        } finally {
-            set({ loading: false });
-        }
-    },
+      if (!response.ok) throw new Error("Failed to fetch profile data");
 
-    fetchProfileReviews: async () => {
-        set({ loading: true, error: null });
-    
-        try {
-            const response = await fetch("/api/profile", {
-                method: "GET",
-            });
-    
-            if (!response.ok) throw new Error("Failed to fetch profiles");
-    
-            const data = await response.json();
-            if (data.success) {
-                const profileMap = data.profiles.reduce(
-                    (map: Record<string, { nama: string }>, profile: { _id: string; nama: string }) => {
-                        map[profile._id] = { nama: profile.nama };
-                        return map;
-                    },
-                    {}
-                );
-                console.log("Fetched profile map:", profileMap);
-    
-                set({ profileMap });
-            } else {
-                console.log("Error fetching profiles:", data.message);
-                set({ error: data.message });
-            }
-        } catch (error: unknown) {
-            console.log("Error during profiles fetch:", error instanceof Error ? error.message : String(error));
-            set({ error: error instanceof Error ? error.message : String(error) });
-        } finally {
-            set({ loading: false });
-        }
-    },
-    fetchProfiles: async () => {
-        const { token } = useAuthStore.getState();
-        if (!token) {
-            console.log("User not authenticated");
-            set({ error: "User not authenticated", loading: false });
-            return;
-        }
+      const data = await response.json();
+      if (data.success) {
+        console.log("Profile data fetched:", data.profile);
+        set({ profile: data.profile });
+      } else {
+        console.log("Error fetching profile:", data.message);
+        set({ error: data.message });
+      }
+    } catch (error: unknown) {
+      console.log("Error during profile fetch:", error instanceof Error ? error.message : String(error));
+      set({ error: error instanceof Error ? error.message : String(error) });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
-        set({ loading: true, error: null });
+  // Fetch all profiles (if needed)
+  fetchProfiles: async () => {
+    const { token } = useAuthStore.getState();
+    if (!token) {
+      console.log("User not authenticated");
+      set({ error: "User not authenticated", loading: false });
+      return;
+    }
 
-        try {
-            const response = await fetch("/api/profile/account", {  // Adjusted API endpoint for multiple profiles
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+    set({ loading: true, error: null });
 
-            if (!response.ok) throw new Error("Failed to fetch profiles");
+    try {
+      const response = await fetch("/api/profile/account", {  // Adjusted API endpoint for multiple profiles
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-            const data = await response.json();
-            if (data.success) {
-                const profiles = data.profiles.reduce(
-                    (map: Record<string, Profile>, profile: Profile) => {
-                        map[profile._id] = profile;
-                        return map;
-                    },
-                    {}
-                );
-                console.log("Fetched profiles:", profiles);
-                set({ profileMap: profiles });
-            } else {
-                console.log("Error fetching profiles:", data.message);
-                set({ error: data.message });
-            }
-        } catch (error: unknown) {
-            console.log("Error during profiles fetch:", error instanceof Error ? error.message : String(error));
-            set({ error: error instanceof Error ? error.message : String(error) });
-        } finally {
-            set({ loading: false });
-        }
-    },
+      if (!response.ok) throw new Error("Failed to fetch profiles");
 
-    createProfile: async (profileData: CreateProfileData) => {
-        const { token } = useAuthStore.getState();
-        if (!token) {
-            console.log("User not authenticated");
-            set({ error: "User not authenticated" });
-            return;
-        }
+      const data = await response.json();
+      if (data.success) {
+        const profiles = data.profiles.reduce(
+          (map: Record<string, Profile>, profile: Profile) => {
+            map[profile._id] = profile;
+            return map;
+          },
+          {}
+        );
+        console.log("Fetched profiles:", profiles);
+        set({ profileMap: profiles });
+      } else {
+        console.log("Error fetching profiles:", data.message);
+        set({ error: data.message });
+      }
+    } catch (error: unknown) {
+      console.log("Error during profiles fetch:", error instanceof Error ? error.message : String(error));
+      set({ error: error instanceof Error ? error.message : String(error) });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
-        try {
-            const response = await fetch("/api/profile", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(profileData), // Send only the profile data without User field
-            });
+  // Create a new profile
+  createProfile: async (profileData: CreateProfileData) => {
+    const { token } = useAuthStore.getState();
+    if (!token) {
+      console.log("User not authenticated");
+      set({ error: "User not authenticated" });
+      return;
+    }
 
-            if (!response.ok) throw new Error("Failed to create profile");
+    try {
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
 
-            const data = await response.json();
-            if (data.success) {
-                console.log("Profile created:", data.profile);
-                set({ profile: data.profile });
-            } else {
-                console.log("Error creating profile:", data.message);
-                set({ error: data.message });
-            }
-        } catch (error: unknown) {
-            console.log("Error during profile creation:", error instanceof Error ? error.message : String(error));
-            set({ error: error instanceof Error ? error.message : String(error) });
-        }
-    },
+      if (!response.ok) throw new Error("Failed to create profile");
 
-    updateProfile: async (profile: Profile) => {
-        const { token } = useAuthStore.getState();
-        if (!token) {
-            console.log("User not authenticated");
-            set({ error: "User not authenticated" });
-            return;
-        }
+      const data = await response.json();
+      if (data.success) {
+        console.log("Profile created:", data.profile);
+        set({ profile: data.profile });
+      } else {
+        console.log("Error creating profile:", data.message);
+        set({ error: data.message });
+      }
+    } catch (error: unknown) {
+      console.log("Error during profile creation:", error instanceof Error ? error.message : String(error));
+      set({ error: error instanceof Error ? error.message : String(error) });
+    }
+  },
 
-        try {
-            const response = await fetch(`/api/profile/${profile._id}`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(profile),
-            });
+  // Update an existing profile
+  updateProfile: async (profile: Profile) => {
+    const { token } = useAuthStore.getState();
+    if (!token) {
+      console.log("User not authenticated");
+      set({ error: "User not authenticated" });
+      return;
+    }
 
-            if (!response.ok) throw new Error("Failed to update profile");
+    try {
+      const response = await fetch(`/api/profile/${profile._id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profile),
+      });
 
-            const data = await response.json();
-            if (data.success) {
-                console.log("Profile updated:", data.profile);
-                set({ profile: data.profile });
-            } else {
-                console.log("Error updating profile:", data.message);
-                set({ error: data.message });
-            }
-        } catch (error: unknown) {
-            console.log("Error during profile update:", error instanceof Error ? error.message : String(error));
-            set({ error: error instanceof Error ? error.message : String(error) });
-        }
-    },
+      if (!response.ok) throw new Error("Failed to update profile");
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Profile updated:", data.profile);
+        set({ profile: data.profile });
+      } else {
+        console.log("Error updating profile:", data.message);
+        set({ error: data.message });
+      }
+    } catch (error: unknown) {
+      console.log("Error during profile update:", error instanceof Error ? error.message : String(error));
+      set({ error: error instanceof Error ? error.message : String(error) });
+    }
+  },
+
+  // Fetch profile reviews if required
+  fetchProfileReviews: async () => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await fetch("/api/profile/reviews", { method: "GET" }); // Adjusted endpoint for reviews
+
+      if (!response.ok) throw new Error("Failed to fetch profile reviews");
+
+      const data = await response.json();
+      if (data.success) {
+        // Handle the review data if necessary
+        console.log("Fetched profile reviews:", data.reviews);
+      } else {
+        console.log("Error fetching profile reviews:", data.message);
+        set({ error: data.message });
+      }
+    } catch (error: unknown) {
+      console.log("Error during profile reviews fetch:", error instanceof Error ? error.message : String(error));
+      set({ error: error instanceof Error ? error.message : String(error) });
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));

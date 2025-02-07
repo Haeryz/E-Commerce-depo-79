@@ -80,7 +80,7 @@ const checkoutSchema = new mongoose.Schema({
     items: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Product",
+            ref: "Product",  // Verify this matches your Product model name
             required: true
         },
         quantity: {
@@ -97,6 +97,34 @@ const checkoutSchema = new mongoose.Schema({
         ref: 'Struk'
     }
 }, { timestamps: true });
+
+// Add pre-save middleware to validate product references
+checkoutSchema.pre('save', async function(next) {
+  const Product = mongoose.model('Product');
+  
+  // Verify all product references exist
+  for (const item of this.items) {
+    if (!item.product) {
+      throw new Error('Product reference is required for checkout items');
+    }
+    
+    const productExists = await Product.exists({ _id: item.product });
+    if (!productExists) {
+      throw new Error(`Product with ID ${item.product} does not exist`);
+    }
+  }
+  
+  next();
+});
+
+// Add these middleware hooks for population
+checkoutSchema.pre(['find', 'findOne'], function(next) {
+    this.populate({
+        path: 'items.product',
+        select: 'nama harga_jual'
+    });
+    next();
+});
 
 const Checkout = mongoose.model("Checkout", checkoutSchema);  // Fixed typo
 export default Checkout;

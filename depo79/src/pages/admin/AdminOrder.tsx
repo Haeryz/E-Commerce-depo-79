@@ -1,4 +1,4 @@
-import { Box, HStack, Input, Image, Separator, Table, Text, VStack } from '@chakra-ui/react'
+import { Box, HStack, Input, Image, Separator, Table, Text, VStack, createListCollection } from '@chakra-ui/react'
 import React, { useEffect } from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import CustomDatePicker from '../../components/main/CustomDatePicker'
@@ -13,6 +13,9 @@ import { format } from 'date-fns'
 import { DialogBody, DialogCloseTrigger, DialogContent, DialogHeader, DialogTitle, DialogRoot, DialogTrigger } from '../../components/ui/dialog'
 import { io, Socket } from 'socket.io-client'
 import * as XLSX from 'xlsx';
+import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
+import { useCheckoutSearchStore } from '../../store/checkoutSearch';
+import debounce from 'lodash/debounce';  // Add this import
 
 interface CheckoutItem {
   _id: string;
@@ -47,6 +50,42 @@ const AdminOrder = () => {
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null);
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [localCheckouts, setLocalCheckouts] = React.useState(checkouts);
+  const { searchParams, setSearchParams, searchCheckouts, searchResults, isLoading } = useCheckoutSearchStore();
+  const [searchInput, setSearchInput] = React.useState('');
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
+
+  // Add debounced search
+  const debouncedSearch = React.useCallback(
+    debounce(() => {
+      searchCheckouts();
+    }, 500),
+    []
+  );
+
+  // Handle search input change
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    setSearchParams({ query: value });
+    debouncedSearch();
+  };
+
+  // Handle status change
+  const handleStatusChange = (value: string) => {
+    setSearchParams({ status: value });
+    debouncedSearch();
+  };
+
+  // Handle date change
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    if (date) {
+      setSearchParams({
+        startDate: format(date, 'yyyy-MM-dd'),
+        endDate: format(date, 'yyyy-MM-dd')
+      });
+      debouncedSearch();
+    }
+  };
 
   useEffect(() => {
     setLocalCheckouts(checkouts);
@@ -85,12 +124,12 @@ const AdminOrder = () => {
         socketInstance.on('checkoutUpdated', async (updatedCheckout) => {
           console.log('Checkout update received:', updatedCheckout);
           await fetchCheckouts(); // Fetch fresh data
-          setLocalCheckouts(prev => 
-            prev.map(checkout => 
+          setLocalCheckouts(prev =>
+            prev.map(checkout =>
               checkout._id === updatedCheckout._id ? updatedCheckout : checkout
             )
           );
-          
+
           if (selectedCheckout?._id === updatedCheckout._id) {
             setSelectedCheckout(updatedCheckout);
           }
@@ -183,7 +222,7 @@ const AdminOrder = () => {
 
     // Create worksheet
     const ws = XLSX.utils.json_to_sheet(excelData);
-    
+
     // Create workbook
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Orders');
@@ -220,14 +259,42 @@ const AdminOrder = () => {
       >
         <VStack align="stretch" height="100%" gap={4}>
           <HStack gap={4} align="stretch" width="100%">
-            <CustomDatePicker />
-            <Field w={'80%'}>
-              <Input placeholder="Nama Customer" />
+            <SelectRoot
+              value={searchParams.status ? [searchParams.status] : undefined}
+              onChange={(value) => handleStatusChange(value[0])}
+              collection={frameworks}
+              size="sm"
+              width="100px"
+            >
+              <SelectTrigger>
+                <SelectValueText placeholder='Status' />
+              </SelectTrigger>
+              <SelectContent>
+                {frameworks.items.map((item) => (
+                  <SelectItem item={item} key={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectRoot>
+            <CustomDatePicker 
+              selectedDate={selectedDate}
+              onChange={handleDateChange}
+            />
+            <Field w={'60%'}>
+              <Input 
+                placeholder="Search orders..." 
+                value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)}
+              />
             </Field>
-            <Button>
+            <Button
+              isLoading={isLoading}
+              onClick={() => searchCheckouts()}
+            >
               Search
             </Button>
-            <Button 
+            <Button
               onClick={handleExportToExcel}
               {...getButtonStyles('green')}
             >
@@ -241,7 +308,7 @@ const AdminOrder = () => {
           {/* Updated table container with overflow handling */}
           <Box flex={1} overflow="auto" borderRadius="md">
             <Table.Root>
-              <Table.Header position="sticky" top={0} bg={colorMode === 'light' ? 'gray.100' : 'gray.700'} zIndex={1}>
+              <Table.Header top={0} bg={colorMode === 'light' ? 'gray.100' : 'gray.700'} zIndex={1}>
                 <Table.Row>
                   <Table.ColumnHeader>Order</Table.ColumnHeader>
                   <Table.ColumnHeader>Customer</Table.ColumnHeader>
@@ -253,8 +320,8 @@ const AdminOrder = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {filteredCheckouts.map((checkout) => (
-                  <Table.Row 
+                {(searchResults.length > 0 ? searchResults : filteredCheckouts).map((checkout) => (
+                  <Table.Row
                     key={`${checkout._id}-${checkout.updatedAt}-${Math.random()}`} // Force re-render with random key
                     onClick={() => handleRowClick(checkout)}
                   >
@@ -326,8 +393,8 @@ const AdminOrder = () => {
               <VStack align={'end'}>
                 <DialogRoot>
                   <DialogTrigger asChild>
-                    <Button 
-                      w={'100%'} 
+                    <Button
+                      w={'100%'}
                       disabled={!selectedCheckout?.buktiTransfer}
                       {...getButtonStyles('blue')}
                     >
@@ -356,15 +423,15 @@ const AdminOrder = () => {
                 <HStack w={'100%'}>
                   {selectedCheckout?.status === 'Menunggu Konfirmasi' ? (
                     <>
-                      <Button 
-                        w={'49%'} 
+                      <Button
+                        w={'49%'}
                         onClick={handleRejectOrder}
                         {...getButtonStyles('red')}
                       >
                         Tolak
                       </Button>
-                      <Button 
-                        w={'49%'} 
+                      <Button
+                        w={'49%'}
                         onClick={handleAcceptOrder}
                         {...getButtonStyles('green')}
                       >
@@ -372,8 +439,8 @@ const AdminOrder = () => {
                       </Button>
                     </>
                   ) : selectedCheckout?.status === 'Dikirim' ? (
-                    <Button 
-                      w={'100%'} 
+                    <Button
+                      w={'100%'}
                       onClick={handleCompleteOrder}
                       {...getButtonStyles('green')}
                     >
@@ -389,5 +456,16 @@ const AdminOrder = () => {
     </Box>
   )
 }
+
+const frameworks = createListCollection({
+  items: [
+    { label: "Pending", value: "react" },
+    { label: "Menunggu Konfirmasi", value: "vue" },
+    { label: "Diterima", value: "ts" },
+    { label: "Ditolak", value: "js" },
+    { label: "Dikirim", value: "c" },
+    { label: "Selesai", value: "C++" },
+  ],
+})
 
 export default AdminOrder

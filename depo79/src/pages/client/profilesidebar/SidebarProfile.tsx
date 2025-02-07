@@ -1,21 +1,12 @@
-import { Box, HStack, Input, Text, VStack, Button as ChakraButton } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import {Box, HStack, Input, Text, VStack, Button as ChakraButton,
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { MdPerson } from "react-icons/md";
 import { Avatar } from "../../../components/ui/avatar";
 import { Field } from "../../../components/ui/field";
 import { useAuthStore } from "../../../store/auth";
 import { useProfileStore } from "../../../store/profile";
-import {
-  DialogActionTrigger,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "../../../components/ui/dialog";
+import {DialogActionTrigger, DialogBody, DialogCloseTrigger, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger} from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
 
 function SidebarProfile() {
@@ -24,13 +15,14 @@ function SidebarProfile() {
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
   const updateProfile = useProfileStore((state) => state.updateProfile);
   const createProfile = useProfileStore((state) => state.createProfile);
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   // Local state for form inputs
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
 
   // State for create profile form
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newGender, setNewGender] = useState("");
@@ -39,20 +31,6 @@ function SidebarProfile() {
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
-
-  // Populate form with current profile data when dialog is opened
-  const handleDialogOpen = () => {
-    setName(profile?.nama || "");
-    setPhone(profile?.nomorhp || "");
-    setGender(profile?.jeniskelamin || "");
-  };
-
-  // Reset create form fields
-  const handleCreateDialogOpen = () => {
-    setNewName("");
-    setNewPhone("");
-    setNewGender("");
-  };
 
   // Submit updated data
   const handleUpdate = async () => {
@@ -70,6 +48,8 @@ function SidebarProfile() {
     } catch (error) {
       console.error("Error updating profile:", error);
     }
+
+    setIsDialogOpen(false);
   };
 
   // Handle create profile submission
@@ -89,8 +69,8 @@ function SidebarProfile() {
   };
 
   return (
-    <Box px={[4, 6, 10]} py={5} width="100%">
-      <VStack align="start" spacing={[4, 6, 8]}>
+    <Box px={[4, 6, 10]} py={[4, 5, 6]} width="100%" height="auto">
+      <VStack align="start" gap={[4, 6, 8]}>
         {/* Header */}
         <HStack gapX={4} wrap="wrap">
           <MdPerson size={40} />
@@ -102,13 +82,15 @@ function SidebarProfile() {
         {/* Avatar dan Nama */}
         <HStack
           mt={[4, 6, 8]}
-          px={[2, 4, 6]}
+          // px={[2, 4, ]}
           gapX={[4, 6, 8]}
           wrap="wrap"
-          justify={["center", "start"]}
+          direction={["column","row"]}
+          justify={["start"]}
+          alignItems="center"
         >
           <Avatar
-            name={profile?.nama || "Rusdi"}
+            name={profile?.nama || "Username"}
             src="https://bit.ly/broken-link"
             colorPalette="teal"
             size={["xl", "2xl", "full"]}
@@ -116,7 +98,7 @@ function SidebarProfile() {
             height={["80px", "100px", "120px"]}
           />
           <Text fontWeight="bold" fontSize={["lg", "xl", "2xl"]} color="black">
-            {profile?.nama || "Rusdaaaaaaai"}
+            {profile?.nama || "Username"}
           </Text>
         </HStack>
 
@@ -129,22 +111,34 @@ function SidebarProfile() {
             <Input placeholder="Nama" value={profile?.nama} readOnly />
           </Field>
           <Field label="Nomor Telefon" width="100%">
-            <Input placeholder="Nomor Telefon" value={profile?.nomorhp} readOnly />
+            <Input
+              placeholder="Nomor Telefon"
+              value={profile?.nomorhp}
+              readOnly
+            />
           </Field>
           <Field label="Jenis Kelamin" width="100%">
-            <Input placeholder="Jenis Kelamin" value={profile?.jeniskelamin} readOnly />
+            <Input
+              placeholder="Jenis Kelamin"
+              value={profile?.jeniskelamin}
+              readOnly
+            />
           </Field>
         </VStack>
 
         {/* Button Edit Profile dan Create Account */}
-        <HStack spacing={4} mt={4} width={["100%", "80%", "50%"]}>
-          <DialogRoot role="dialog">
+        <HStack gap={4} mt={4} width={["100%", "80%", "50%"]}>
+          <DialogRoot
+            open={isDialogOpen}
+            onOpenChange={(details) => setIsDialogOpen(details.open)}
+            role="dialog"
+          >
             <DialogTrigger asChild>
               <ChakraButton
                 colorScheme="blue"
                 flex={1}
                 size={["sm", "md", "lg"]}
-                onClick={handleDialogOpen}
+                onClick={() => setIsDialogOpen(true)}
               >
                 Edit Profile
               </ChakraButton>
@@ -188,13 +182,17 @@ function SidebarProfile() {
             </DialogContent>
           </DialogRoot>
 
-          <DialogRoot role="dialog">
+          <DialogRoot
+            open={isCreateDialogOpen}
+            onOpenChange={(details) => setIsCreateDialogOpen(details.open)}
+            role="dialog"
+          >
             <DialogTrigger asChild>
               <ChakraButton
                 colorScheme="teal"
                 flex={1}
                 size={["sm", "md", "lg"]}
-                onClick={handleCreateDialogOpen}
+                onClick={() => setIsCreateDialogOpen(true)}
               >
                 Create Account
               </ChakraButton>
@@ -226,15 +224,21 @@ function SidebarProfile() {
                   />
                 </Field>
               </DialogBody>
+
               <DialogFooter>
                 <DialogActionTrigger asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
                 </DialogActionTrigger>
                 <Button colorPalette="blue" onClick={handleCreate}>
                   Create Profile
                 </Button>
               </DialogFooter>
-              <DialogCloseTrigger />
+              <DialogCloseTrigger  onClick={() => setIsCreateDialogOpen(false)} />
             </DialogContent>
           </DialogRoot>
         </HStack>

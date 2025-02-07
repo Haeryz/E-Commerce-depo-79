@@ -4,8 +4,17 @@ import axios from "axios";
 // Define the types for the review and store state
 interface Review {
     _id: string;
-    user: string;
-    product: string;
+    user: {
+        _id: string;
+        nama: string;
+        nomorhp?: string;
+    };
+    product: {
+        _id: string;
+        nama: string;
+    };
+    userName: string;    // Add this field
+    productName: string; // Add this field
     rating: number;
     comment: string;
     image?: string;
@@ -30,22 +39,25 @@ export const useReviewStore = create<ReviewStore>((set) => ({
     fetchReviews: async () => {
         set({ loading: true, error: null });
         try {
-            const response = await axios.get("/api/review");
-            if (response.data.success) {  // Add check for success
+            const response = await fetch("/api/review/all");
+            if (!response.ok) {
+                throw new Error("Failed to fetch reviews");
+            }
+            const data = await response.json();
+            if (data.success) {
                 set({ 
-                    reviews: response.data.reviews,
+                    reviews: data.reviews,
                     loading: false 
                 });
-                console.log("Reviews fetched:", response.data.reviews); // Debug log
             } else {
-                throw new Error(response.data.message || "Failed to fetch reviews");
+                throw new Error(data.message);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching reviews:", error);
             set({
                 loading: false,
-                error: error.message || "Failed to fetch reviews",
-                reviews: [], // Reset reviews on error
+                error: error instanceof Error ? error.message : "Failed to fetch reviews",
+                reviews: []
             });
         }
     },

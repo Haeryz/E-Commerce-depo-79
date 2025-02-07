@@ -132,8 +132,12 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
             if (response.data.success) {
                 set({ checkouts: response.data.checkouts });
             }
-        } catch (error: any) {
-            set({ error: error.message });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                set({ error: error.message });
+            } else {
+                set({ error: 'An unexpected error occurred.' });
+            }
         } finally {
             set({ loading: false });
         }
@@ -309,7 +313,7 @@ const useCheckoutStore = create<CheckoutState>((set, get) => ({
             const response = await fetch(`/api/checkout/profile/${profileId}`);
             const data = await response.json();
             if (!data.success) throw new Error(data.message);
-            set({ checkouts: data.checkouts.filter(checkout => checkout.nama === profileId) });
+            set({ checkouts: (data.checkouts as Checkout[]).filter((checkout: Checkout) => checkout.nama === profileId) });
         } catch (error) {
             set({ 
                 error: error instanceof Error ? error.message : 'Failed to fetch profile checkouts',

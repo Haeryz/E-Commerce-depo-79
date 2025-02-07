@@ -51,91 +51,94 @@ const Login: React.FC = () => {
     }
   };
 
-  return (
-    <Box
-      mt={{ base: 100, md: 185 }} // Adjust margin-top for mobile
-      mb={500}
-      w={{ base: "90%", sm: "80%", md: "md" }} // Set width to 90% for mobile, keep md for larger screens
-      mx="auto"
-      p={6}
-      borderRadius="30px"
-      boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
-      bg={bgColor}
-      color={textColor}
-    >
-      <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
-        Login
-      </Text>
-      <form onSubmit={handleSubmit}>
-        <Stack gap="4" align="flex-start">
-          <Field label="Email">
-            <Input
-              value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setEmail(e.target.value.replace(/\s/g, ""))
-              }
-              placeholder="Enter Email"
-              borderRadius="30px"
-              padding="8px 16px"
-              backgroundColor={inputBgColor}
-              _selection={{
-                backgroundColor: "#2563eb",
-                color: "white",
-              }}
-            />
-          </Field>
-
-          <Field label="Password">
-            <PasswordInput
-              value={password}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setPassword(e.target.value)
-              }
-              placeholder="Enter password"
-              borderRadius="30px"
-              padding="8px 16px"
-              backgroundColor={inputBgColor}
-              _selection={{
-                backgroundColor: "#2563eb",
-                color: "white",
-              }}
-            />
-          </Field>
-
-          <Box display="flex" justifyContent="center" width="100%">
-            <Turnstile
-              sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
-              onSuccess={(token) => setTurnstileToken(token)}
-            />
-          </Box>
-
-          <Box display="flex" justifyContent="center" width="full">
-            <Button
-              type="submit"
-              colorScheme="blue"
-              width="full"
-              borderRadius="50px"
-              pl={10}
-              pr={10}
-            >
-              Submit
-            </Button>
-          </Box>
-
-          <Box display="flex" justifyContent="center" width="full">
-            <Text textAlign="center">
-              Belum memiliki akun ? Registrasi{" "}
-              <Link to="/register">
-                <Text as="span" color="blue.500" cursor="pointer">
-                  disini
-                </Text>
-              </Link>
+    return (
+        <Box
+            mt={185}
+            mb={500}
+            w="md"
+            mx="auto"
+            p={6}
+            borderWidth={2}
+            borderRadius="30px"
+            border="1px solid #000"
+            boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
+            bg={bgColor}
+            color={textColor}
+        >
+            <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
+                Login
             </Text>
-          </Box>
-        </Stack>
-      </form>
-    </Box>
-  );
+
+            <form onSubmit={handleSubmit}>
+                <Stack gap="4" align="flex-start">
+                    <Field label="Email">
+                        <Input
+                            value={email}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setEmail(e.target.value.replace(/\s/g, ""))
+                            }
+                            placeholder="Enter Email"
+                            borderRadius="30px"
+                            padding="8px 16px"
+                            backgroundColor={inputBgColor}
+                            _selection={{
+                                backgroundColor: "#2563eb",
+                                color: "white",
+                            }}
+                        />
+                    </Field>
+
+                    <Field label="Password">
+                        <PasswordInput
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setPassword(e.target.value)
+                            }
+                            placeholder="Enter password"
+                            borderRadius="30px"
+                            padding="8px 16px"
+                            backgroundColor={inputBgColor}
+                            _selection={{
+                                backgroundColor: "#2563eb",
+                                color: "white",
+                            }}
+                        />
+                    </Field>
+
+                    <Box display="flex" justifyContent="center" width="100%">
+                        <Turnstile
+                            sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
+                            onSuccess={(token) => setTurnstileToken(token)}
+                        />
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" width="full">
+                        <Button
+                            type="submit"
+                            colorScheme="blue"
+                            width="l"
+                            borderRadius="50px"
+                            pl={10}
+                            pr={10}
+                        >
+                            Submit
+                        </Button>
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" width="full">
+                        <Text>
+                            Belum memiliki akun ? Registrasi{" "}
+                            <Link to="/register">
+                                <Text as="span" color="blue.500" cursor="pointer">
+                                    disini
+                                </Text>
+                            </Link>
+                        </Text>
+                    </Box>
+                </Stack>
+            </form>
+        </Box>
+    );
 };
 
 export default Login;
