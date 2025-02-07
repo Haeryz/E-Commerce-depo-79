@@ -83,7 +83,8 @@ export const createProduct = async (req, res) => {
   } = req.body;
 
   try {
-    const newProduct = new Product({
+    // Create product object with required fields
+    const productData = {
       nama,
       harga_jual,
       harga_beli,
@@ -93,14 +94,26 @@ export const createProduct = async (req, res) => {
       letak_rak,
       keterangan,
       kategori,
-      image,
       terjual,
-    });
+    };
 
+    // Only add image if it's provided
+    if (image) {
+      productData.image = image;
+    }
+
+    const newProduct = new Product(productData);
     await newProduct.save();
-    res.status(201).json(newProduct);
+    
+    res.status(201).json({
+      success: true,
+      product: newProduct
+    });
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(409).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };
 
@@ -117,7 +130,7 @@ export const updateProduct = async (req, res) => {
     keterangan,
     kategori,
     image,
-    terjual,  // Added terjual field
+    terjual,
   } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -126,7 +139,8 @@ export const updateProduct = async (req, res) => {
       .json({ success: false, message: "Product not found" });
   }
 
-  const updatedProduct = {
+  // Create update object with required fields
+  const updateFields = {
     nama,
     harga_jual,
     harga_beli,
@@ -136,14 +150,32 @@ export const updateProduct = async (req, res) => {
     letak_rak,
     keterangan,
     kategori,
-    image,
-    terjual,  // Added terjual field
-    _id: id,
+    terjual,
   };
 
+  // Only add image field if it's provided
+  if (image) {
+    updateFields.image = image;
+  }
+
   try {
-    await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
-    return res.status(200).json({ success: true, product: updatedProduct });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id, 
+      updateFields,
+      { new: true }
+    );
+    
+    if (!updatedProduct) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Product not found" 
+      });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      product: updatedProduct 
+    });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
