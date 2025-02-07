@@ -21,34 +21,45 @@ function ListBarang() {
   if (error) return <Box>Error: {error}</Box>;
 
   return (
-    <Box p={{ base: 4, md: 5 }}>
+    <Box p={{ base: 1, sm: 3, md: 4, lg: 5 }}>
       {loading ? (
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
+        <SimpleGrid 
+          columns={{ base: 2, sm: 2, md: 3, lg: 4 }} 
+          gap={{ base: 1, sm: 3, md: 4 }}
+        >
           {Array.from({ length: 10 }).map((_, index) => (
-            <Stack key={index} gap="6" maxW="sm">
-              <Skeleton height="200px" />
+            <Stack key={index} gap={{ base: 2, md: 6 }} maxW="100%">
+              <Skeleton height={{ base: "120px", sm: "180px", md: "200px" }} />
               <SkeletonText noOfLines={2} />
               <SkeletonText noOfLines={1} width="50%" />
             </Stack>
           ))}
         </SimpleGrid>
       ) : results.length > 0 ? (
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gapX={3} gapY={4}>
+        <SimpleGrid 
+          columns={{ base: 2, sm: 2, md: 3, lg: 4 }} 
+          gap={{ base: 1, sm: 3, md: 4 }}
+        >
           {results.map((product) => (
             <Box
-              maxW="sm"
+              maxW="100%"
               overflow="hidden"
               borderRadius="md"
-              boxShadow="xl"
+              boxShadow="md"
               key={product._id}
               _hover={{
-                transform: "scale(1.05)",
+                transform: { base: "none", md: "scale(1.02)" },
                 boxShadow: "lg",
               }}
               transition="transform 0.2s ease, box-shadow 0.2s ease"
             >
               <Link to={`/detail-barang/${product._id}`}>
-                <Box position="relative" height="200px" width="100%" overflow="hidden">
+                <Box 
+                  position="relative" 
+                  height={{ base: "120px", sm: "180px", md: "200px" }} 
+                  width="100%" 
+                  overflow="hidden"
+                >
                   <img
                     src={product.image}
                     alt={product.nama}
@@ -59,15 +70,45 @@ function ListBarang() {
                     }}
                   />
                 </Box>
-                <Box p={4}>
-                  <Text fontSize="xl" fontWeight="bold">{product.nama}</Text>
-                  <Text fontSize="sm" color="gray.500">
+                <Box p={{ base: 1, sm: 3, md: 4 }}>
+                  <Text 
+                    fontSize={{ base: "sm", sm: "lg", md: "xl" }} 
+                    fontWeight="bold" 
+                    css={{
+                      display: '-webkit-box',
+                      overflow: 'hidden',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: { base: 1, md: 2 }
+                    }}
+                  >
+                    {product.nama}
+                  </Text>
+                  <Text 
+                    fontSize={{ base: "2xs", sm: "xs", md: "sm" }} 
+                    color="gray.500"
+                    css={{
+                      display: '-webkit-box',
+                      overflow: 'hidden',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: { base: 1, md: 2 }
+                    }}
+                  >
                     {product.keterangan || "No description available"}
                   </Text>
-                  <Text mt={2} fontWeight="medium" fontSize="lg">
+                  <Text 
+                    mt={{ base: 0.5, md: 2 }} 
+                    fontWeight="medium" 
+                    fontSize={{ base: "xs", sm: "md", md: "lg" }}
+                  >
                     Rp.{product.harga_jual.toLocaleString()}
                   </Text>
-                  <Text color={'gray.400'}>Klik disini untuk info lebih lanjut</Text>
+                  <Text 
+                    color={'gray.400'} 
+                    fontSize={{ base: "2xs", sm: "xs", md: "sm" }}
+                    display={{ base: "none", md: "block" }}
+                  >
+                    Klik disini untuk info lebih lanjut
+                  </Text>
                 </Box>
               </Link>
             </Box>
@@ -75,17 +116,19 @@ function ListBarang() {
         </SimpleGrid>
       ) : (
         <EmptyState.Root>
-          <EmptyState.Content>
-            <EmptyState.Indicator>
+          <EmptyState.Content px={{ base: 2, md: 4 }}>
+            <EmptyState.Indicator fontSize={{ base: "3xl", md: "4xl" }}>
               <HiColorSwatch />
             </EmptyState.Indicator>
-            <VStack textAlign="center">
-              <EmptyState.Title>Item Tidak Ditemukan</EmptyState.Title>
-              <EmptyState.Description>
+            <VStack textAlign="center" gap={{ base: 2, md: 3 }}>
+              <EmptyState.Title fontSize={{ base: "xl", md: "2xl" }}>
+                Item Tidak Ditemukan
+              </EmptyState.Title>
+              <EmptyState.Description fontSize={{ base: "sm", md: "md" }}>
                 Try adjusting your search
               </EmptyState.Description>
             </VStack>
-            <List.Root variant="marker">
+            <List.Root variant="marker" fontSize={{ base: "sm", md: "md" }}>
               <List.Item>Try removing filters</List.Item>
               <List.Item>Try different keywords</List.Item>
             </List.Root>
