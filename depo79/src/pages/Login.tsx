@@ -55,9 +55,9 @@ const Login: React.FC = () => {
         <Box
             mt={185}
             mb={500}
-            w="md"
+            w={{ base: "90%", md: "md" }} // Adjust width for mobile and desktop
             mx="auto"
-            p={6}
+            p={{ base: 4, md: 6 }} // Adjust padding for mobile and desktop
             borderWidth={2}
             borderRadius="30px"
             border="1px solid #000"
@@ -116,7 +116,7 @@ const Login: React.FC = () => {
                         <Button
                             type="submit"
                             colorScheme="blue"
-                            width="l"
+                            width={{ base: "full", md: "l" }} // Adjust button width for mobile and desktop
                             borderRadius="50px"
                             pl={10}
                             pr={10}
