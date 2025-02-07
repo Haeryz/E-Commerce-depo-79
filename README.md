@@ -1,9 +1,7 @@
+# Depo79 E-Commerce Platform
 
-# Internship Project E-Commerce app
+A modern e-commerce web application built with the MERN stack (MongoDB, Express.js, React, Node.js) for construction materials retail. Developed as part of an internship project at Azka Group Malang.
 
-A brief description of what this project does and who it's for
-
-Simple E-Commerce web app for constuction materials using MERN stack for my team internship project in azka group malang
 ## Badges
 
 Add badges from somewhere like: [shields.io](https://shields.io/)
@@ -12,51 +10,66 @@ Add badges from somewhere like: [shields.io](https://shields.io/)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
 
+## 🌟 Features
 
-## Features
+### Customer Features
+- 🛒 Shopping cart management
+- 💳 Multiple payment methods integration
+- 🔍 Advanced product search and filtering
+- 💬 Real-time chat support
+- 🌓 Light/dark mode toggle
+- ⭐ Product reviews and ratings
+- 📱 Responsive design for all devices
 
-- Light/dark mode toggle
-- Realtime chat
-- Fullscreen mode
-- Cross platform
-- Search items
-- Account
-- Autosend materials
-- multiple payment method
+### Admin Features
+- 📊 Dashboard analytics
+- 📦 Product management
+- 🚚 Order tracking
+- 👥 Customer management
+- 💰 Sales reports
+- 📝 Review management
 
+## 🚀 Tech Stack
 
-## Feedback
+### Frontend
+- React with TypeScript
+- Zustand for state management
+- Chakra UI & TailwindCSS for styling
+- Vite as build tool
+- Axios for API requests
 
-If you have any feedback, please reach out to us at muh4mm4dh4r1z@gmail.com
+### Backend
+- Node.js with Express
+- MongoDB for database
+- JWT for authentication
+- Socket.io for real-time features
 
+## ⚙️ Installation
 
-## Installation backend
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn
 
+### Backend Setup
 ```bash
   npm install 
   npm run dev
 ```
 
-## Installation frontend
+### Frontend Setup
 ```bash
     cd depo79
     npm install
 ```
 
+## Feedback
 
-    
+If you have any feedback, please reach out to us at muh4mm4dh4r1z@gmail.com
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
-
-## Tech Stack
-
-**Client:** React, Zustand, TailwindCSS, ChakraUI
-
-**Server:** Node, Express
-
-**Database:** MongoDB
 
 
 

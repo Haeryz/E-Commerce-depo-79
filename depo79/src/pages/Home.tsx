@@ -9,14 +9,17 @@ import ReviewScroll from "../components/home/ReviewScroll";
 
 const Home: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<1 | -1>(1);
   const totalImages = 2;
 
   const scroll = (direction: 'left' | 'right') => {
-    const newIndex = direction === 'left' 
-      ? Math.max(0, currentIndex - 1)
-      : Math.min(totalImages - 1, currentIndex + 1);
+    setSlideDirection(direction === 'left' ? -1 : 1);
     
-    setCurrentIndex(newIndex);
+    if (direction === 'left') {
+      setCurrentIndex(prev => (prev === 0 ? totalImages - 1 : prev - 1));
+    } else {
+      setCurrentIndex(prev => (prev === totalImages - 1 ? 0 : prev + 1));
+    }
   };
 
   return (
@@ -40,7 +43,7 @@ const Home: React.FC = () => {
           colorScheme="blackAlpha"
           rounded="full"
           size={{ base: "sm", md: "md" }}
-          disabled={currentIndex === 0}
+          disabled={false} // Remove disable condition to allow continuous scrolling
         >
           <FaChevronLeft />
         </IconButton>
@@ -55,7 +58,7 @@ const Home: React.FC = () => {
           colorScheme="blackAlpha"
           rounded="full"
           size={{ base: "sm", md: "md" }}
-          disabled={currentIndex === totalImages - 1}
+          disabled={false} // Remove disable condition to allow continuous scrolling
         >
           <FaChevronRight />
         </IconButton>
@@ -71,8 +74,8 @@ const Home: React.FC = () => {
             position="absolute"
             height="100%"
             width={`${totalImages * 100}%`}
-            transform={`translateX(-${currentIndex * (100 / totalImages)}%)`}
-            transition="transform 0.5s ease-in-out"
+            transform={`translateX(${-currentIndex * (100 / totalImages)}%)`}
+            transition={`transform 0.5s ${slideDirection === 1 ? 'ease-in-out' : 'ease-in-out'}`}
           >
             <Box 
               w={`${100 / totalImages}%`}
