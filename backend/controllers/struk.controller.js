@@ -5,15 +5,28 @@ import Checkout from "../models/checkout.model.js";
 export const getStruk = async (req, res) => {
   try {
     if (req.params.id) {
-      const struk = await Struk.findById(req.params.id);
+      // Validate ObjectId
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid struk ID format"
+        });
+      }
+
+      // Use $eq operator for safe comparison
+      const struk = await Struk.findOne({
+        _id: { $eq: req.params.id }
+      });
+
       if (!struk) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Struk not found" });
+        return res.status(404).json({ 
+          success: false, 
+          message: "Struk not found" 
+        });
       }
       return res.status(200).json({ success: true, struk });
     } else {
-      const struks = await Struk.find();
+      const struks = await Struk.find({});  // Using empty object for safety
       return res.status(200).json({ success: true, struks });
     }
   } catch (error) {
@@ -26,15 +39,29 @@ export const createStruk = async (req, res) => {
     const { nama_kasir, checkout_id } = req.body;
 
     // Validate input
-    if (!nama_kasir || !checkout_id) {
+    if (!nama_kasir || !nama_kasir.trim()) {
       return res.status(400).json({ 
         success: false, 
-        message: "nama_kasir and checkout_id are required" 
+        message: "nama_kasir is required" 
       });
     }
 
-    // Find the checkout to get its details
-    const checkout = await Checkout.findById(checkout_id).populate('items.product');
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(checkout_id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid checkout ID format"
+      });
+    }
+
+    // Sanitize input
+    const sanitizedNamaKasir = nama_kasir.trim();
+
+    // Find the checkout using $eq operator
+    const checkout = await Checkout.findOne({
+      _id: { $eq: checkout_id }
+    }).populate('items.product');
+
     if (!checkout) {
       return res.status(404).json({
         success: false,
@@ -42,30 +69,36 @@ export const createStruk = async (req, res) => {
       });
     }
 
+    // Generate safe struk number
+    const strukNumber = `STR-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
     const newStruk = new Struk({
-      nomor_struk: `STR-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      nomor_struk: strukNumber,
       checkout: checkout_id,
       items: checkout.items.map(item => ({
-        product: item.product,
-        quantity: item.quantity,
-        price: item.price,
-        subtotal: item.quantity * item.price
+        product: item.product._id, // Ensure we're using the ObjectId
+        quantity: Number(item.quantity),
+        price: Number(item.price),
+        subtotal: Number(item.quantity) * Number(item.price)
       })),
-      total: checkout.grandTotal,
+      total: Number(checkout.grandTotal),
       payment_method: checkout.pembayaran,
-      nama_kasir: nama_kasir,
-      customer_name: checkout.nama_lengkap || 'Guest'
+      nama_kasir: sanitizedNamaKasir,
+      customer_name: (checkout.nama_lengkap || 'Guest').trim()
     });
 
-    await newStruk.save();
+    const savedStruk = await newStruk.save();
 
-    // Update checkout with struk reference
-    checkout.struk = newStruk._id;
-    await checkout.save();
+    // Update checkout with struk reference using $set
+    await Checkout.findOneAndUpdate(
+      { _id: { $eq: checkout_id } },
+      { $set: { struk: savedStruk._id } },
+      { new: true }
+    );
 
     return res.status(201).json({ 
       success: true, 
-      struk: newStruk 
+      struk: savedStruk 
     });
   } catch (error) {
     return res.status(500).json({ 
@@ -77,16 +110,48 @@ export const createStruk = async (req, res) => {
 
 export const updateStruk = async (req, res) => {
   const { id } = req.params;
-  const { struk, nama_kasir, checkout_id } = req.body;
+  const { nama_kasir, checkout_id } = req.body;
 
+  // Validate ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ success: false, message: "Struk not found" });
+    return res.status(400).json({ 
+      success: false, 
+      message: "Invalid struk ID format" 
+    });
   }
 
-  const updatedStruk = { struk, nama_kasir, checkout_id, _id: id };
+  // Validate input
+  if (checkout_id && !mongoose.Types.ObjectId.isValid(checkout_id)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid checkout ID format"
+    });
+  }
+
   try {
-    await Struk.findByIdAndUpdate(id, updatedStruk, { new: true });
-    return res.status(200).json({ success: true, struk: updatedStruk });
+    // Prepare update object with only valid fields
+    const updateObj = {};
+    if (nama_kasir) updateObj.nama_kasir = nama_kasir.trim();
+    if (checkout_id) updateObj.checkout = checkout_id;
+
+    // Use findOneAndUpdate with $set operator
+    const updatedStruk = await Struk.findOneAndUpdate(
+      { _id: { $eq: id } },
+      { $set: updateObj },
+      { new: true }
+    );
+
+    if (!updatedStruk) {
+      return res.status(404).json({
+        success: false,
+        message: "Struk not found"
+      });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      struk: updatedStruk 
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -95,12 +160,32 @@ export const updateStruk = async (req, res) => {
 export const deleteStruk = async (req, res) => {
   const { id } = req.params;
 
+  // Validate ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ success: false, message: "Struk not found" });
+    return res.status(400).json({ 
+      success: false, 
+      message: "Invalid struk ID format" 
+    });
   }
 
-  await Struk.findByIdAndRemove(id);
-  return res
-    .status(200)
-    .json({ success: true, message: "Struk deleted successfully" });
+  try {
+    // Use findOneAndDelete with $eq operator
+    const deletedStruk = await Struk.findOneAndDelete({
+      _id: { $eq: id }
+    });
+
+    if (!deletedStruk) {
+      return res.status(404).json({
+        success: false,
+        message: "Struk not found"
+      });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      message: "Struk deleted successfully" 
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
 };
