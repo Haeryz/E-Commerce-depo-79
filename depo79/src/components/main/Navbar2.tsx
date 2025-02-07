@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent, useRef } from 'react';
-import { Button, HStack, IconButton, Text, Spacer, Input, Image, VStack, Box, Icon, } from '@chakra-ui/react';
+import { Button, HStack, IconButton, Text, Input, Image, VStack, Box, Icon } from '@chakra-ui/react';
 // Icons
 import { MdOutlineShoppingCart, MdChat } from 'react-icons/md';
 import { FaMoon, FaSun } from 'react-icons/fa';
@@ -127,8 +127,10 @@ function Navbar2() {
 
   return (
     <HStack
-      wrap="wrap"
-      gap="7"
+      justify="space-between"
+      align="center"
+      wrap="nowrap"
+      gap={2}
       bg={
         isScrolled
           ? colorMode === "light"
@@ -136,92 +138,27 @@ function Navbar2() {
             : "gray.800"
           : "transparent"
       }
-      p={4}
+      p={{ base: 2, md: 4 }}
       position="sticky"
       top="0"
       zIndex="1000"
       boxShadow={isScrolled ? "md" : "none"}
       transition="background-color 0.3s ease, box-shadow 0.3s ease"
     >
-      {/* Logo */}
-      <HStack gap={4}>
+      {/* Left section - Logo */}
+      <Box>
         <a href="/" onClick={(e) => handleNavigateToTop(e, "/")}>
-          <Image src={LogoCompany} w={"24"} />
+          <Image src={LogoCompany} w={{ base: "16", md: "24" }} />
         </a>
-      </HStack>
-      <Box display={{ base: "none", md: "flex" }}>
-        {/* Home Button */}
-        <Link to="/">
-          <Button
-            onClick={(e) => handleNavigateToTop(e, "/")}
-            textStyle=""
-            w={16}
-            h={11}
-            background={
-              isScrolled
-                ? colorMode === "light"
-                  ? "white"
-                  : "gray.800"
-                : "transparent"
-            }
-            color={colorMode === "light" ? "black" : "white"}
-            border={isScrolled ? "none" : "none"}
-            borderColor={
-              isScrolled
-                ? colorMode === "light"
-                  ? "blackAlpha.300"
-                  : "whiteAlpha.300"
-                : "transparent"
-            }
-            _hover={{
-              background: colorMode === "light" ? "gray.100" : "gray.700", // Adjust hover color based on color mode
-            }}
-          >
-            Home
-          </Button>
-        </Link>
+      </Box>
 
-        {/* Diskon Button */}
-        <Button
-          textStyle=""
-          w={16}
-          h={11}
-          background={
-            isScrolled
-              ? colorMode === "light"
-                ? "white"
-                : "gray.800"
-              : "transparent"
-          }
-          color={colorMode === "light" ? "black" : "white"}
-          border={isScrolled ? "none" : "none"}
-          borderColor={
-            isScrolled
-              ? colorMode === "light"
-                ? "blackAlpha.300"
-                : "whiteAlpha.300"
-              : "transparent"
-          }
-          _hover={{
-            background: isScrolled
-              ? colorMode === "light"
-                ? "gray.100"
-                : "gray.700"
-              : "transparent",
-          }}
-          transition="background-color 0.3s ease, border-color 0.3s ease"
-        >
-          Diskon
-        </Button>
-
-        {/* Alamat Button */}
-        <DialogRoot
-          size="xl"
-          placement="center"
-          motionPreset="slide-in-bottom"
-        >
-          <DialogTrigger asChild>
+      {/* Center section - Search and Desktop Navigation */}
+      <HStack gap={4} flex="1" justify="center">
+        <Box display={{ base: "none", md: "flex" }}>
+          {/* Home Button */}
+          <Link to="/">
             <Button
+              onClick={(e) => handleNavigateToTop(e, "/")}
               textStyle=""
               w={16}
               h={11}
@@ -242,227 +179,293 @@ function Navbar2() {
                   : "transparent"
               }
               _hover={{
-                background: isScrolled
-                  ? colorMode === "light"
-                    ? "gray.100"
-                    : "gray.700"
-                  : "transparent",
+                background: colorMode === "light" ? "gray.100" : "gray.700", // Adjust hover color based on color mode
               }}
-              transition="background-color 0.3s ease, border-color 0.3s ease"
             >
-              Alamat
+              Home
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Lokasi Depo79</DialogTitle>
-              <DialogCloseTrigger />
-            </DialogHeader>
-            <DialogBody>
-              <VStack gap={4} align="stretch">
-                <Text>
-                  Jl. Raya Tulus Ayu No.171, Tulus Ayu, Tulusbesar, Kec. Tumpang,
-                  Kabupaten Malang, Jawa Timur 65156
-                </Text>
-                <Box borderRadius="md" overflow="hidden">
-                  <Map position={DEPO79_LOCATION} />
-                </Box>
-              </VStack>
-            </DialogBody>
-          </DialogContent>
-        </DialogRoot>
-      </Box>
-      <Box position="relative" ref={searchRef}>
-        <form onSubmit={handleSearch}>
-          <Field
-            maxW={{ base: '120px', sm: '150px', md: '140px' }} // Single maxW declaration
-            borderRadius="15px"
-            outline="1px solid"
-            border="none"
-            borderColor={colorMode === "dark" ? "white" : "black"} // Border berubah sesuai mode
-            _focus={{
-              outline: "1px solid",
-              borderRadius: "50px",
-              borderColor: colorMode === "dark" ? "white" : "black", // Fokus border menjadi putih atau hitam
-            }}
-            order={{ base: 3, sm: "initial" }}
-            flexGrow={{ base: 1, sm: 0 }}
-          >
-            <Input
-              placeholder="Search"
-              border="none"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSuggestions(true);
-              }}
-              _focus={{
-                outline: "none",
-                boxShadow: "none",
-                borderColor: colorMode === "dark" ? "white" : "black", // Fokus border berubah warna berdasarkan mode
-              }}
-              _selection={{
-                backgroundColor: "#2563eb",
-                color: "white",
-              }}
-            />
-          </Field>
-        </form>
-        {showSuggestions && searchQuery && results.length > 0 && (
-          <Box
-            position="absolute"
-            top="100%"
-            left="0"
-            right="0"
-            mt={2}
-            bg={colorMode === "light" ? "white" : "gray.700"}
-            borderRadius="md"
-            boxShadow="lg"
-            zIndex={1000}
-            maxH="300px"
-            overflowY="auto"
-          >
-            <VStack align="stretch" gap={0}>
-              {results.map((result) => (
-                <Box
-                  key={result._id}
-                  px={4}
-                  py={2}
-                  cursor="pointer"
-                  _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.600' }}
-                  onClick={() => {
-                    setSearchQuery(result.nama);
-                    setShowSuggestions(false);
-                    navigate(`/detail-barang/${result._id}`);
-                  }}
-                >
-                  <HStack gap={3}>
-                    <Image
-                      src={result.image}
-                      alt={result.nama}
-                      boxSize="40px"
-                      objectFit="cover"
-                      borderRadius="md"
-                    />
-                    <VStack align="start" gap={0}>
-                      <Text fontWeight="medium">{result.nama}</Text>
-                      <Text fontSize="sm" color="gray.500">
-                        Rp {result.harga_jual.toLocaleString()}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </Box>
-              ))}
-            </VStack>
-          </Box>
-        )}
-      </Box>
+          </Link>
 
-      <Spacer />
-
-      <HStack display={{ base: "none", md: "flex" }}>
-        <Switch
-          colorScheme={colorMode === "light" ? "teal" : "orange"}
-          colorPalette="blue"
-          size="lg"
-          onChange={toggleColorMode}
-          trackLabel={{
-            on: (
-              <Icon color="yellow.400">
-                <FaSun />
-              </Icon>
-            ),
-            off: (
-              <Icon color="gray.400">
-                <FaMoon />
-              </Icon>
-            ),
-          }}
-        />
-        {isAuthenticated && (
-          <>
-            <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
-              <DrawerBackdrop />
-              <DrawerTrigger asChild>
-                <Button
-                  aria-label="Chat"
-                  variant="ghost"
-                  size="lg"
-                  colorScheme={colorMode === "light" ? "teal" : "orange"}
-                >
-                  <MdChat />
-                </Button>
-              </DrawerTrigger>
-              <Chat></Chat>
-            </DrawerRoot>
-            <Box position="relative" display="inline-block">
-              <Link to="/cart">
-                <IconButton
-                  aria-label="Shopping Cart"
-                  variant="ghost"
-                  size="lg"
-                  colorScheme={colorMode === "light" ? "teal" : "orange"}
-                >
-                  <MdOutlineShoppingCart />
-                </IconButton>
-                {cartItemsCount > 0 && (
-                  <Box
-                    position="absolute"
-                    top="-1"
-                    right="-1"
-                    px={1.5}
-                    py={0.5}
-                    fontSize="10px"
-                    fontWeight="bold"
-                    lineHeight="none"
-                    color="white"
-                    bg="red.500"
-                    borderRadius="full"
-                    minWidth={4}
-                    textAlign="center"
-                  >
-                    {cartItemsCount}
-                  </Box>
-                )}
-              </Link>
-            </Box>
-          </>
-        )}
-        {isAuthenticated && user ? (
-          <>
-            <ProfilePopover
-              userName={userName}
-              isPopoverOpen={isPopoverOpen}
-              setIsPopoverOpen={setIsPopoverOpen}
-              handlePesananClick={handlePesananClick}
-              handleNavigateToTop={handleNavigateToTop}
-            />
-
-            <DialogRoot open={isPesananOpen} onOpenChange={(e) => setIsPesananOpen(e.open)}>
-              <Pesanan
-                isPesananOpen={isPesananOpen}
-                setIsPesananOpen={setIsPesananOpen}
-              />
-            </DialogRoot>
-          </>
-        ) : (
+          {/* Diskon Button */}
           <Button
-            onClick={() => navigate("/login")}
-            colorScheme="blue"
-            height="40px" // Adjust the height to make it more compact
-            paddingX="8" // Reduced padding for a more compact look
-            fontSize="sm" // Adjust font size if necessary
+            textStyle=""
+            w={16}
+            h={11}
+            background={
+              isScrolled
+                ? colorMode === "light"
+                  ? "white"
+                  : "gray.800"
+                : "transparent"
+            }
+            color={colorMode === "light" ? "black" : "white"}
+            border={isScrolled ? "none" : "none"}
+            borderColor={
+              isScrolled
+                ? colorMode === "light"
+                  ? "blackAlpha.300"
+                  : "whiteAlpha.300"
+                : "transparent"
+            }
             _hover={{
-              borderRadius: "full", // Change borderRadius to full on hover
+              background: isScrolled
+                ? colorMode === "light"
+                  ? "gray.100"
+                  : "gray.700"
+                : "transparent",
             }}
+            transition="background-color 0.3s ease, border-color 0.3s ease"
           >
-            Login
+            Diskon
           </Button>
-        )}
+
+          {/* Alamat Button */}
+          <DialogRoot
+            size="xl"
+            placement="center"
+            motionPreset="slide-in-bottom"
+          >
+            <DialogTrigger asChild>
+              <Button
+                textStyle=""
+                w={16}
+                h={11}
+                background={
+                  isScrolled
+                    ? colorMode === "light"
+                      ? "white"
+                      : "gray.800"
+                    : "transparent"
+                }
+                color={colorMode === "light" ? "black" : "white"}
+                border={isScrolled ? "none" : "none"}
+                borderColor={
+                  isScrolled
+                    ? colorMode === "light"
+                      ? "blackAlpha.300"
+                      : "whiteAlpha.300"
+                    : "transparent"
+                }
+                _hover={{
+                  background: isScrolled
+                    ? colorMode === "light"
+                      ? "gray.100"
+                      : "gray.700"
+                    : "transparent",
+                }}
+                transition="background-color 0.3s ease, border-color 0.3s ease"
+              >
+                Alamat
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Lokasi Depo79</DialogTitle>
+                <DialogCloseTrigger />
+              </DialogHeader>
+              <DialogBody>
+                <VStack gap={4} align="stretch">
+                  <Text>
+                    Jl. Raya Tulus Ayu No.171, Tulus Ayu, Tulusbesar, Kec. Tumpang,
+                    Kabupaten Malang, Jawa Timur 65156
+                  </Text>
+                  <Box borderRadius="md" overflow="hidden">
+                    <Map position={DEPO79_LOCATION} />
+                  </Box>
+                </VStack>
+              </DialogBody>
+            </DialogContent>
+          </DialogRoot>
+        </Box>
+        <Box 
+          position="relative" 
+          ref={searchRef}
+          w={{ base: "120px", sm: "150px", md: "200px" }}
+        >
+          <form onSubmit={handleSearch}>
+            <Field
+              w="100%"
+              borderRadius="15px"
+              outline="1px solid"
+              border="none"
+              borderColor={colorMode === "dark" ? "white" : "black"}
+              _focus={{
+                outline: "1px solid",
+                borderRadius: "50px",
+                borderColor: colorMode === "dark" ? "white" : "black",
+              }}
+            >
+              <Input
+                placeholder="Search"
+                border="none"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                fontSize={{ base: "xs", md: "sm" }}
+              />
+            </Field>
+          </form>
+          {showSuggestions && searchQuery && results.length > 0 && (
+            <Box
+              position="absolute"
+              top="100%"
+              left="0"
+              right="0"
+              mt={2}
+              bg={colorMode === "light" ? "white" : "gray.700"}
+              borderRadius="md"
+              boxShadow="lg"
+              zIndex={1000}
+              maxH="300px"
+              overflowY="auto"
+            >
+              <VStack align="stretch" gap={0}>
+                {results.map((result) => (
+                  <Box
+                    key={result._id}
+                    px={4}
+                    py={2}
+                    cursor="pointer"
+                    _hover={{ bg: colorMode === 'light' ? 'gray.100' : 'gray.600' }}
+                    onClick={() => {
+                      setSearchQuery(result.nama);
+                      setShowSuggestions(false);
+                      navigate(`/detail-barang/${result._id}`);
+                    }}
+                  >
+                    <HStack gap={3}>
+                      <Image
+                        src={result.image}
+                        alt={result.nama}
+                        boxSize="40px"
+                        objectFit="cover"
+                        borderRadius="md"
+                      />
+                      <VStack align="start" gap={0}>
+                        <Text fontWeight="medium">{result.nama}</Text>
+                        <Text fontSize="sm" color="gray.500">
+                          Rp {result.harga_jual.toLocaleString()}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  </Box>
+                ))}
+              </VStack>
+            </Box>
+          )}
+        </Box>
       </HStack>
 
-      {/* Mobile Menu Button */}
-      <MobileDrawer />
+      {/* Right section - Desktop menu and Mobile drawer */}
+      <HStack gap={2}>
+        <HStack display={{ base: "none", md: "flex" }}>
+          <Switch
+            colorScheme={colorMode === "light" ? "teal" : "orange"}
+            colorPalette="blue"
+            size="lg"
+            onChange={toggleColorMode}
+            trackLabel={{
+              on: (
+                <Icon color="yellow.400">
+                  <FaSun />
+                </Icon>
+              ),
+              off: (
+                <Icon color="gray.400">
+                  <FaMoon />
+                </Icon>
+              ),
+            }}
+          />
+          {isAuthenticated && (
+            <>
+              <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+                <DrawerBackdrop />
+                <DrawerTrigger asChild>
+                  <Button
+                    aria-label="Chat"
+                    variant="ghost"
+                    size="lg"
+                    colorScheme={colorMode === "light" ? "teal" : "orange"}
+                  >
+                    <MdChat />
+                  </Button>
+                </DrawerTrigger>
+                <Chat></Chat>
+              </DrawerRoot>
+              <Box position="relative" display="inline-block">
+                <Link to="/cart">
+                  <IconButton
+                    aria-label="Shopping Cart"
+                    variant="ghost"
+                    size="lg"
+                    colorScheme={colorMode === "light" ? "teal" : "orange"}
+                  >
+                    <MdOutlineShoppingCart />
+                  </IconButton>
+                  {cartItemsCount > 0 && (
+                    <Box
+                      position="absolute"
+                      top="-1"
+                      right="-1"
+                      px={1.5}
+                      py={0.5}
+                      fontSize="10px"
+                      fontWeight="bold"
+                      lineHeight="none"
+                      color="white"
+                      bg="red.500"
+                      borderRadius="full"
+                      minWidth={4}
+                      textAlign="center"
+                    >
+                      {cartItemsCount}
+                    </Box>
+                  )}
+                </Link>
+              </Box>
+            </>
+          )}
+          {isAuthenticated && user ? (
+            <>
+              <ProfilePopover
+                userName={userName}
+                isPopoverOpen={isPopoverOpen}
+                setIsPopoverOpen={setIsPopoverOpen}
+                handlePesananClick={handlePesananClick}
+                handleNavigateToTop={handleNavigateToTop}
+              />
+
+              <DialogRoot open={isPesananOpen} onOpenChange={(e) => setIsPesananOpen(e.open)}>
+                <Pesanan
+                  isPesananOpen={isPesananOpen}
+                  setIsPesananOpen={setIsPesananOpen}
+                />
+              </DialogRoot>
+            </>
+          ) : (
+            <Button
+              onClick={() => navigate("/login")}
+              colorScheme="blue"
+              height="40px" // Adjust the height to make it more compact
+              paddingX="8" // Reduced padding for a more compact look
+              fontSize="sm" // Adjust font size if necessary
+              _hover={{
+                borderRadius: "full", // Change borderRadius to full on hover
+              }}
+            >
+              Login
+            </Button>
+          )}
+        </HStack>
+        
+        {/* Mobile Menu Button - Always visible on mobile */}
+        <Box display={{ base: "block", md: "none" }}>
+          <MobileDrawer />
+        </Box>
+      </HStack>
     </HStack>
   );
 }
