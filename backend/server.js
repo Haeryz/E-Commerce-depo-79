@@ -17,11 +17,27 @@ import { initSocket } from './socket.js'; // Make sure path is correct
 import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
 import path from "path";
 import strukRoute from "./routes/struk.route.js";
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+
+// Configure rate limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+// Configure stricter rate limiter for static files
+const staticLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50 // limit each IP to 50 requests per windowMs
+});
+
+// Apply rate limiting to all routes
+app.use(limiter);
 
 // Initialize Socket.IO before routes
 const io = initSocket(httpServer);
@@ -47,11 +63,13 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoute);
 app.use("/api/struk", strukRoute);
 
-if(process.env === 'production'){
-  app.use(express.static(path.join(__dirname, "/depo79/dist")))
-  app.get("*", (req, res) => {
+if(process.env.NODE_ENV === 'production'){
+  // Apply stricter rate limiting to static file serving
+  app.use(staticLimiter);
+  app.use(express.static(path.join(__dirname, "/depo79/dist")));
+  app.get("*", staticLimiter, (req, res) => {
     res.sendFile(path.resolve(__dirname, "depo79", "dist", "index.html"));
-  })
+  });
 }
 
 // Add test endpoint for Cloudinary
