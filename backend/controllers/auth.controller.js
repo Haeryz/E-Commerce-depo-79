@@ -18,6 +18,18 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Add a safe email validation function at the top level
+const validateEmail = (email) => {
+  // First do basic validation
+  if (!email || typeof email !== 'string') return false;
+  if (email.length > 254) return false; // RFC 5321
+  if (email.length < 3) return false;
+
+  // Simple, safe regex that doesn't use problematic patterns
+  const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  return emailRegex.test(email);
+};
+
 export const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -30,9 +42,8 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // Email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Email validation using the safe function
+    if (!validateEmail(email)) {
       return res.status(400).json({ 
         success: false,
         error: "Invalid email format" 
@@ -139,9 +150,8 @@ export const loginUser = async (req, res) => {
     });
   }
 
-  // Email format validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  // Email validation using the safe function
+  if (!validateEmail(email)) {
     return res.status(400).json({
       success: false,
       error: "Invalid email format"
@@ -219,9 +229,8 @@ export const registerAdmin = async (req, res) => {
       });
     }
 
-    // Email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Email validation using the safe function
+    if (!validateEmail(email)) {
       return res.status(400).json({
         success: false,
         error: "Invalid email format"
