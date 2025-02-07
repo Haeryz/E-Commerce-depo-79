@@ -1,6 +1,15 @@
 import mongoose from "mongoose";
 import Profile from "../models/profile.model.js";
-import jwt from "jsonwebtoken"; // Assuming the model is named 'profile.model.js'
+import jwt from "jsonwebtoken";
+
+// Helper function to validate input
+const sanitizeInput = (data) => {
+  if (typeof data === 'object' && data !== null) {
+    // Prevent object injection
+    return String(data);
+  }
+  return data;
+};
 
 export const getProfile = async (req, res) => {
   try {
@@ -11,9 +20,13 @@ export const getProfile = async (req, res) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
-    const profile = await Profile.findOne({ User: userId })
-      .populate("User") // Populate user correctly
-      .populate("alamat"); // Populate alamat if needed
+    
+    // Use $eq operator to prevent injection
+    const profile = await Profile.findOne({ 
+      User: { $eq: userId } 
+    })
+    .populate("User", "-password") // Explicit projection
+    .populate("alamat");
 
     if (!profile) {
       console.error("Profile not found");
@@ -30,26 +43,33 @@ export const getProfile = async (req, res) => {
 
 export const getAllProfiles = async (req, res) => {
   try {
-      const profiles = await Profile.find().select('_id nama'); // Include '_id' and 'nama'
+    // Use explicit projection
+    const profiles = await Profile.find({}, { _id: 1, nama: 1 });
 
-      if (!profiles.length) {
-          return res.status(404).json({ success: false, message: "No profiles found" });
-      }
+    if (!profiles.length) {
+      return res.status(404).json({ success: false, message: "No profiles found" });
+    }
 
-      return res.status(200).json({
-          success: true,
-          profiles: profiles.map(profile => ({ _id: profile._id, nama: profile.nama }))
-      });
+    return res.status(200).json({
+      success: true,
+      profiles: profiles.map(profile => ({ _id: profile._id, nama: profile.nama }))
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: "Server error" });
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 export const createProfile = async (req, res) => {
   try {
     const { nama, nomorhp, jeniskelamin } = req.body;
+    // Sanitize inputs
+    const sanitizedData = {
+      nama: sanitizeInput(nama),
+      nomorhp: sanitizeInput(nomorhp),
+      jeniskelamin: sanitizeInput(jeniskelamin)
+    };
+    
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
@@ -69,9 +89,7 @@ export const createProfile = async (req, res) => {
 
     const newProfile = new Profile({
       User: userId, // Use the ID from token
-      nama,
-      nomorhp,
-      jeniskelamin,
+      ...sanitizedData
     });
 
     await newProfile.save();
@@ -87,7 +105,7 @@ export const createProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   const { id } = req.params;
-  const { User, nama, nomorhp, alamat, jeniskelamin } = req.body;
+  const updateData = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -95,10 +113,23 @@ export const updateProfile = async (req, res) => {
       .json({ success: false, message: "Profile not found" });
   }
 
-  const updatedProfile = { User, nama, nomorhp, alamat, jeniskelamin, _id: id };
+  // Sanitize all input fields
+  const sanitizedData = {};
+  for (let [key, value] of Object.entries(updateData)) {
+    sanitizedData[key] = sanitizeInput(value);
+  }
 
   try {
-    await Profile.findByIdAndUpdate(id, updatedProfile, { new: true });
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { _id: { $eq: id } },
+      { $set: sanitizedData },
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedProfile) {
+      return res.status(404).json({ success: false, message: "Profile not found" });
+    }
+    
     return res.status(200).json({ success: true, profile: updatedProfile });
   } catch (error) {
     console.log("Error:", error);
@@ -116,7 +147,12 @@ export const deleteProfile = async (req, res) => {
   }
 
   try {
-    await Profile.findByIdAndRemove(id);
+    const deletedProfile = await Profile.findOneAndDelete({ _id: { $eq: id } });
+    
+    if (!deletedProfile) {
+      return res.status(404).json({ success: false, message: "Profile not found" });
+    }
+    
     return res
       .status(200)
       .json({ success: true, message: "Profile deleted successfully" });
