@@ -51,7 +51,6 @@ function Navbar2() {
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      setShowSuggestions(false);
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -77,7 +76,6 @@ function Navbar2() {
   }, []);
 
 
-  // useEffect to detect scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
@@ -146,46 +144,43 @@ function Navbar2() {
       boxShadow={isScrolled ? "md" : "none"}
       transition="background-color 0.3s ease, box-shadow 0.3s ease"
     >
-      {/* Left section - Logo */}
-      <Box>
+      {/* Logo */}
+      <HStack gap={4}>
         <a href="/" onClick={(e) => handleNavigateToTop(e, "/")}>
-          <Image src={LogoCompany} w={{ base: "16", md: "24" }} />
+          <Image src={LogoCompany} w={"24"} />
         </a>
-      </Box>
-
-      {/* Center section - Search and Desktop Navigation */}
-      <HStack gap={4} flex="1" justify="center">
-        <Box display={{ base: "none", md: "flex" }}>
-          {/* Home Button */}
-          <Link to="/">
-            <Button
-              onClick={(e) => handleNavigateToTop(e, "/")}
-              textStyle=""
-              w={16}
-              h={11}
-              background={
-                isScrolled
-                  ? colorMode === "light"
-                    ? "white"
-                    : "gray.800"
-                  : "transparent"
-              }
-              color={colorMode === "light" ? "black" : "white"}
-              border={isScrolled ? "none" : "none"}
-              borderColor={
-                isScrolled
-                  ? colorMode === "light"
-                    ? "blackAlpha.300"
-                    : "whiteAlpha.300"
-                  : "transparent"
-              }
-              _hover={{
-                background: colorMode === "light" ? "gray.100" : "gray.700", // Adjust hover color based on color mode
-              }}
-            >
-              Home
-            </Button>
-          </Link>
+      </HStack>
+      <Box display={{ base: "none", md: "flex" }}>
+        {/* Home Button */}
+        <Link to="/">
+          <Button
+            onClick={(e) => handleNavigateToTop(e, "/")}
+            textStyle=""
+            w={16}
+            h={11}
+            background={
+              isScrolled
+                ? colorMode === "light"
+                  ? "white"
+                  : "gray.800"
+                : "transparent"
+            }
+            color={colorMode === "light" ? "black" : "white"}
+            border={isScrolled ? "none" : "none"}
+            borderColor={
+              isScrolled
+                ? colorMode === "light"
+                  ? "blackAlpha.300"
+                  : "whiteAlpha.300"
+                : "transparent"
+            }
+            _hover={{
+              background: colorMode === "light" ? "gray.100" : "gray.700", // Adjust hover color based on color mode
+            }}
+          >
+            Home
+          </Button>
+        </Link>
 
           {/* Diskon Button */}
           <Button

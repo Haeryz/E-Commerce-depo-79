@@ -30,44 +30,6 @@ const Login: React.FC = () => {
       return;
     }
 
-    try {
-      const result = await loginUser(email, password, turnstileToken);
-
-      if (result.success) {
-        // Show success toast
-        toaster.create({
-          title: "Login Successful",
-          type: "success",
-        });
-
-        if (result.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
-      }
-    } catch (error) {
-      toaster.create({ title: error as string, type: "error" });
-    }
-  };
-
-    return (
-        <Box
-            mt={185}
-            mb={500}
-            w={{ base: "90%", md: "md" }} // Adjust width for mobile and desktop
-            mx="auto"
-            p={{ base: 4, md: 6 }} // Adjust padding for mobile and desktop
-            borderWidth={2}
-            borderRadius="30px"
-            border="1px solid #000"
-            boxShadow="0px 8px 20px 8px rgba(0, 0, 0, 0.2)"
-            bg={bgColor}
-            color={textColor}
-        >
-            <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
-                Login
-            </Text>
 
             <form onSubmit={handleSubmit}>
                 <Stack gap="4" align="flex-start">
@@ -88,6 +50,22 @@ const Login: React.FC = () => {
                         />
                     </Field>
 
+                    <Field label="Password">
+                        <PasswordInput
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setPassword(e.target.value)
+                            }
+                            placeholder="Enter password"
+                            borderRadius="30px"
+                            padding="8px 16px"
+                            backgroundColor={inputBgColor}
+                            _selection={{
+                                backgroundColor: "#2563eb",
+                                color: "white",
+                            }}
+                        />
+                    </Field>
                     <Field label="Password">
                         <PasswordInput
                             value={password}

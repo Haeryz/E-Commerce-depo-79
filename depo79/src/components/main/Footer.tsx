@@ -104,11 +104,101 @@ function Footer() {
               color="gray.400"
               _hover={{
                 cursor: "pointer",
-                color: colorMode === "dark" ? "white" : "black",
+                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
               }}
             >
               Whatsapp
             </Text>
+          </VStack>
+
+          {/* Shortcut Section */}
+          <VStack alignItems="flex-start" gap={2}>
+            <Text fontWeight="bold" fontSize={["sm", "md"]}>
+              SHORTCUT
+            </Text>
+            <Link to="/">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                About Us
+              </Text>
+            </Link>
+            <Link to="/">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                FAQs
+              </Text>
+            </Link>
+          </VStack>
+
+          {/* Sosmed Section */}
+          <VStack alignItems="flex-start" gap={2}>
+            <Text fontWeight="bold" fontSize={["sm", "md"]}>
+              SOSMED
+            </Text>
+            <Link to="https://www.instagram.com" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Instagram
+              </Text>
+            </Link>
+
+            <Link to="https://wa.me" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Whatsapp
+              </Text>
+            </Link>
+
+            <Link to="https://www.facebook.com" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                Facebook
+              </Text>
+            </Link>
+
+            <Link to="https://www.linkedin.com" target="_blank">
+              <Text
+                fontSize={["sm", "md"]}
+                color="gray.400"
+                _hover={{
+                  cursor: "pointer",
+                  color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+                }}
+              >
+                LinkedIn
+              </Text>
+            </Link>
+          </VStack>
           </Link>
         </VStack>
 
@@ -143,6 +233,36 @@ function Footer() {
             </Text>
           </a>
         </VStack>
+              +6285232668032
+            </Text>
+          </a>
+
+          <Link to="mailto:lab.informatika@umm.ac.id">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+              }}
+            >
+              lab.informatika@umm.ac.id
+            </Text>
+          </Link>
+
+          <Link to="mailto:lab.informatika.umm@gmail.com">
+            <Text
+              fontSize={["sm", "md"]}
+              color="gray.400"
+              _hover={{
+                cursor: "pointer",
+                color: colorMode === "dark" ? "white" : "black", // Change hover color based on theme
+              }}
+            >
+              lab.informatika.umm@gmail.com
+            </Text>
+          </Link>
+        </VStack>
 
         {/* Email Subscription Section */}
         <VStack alignItems="flex-start" gap={2} w={["full", "full", "310px"]}>
@@ -174,6 +294,7 @@ function Footer() {
                 aria-label="Enter your email"
               />
             </Field>
+
             <Button
               borderRadius="15px"
               w={["full", "auto"]}
