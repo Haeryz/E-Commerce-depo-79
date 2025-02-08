@@ -7,23 +7,42 @@ import Struk from "../models/struk.model.js";
 
 export const getCheckout = async (req, res) => {
   try {
-    if (req.params.id) {
-      const checkout = await Checkout.findById(req.params.id)
-        .populate('items.product', 'nama harga_jual'); // Add populate here
+    const { id } = req.params;
+    
+    // Validate ObjectId
+    if (id && !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid checkout ID format" 
+      });
+    }
+
+    if (id) {
+      const checkout = await Checkout.findOne({ 
+        _id: id 
+      }).populate('items.product', 'nama harga_jual');
+      
       if (!checkout) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Checkout not found" });
+        return res.status(404).json({ 
+          success: false, 
+          message: "Checkout not found" 
+        });
       }
       return res.status(200).json({ success: true, checkout });
-    } else {
-      const checkouts = await Checkout.find()
-        .populate('items.product', 'nama harga_jual'); // Add populate here
-      return res.status(200).json({ success: true, checkouts });
     }
+
+    const checkouts = await Checkout.find({})
+      .populate('items.product', 'nama harga_jual')
+      .sort({ createdAt: -1 })
+      .limit(100);  // Add reasonable limit
+      
+    return res.status(200).json({ success: true, checkouts });
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'An error occurred while fetching checkouts' 
+    });
   }
 };
 
@@ -396,9 +415,9 @@ export const searchCheckouts = async (req, res) => {
       maxTotal
     } = req.query;
 
-    // Build the search pipeline
+    // Build the search pipeline with secure operators
     const searchPipeline = {
-      index: "checkout_index", // replace with your index name if different
+      index: "checkout_index",
       compound: {
         should: [],
         must: [],
@@ -406,41 +425,42 @@ export const searchCheckouts = async (req, res) => {
       }
     };
 
-    // Add text search if query exists
-    if (query) {
+    // Sanitize text search query
+    if (query && typeof query === 'string') {
+      const sanitizedQuery = query.replace(/[^a-zA-Z0-9@. -]/g, '');
       searchPipeline.compound.should.push(
         {
           text: {
-            query: query,
+            query: sanitizedQuery,
             path: "nama_lengkap",
             fuzzy: { maxEdits: 1 }
           }
         },
         {
           text: {
-            query: query,
+            query: sanitizedQuery,
             path: "Email",
             fuzzy: { maxEdits: 1 }
           }
         },
         {
           text: {
-            query: query,
+            query: sanitizedQuery,
             path: "alamat_lengkap",
             fuzzy: { maxEdits: 1 }
           }
         },
         {
           text: {
-            query: query,
+            query: sanitizedQuery,
             path: "nomor_telefon"
           }
         }
       );
     }
 
-    // Add status filter
-    if (status) {
+    // Validate status against allowed values
+    if (status && ['Pending', 'Menunggu Konfirmasi', 'Dikirim', 'Selesai', 'Ditolak'].includes(status)) {
       searchPipeline.compound.must.push({
         text: {
           query: status,
@@ -449,8 +469,8 @@ export const searchCheckouts = async (req, res) => {
       });
     }
 
-    // Add payment method filter
-    if (payment) {
+    // Validate payment method against allowed values
+    if (payment && ['Transfer', 'COD', 'Pending'].includes(payment)) {
       searchPipeline.compound.must.push({
         text: {
           query: payment,
@@ -459,7 +479,7 @@ export const searchCheckouts = async (req, res) => {
       });
     }
 
-    // Add date range filter
+    // Validate and sanitize date range
     if (startDate || endDate) {
       const dateFilter = {
         range: {
@@ -468,22 +488,30 @@ export const searchCheckouts = async (req, res) => {
           lte: endDate ? new Date(endDate) : null
         }
       };
-      searchPipeline.compound.filter.push(dateFilter);
+      
+      if ((startDate && !isNaN(new Date(startDate))) || (endDate && !isNaN(new Date(endDate)))) {
+        searchPipeline.compound.filter.push(dateFilter);
+      }
     }
 
-    // Add total amount range filter
+    // Validate and sanitize total amount range
     if (minTotal !== undefined || maxTotal !== undefined) {
-      const totalFilter = {
-        range: {
-          path: "grandTotal",
-          gte: minTotal ? parseFloat(minTotal) : null,
-          lte: maxTotal ? parseFloat(maxTotal) : null
-        }
-      };
-      searchPipeline.compound.filter.push(totalFilter);
+      const parsedMinTotal = parseFloat(minTotal);
+      const parsedMaxTotal = parseFloat(maxTotal);
+      
+      if (!isNaN(parsedMinTotal) || !isNaN(parsedMaxTotal)) {
+        const totalFilter = {
+          range: {
+            path: "grandTotal",
+            gte: !isNaN(parsedMinTotal) ? parsedMinTotal : null,
+            lte: !isNaN(parsedMaxTotal) ? parsedMaxTotal : null
+          }
+        };
+        searchPipeline.compound.filter.push(totalFilter);
+      }
     }
 
-    // Execute the search
+    // Execute the search with a reasonable limit
     const result = await Checkout.aggregate([
       {
         $search: searchPipeline
@@ -492,11 +520,11 @@ export const searchCheckouts = async (req, res) => {
         $sort: { createdAt: -1 }
       },
       {
-        $limit: 50 // Adjust limit as needed
+        $limit: 50
       }
-    ]);
+    ]).exec();
 
-    // Populate the results
+    // Populate with specific fields only
     const populatedResults = await Checkout.populate(result, {
       path: 'items.product',
       select: 'nama harga_jual'
@@ -512,7 +540,7 @@ export const searchCheckouts = async (req, res) => {
     console.error('Search error:', error);
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: 'An error occurred while searching checkouts'
     });
   }
 };
