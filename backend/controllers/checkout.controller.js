@@ -7,23 +7,42 @@ import Struk from "../models/struk.model.js";
 
 export const getCheckout = async (req, res) => {
   try {
-    if (req.params.id) {
-      const checkout = await Checkout.findById(req.params.id)
-        .populate('items.product', 'nama harga_jual'); // Add populate here
+    const { id } = req.params;
+    
+    // Validate ObjectId
+    if (id && !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid checkout ID format" 
+      });
+    }
+
+    if (id) {
+      const checkout = await Checkout.findOne({ 
+        _id: id 
+      }).populate('items.product', 'nama harga_jual');
+      
       if (!checkout) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Checkout not found" });
+        return res.status(404).json({ 
+          success: false, 
+          message: "Checkout not found" 
+        });
       }
       return res.status(200).json({ success: true, checkout });
-    } else {
-      const checkouts = await Checkout.find()
-        .populate('items.product', 'nama harga_jual'); // Add populate here
-      return res.status(200).json({ success: true, checkouts });
     }
+
+    const checkouts = await Checkout.find({})
+      .populate('items.product', 'nama harga_jual')
+      .sort({ createdAt: -1 })
+      .limit(100);  // Add reasonable limit
+      
+    return res.status(200).json({ success: true, checkouts });
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'An error occurred while fetching checkouts' 
+    });
   }
 };
 
@@ -44,6 +63,21 @@ export const createCheckout = async (req, res) => {
       items,
       total
     } = req.body;
+
+    // Validate ObjectIds
+    if (cartId && !mongoose.Types.ObjectId.isValid(cartId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid cart ID format"
+      });
+    }
+
+    if (nama && !mongoose.Types.ObjectId.isValid(nama)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid profile ID format"
+      });
+    }
 
     // Log the request body for debugging
     console.log('Received checkout data:', req.body);
@@ -93,8 +127,11 @@ export const createCheckout = async (req, res) => {
     let checkoutItems = items;
 
     if (cartId) {
-      // Get cart and verify profile
-      const cart = await Cart.findById(cartId).populate('items.product');
+      // Use $eq operator for safe comparison
+      const cart = await Cart.findOne({
+        _id: { $eq: cartId }
+      }).populate('items.product');
+
       if (!cart) {
         return res.status(404).json({
           success: false,
@@ -102,7 +139,11 @@ export const createCheckout = async (req, res) => {
         });
       }
 
-      const profileExists = await mongoose.model('Profile').findById(nama);
+      // Use $eq operator for safe comparison
+      const profileExists = await mongoose.model('Profile').findOne({
+        _id: { $eq: nama }
+      });
+
       if (!profileExists) {
         return res.status(404).json({
           success: false,
@@ -369,8 +410,19 @@ export const deleteCheckout = async (req, res) => {
 export const getCheckoutsByProfile = async (req, res) => {
   try {
     const { profileId } = req.params;
-    const checkouts = await Checkout.find({ nama: profileId })
-      .sort({ createdAt: -1 });
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(profileId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid profile ID format"
+      });
+    }
+
+    // Use $eq operator for safe comparison
+    const checkouts = await Checkout.find({ 
+      nama: { $eq: profileId } 
+    }).sort({ createdAt: -1 });
 
     res.json({ 
       success: true, 
@@ -396,107 +448,72 @@ export const searchCheckouts = async (req, res) => {
       maxTotal
     } = req.query;
 
-    // Build the search pipeline
-    const searchPipeline = {
-      index: "checkout_index", // replace with your index name if different
-      compound: {
-        should: [],
-        must: [],
-        filter: []
-      }
-    };
+    // Build match stage with $eq operators
+    const matchStage = {};
 
-    // Add text search if query exists
-    if (query) {
-      searchPipeline.compound.should.push(
-        {
-          text: {
-            query: query,
-            path: "nama_lengkap",
-            fuzzy: { maxEdits: 1 }
-          }
-        },
-        {
-          text: {
-            query: query,
-            path: "Email",
-            fuzzy: { maxEdits: 1 }
-          }
-        },
-        {
-          text: {
-            query: query,
-            path: "alamat_lengkap",
-            fuzzy: { maxEdits: 1 }
-          }
-        },
-        {
-          text: {
-            query: query,
-            path: "nomor_telefon"
-          }
-        }
-      );
+    // Validate and sanitize status
+    if (status && ['Pending', 'Menunggu Konfirmasi', 'Dikirim', 'Selesai', 'Ditolak'].includes(status)) {
+      matchStage.status = { $eq: status };
     }
 
-    // Add status filter
-    if (status) {
-      searchPipeline.compound.must.push({
-        text: {
-          query: status,
-          path: "status"
-        }
-      });
+    // Validate and sanitize payment
+    if (payment && ['Transfer', 'COD', 'Pending'].includes(payment)) {
+      matchStage.pembayaran = { $eq: payment };
     }
 
-    // Add payment method filter
-    if (payment) {
-      searchPipeline.compound.must.push({
-        text: {
-          query: payment,
-          path: "pembayaran"
-        }
-      });
-    }
-
-    // Add date range filter
+    // Validate and sanitize dates
     if (startDate || endDate) {
-      const dateFilter = {
-        range: {
-          path: "createdAt",
-          gte: startDate ? new Date(startDate) : null,
-          lte: endDate ? new Date(endDate) : null
-        }
-      };
-      searchPipeline.compound.filter.push(dateFilter);
-    }
-
-    // Add total amount range filter
-    if (minTotal !== undefined || maxTotal !== undefined) {
-      const totalFilter = {
-        range: {
-          path: "grandTotal",
-          gte: minTotal ? parseFloat(minTotal) : null,
-          lte: maxTotal ? parseFloat(maxTotal) : null
-        }
-      };
-      searchPipeline.compound.filter.push(totalFilter);
-    }
-
-    // Execute the search
-    const result = await Checkout.aggregate([
-      {
-        $search: searchPipeline
-      },
-      {
-        $sort: { createdAt: -1 }
-      },
-      {
-        $limit: 50 // Adjust limit as needed
+      matchStage.createdAt = {};
+      if (startDate && !isNaN(new Date(startDate))) {
+        matchStage.createdAt.$gte = new Date(startDate);
       }
-    ]);
+      if (endDate && !isNaN(new Date(endDate))) {
+        matchStage.createdAt.$lte = new Date(endDate);
+      }
+    }
 
-    // Populate the results
+    // Validate and sanitize totals
+    if (minTotal !== undefined || maxTotal !== undefined) {
+      matchStage.grandTotal = {};
+      const parsedMinTotal = parseFloat(minTotal);
+      const parsedMaxTotal = parseFloat(maxTotal);
+      
+      if (!isNaN(parsedMinTotal)) {
+        matchStage.grandTotal.$gte = parsedMinTotal;
+      }
+      if (!isNaN(parsedMaxTotal)) {
+        matchStage.grandTotal.$lte = parsedMaxTotal;
+      }
+    }
+
+    // Text search pipeline with sanitized input
+    const pipeline = [];
+    
+    if (query && typeof query === 'string') {
+      const sanitizedQuery = query.replace(/[^a-zA-Z0-9@. -]/g, '');
+      pipeline.push({
+        $search: {
+          text: {
+            query: sanitizedQuery,
+            path: ["nama_lengkap", "Email", "alamat_lengkap", "nomor_telefon"]
+          }
+        }
+      });
+    }
+
+    // Add match stage if there are any filters
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    pipeline.push(
+      { $sort: { createdAt: -1 } },
+      { $limit: 50 }
+    );
+
+    const result = await Checkout.aggregate(pipeline).exec();
+
+    // Safely populate with specific fields
     const populatedResults = await Checkout.populate(result, {
       path: 'items.product',
       select: 'nama harga_jual'
@@ -512,7 +529,7 @@ export const searchCheckouts = async (req, res) => {
     console.error('Search error:', error);
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: 'An error occurred while searching checkouts'
     });
   }
 };
