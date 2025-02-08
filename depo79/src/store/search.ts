@@ -72,7 +72,7 @@ export const useSearchStore = create<SearchState>((set) => ({
 
         set({ 
           results,
-          suggestions: results.map(result => result.nama)
+          suggestions: results.map((result: SearchResult) => result.nama)
         });
       } else {
         set({ error: data.message });

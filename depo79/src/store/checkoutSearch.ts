@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { format } from 'date-fns';
 
 interface CheckoutSearchParams {
   query?: string;

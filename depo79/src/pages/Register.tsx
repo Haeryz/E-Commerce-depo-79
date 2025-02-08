@@ -15,7 +15,6 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [role] = useState<"customer" | "admin">("customer");
   const [otpRequired, setOtpRequired] = useState<boolean>(false);
-  const [emailForOtp, setEmailForOtp] = useState<string>("");
 
   const registerUser = useAuthStore((state) => state.registerUser);
   const navigate = useNavigate();
@@ -36,8 +35,6 @@ const Register: React.FC = () => {
       const result = await registerUser(name, email, password, role);
       if (result.otpRequired) {
         setOtpRequired(true);
-        setEmailForOtp(result.email);
-        // Navigate to OTP verification page after registration
         navigate(`/verify-otp?email=${encodeURIComponent(result.email)}`);
       } else {
         alert("Registration failed.");

@@ -1,9 +1,10 @@
-import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth'; // Assuming you have the Zustand store
 
 // Updated ProtectedRoute as a wrapper
-const ProtectedRoute = ({ element: Element, ...rest }) => {
+import { ComponentType } from 'react';
+
+const ProtectedRoute = ({ element: Element, ...rest }: { element: ComponentType<any> }) => {
     const { isAuthenticated } = useAuthStore.getState(); // Access the authentication state
 
     if (!isAuthenticated) {
