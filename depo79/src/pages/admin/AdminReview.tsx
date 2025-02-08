@@ -1,5 +1,5 @@
 import { Box, HStack, Separator, Text, VStack } from '@chakra-ui/react'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { Rating } from '../../components/ui/rating'
 import { FaStar } from "react-icons/fa6";

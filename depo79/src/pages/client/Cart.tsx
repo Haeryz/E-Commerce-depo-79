@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useCartStore } from '../../store/cart';
-import { BreadcrumbCurrentLink, BreadcrumbLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
+import { BreadcrumbCurrentLink, BreadcrumbRoot } from '../../components/ui/breadcrumb'
 import { Box, Button, HStack, IconButton, Image, Separator, Spinner, Text, VStack } from '@chakra-ui/react'
 import { Checkbox } from '../../components/ui/checkbox'
 import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { motion } from 'framer-motion'
 import { EmptyState } from "../../components/ui/empty-state"
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Cart() {
     const { items, total, loading, error, fetchCart, updateLocalQuantity, syncWithServer, removeFromCart, removeLocalItem, cart } = useCartStore();
