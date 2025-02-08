@@ -43,24 +43,18 @@ export const getProductById = async (req, res) => {
   }
 
   try {
-    // Get reviews for this product
-    const reviews = await Review.find({ product: id })
+    // Use $eq operator to prevent injection
+    const reviews = await Review.find({ product: { $eq: id } })
       .populate('user', 'name email');
 
-    // Get product and manually set the reviews
-    const product = await Product.findById(id).lean();
+    const product = await Product.findOne({ _id: { $eq: id } }).lean();
     
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    // Assign the reviews to the product
     product.reviews = reviews;
-
-    return res.status(200).json({ 
-      success: true, 
-      product
-    });
+    return res.status(200).json({ success: true, product });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
@@ -106,43 +100,29 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const {
-    nama,
-    harga_jual,
-    harga_beli,
-    stok,
-    diskon,
-    berat,
-    letak_rak,
-    keterangan,
-    kategori,
-    image,
-    terjual,  // Added terjual field
-  } = req.body;
-
+  const updateData = { ...req.body };
+  
+  // Remove any MongoDB operators from input
+  delete updateData.$set;
+  delete updateData.$unset;
+  delete updateData.$inc;
+  
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Product not found" });
+    return res.status(404).json({ success: false, message: "Product not found" });
   }
 
-  const updatedProduct = {
-    nama,
-    harga_jual,
-    harga_beli,
-    stok,
-    diskon,
-    berat,
-    letak_rak,
-    keterangan,
-    kategori,
-    image,
-    terjual,  // Added terjual field
-    _id: id,
-  };
-
   try {
-    await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
+    // Use $eq operator and sanitized update data
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: { $eq: id } },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
     return res.status(200).json({ success: true, product: updatedProduct });
   } catch (error) {
     console.log("Error:", error);
@@ -154,16 +134,21 @@ export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Product not found" });
+    return res.status(404).json({ success: false, message: "Product not found" });
   }
 
   try {
-    await Product.findByIdAndRemove(id);
-    return res
-      .status(200)
-      .json({ success: true, message: "Product deleted successfully" });
+    // Use $eq operator for safe deletion
+    const result = await Product.findOneAndDelete({ _id: { $eq: id } });
+    
+    if (!result) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      message: "Product deleted successfully" 
+    });
   } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ success: false, message: error.message });
