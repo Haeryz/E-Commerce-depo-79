@@ -154,7 +154,7 @@ function Chat() {
       </DrawerBody>
 
       <DrawerFooter>
-        <HStack w="full" spacing={4} align="center">
+        <HStack w="full" gap={4} align="center">
     
           <Input
             value={message}
@@ -167,10 +167,10 @@ function Chat() {
           />
 
         
-          <HStack spacing={4}>
+          <HStack gap={4}>
            
             <Button
-              variant="link"
+              variant="ghost"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Attach File"
               borderRadius="full"
@@ -183,12 +183,12 @@ function Chat() {
             </Button>
 
             <Button
-              variant="link"
+              variant="ghost"
               onClick={sendMessage}
               aria-label="Send Message"
               borderRadius="full"
               // padding={10}
-              isDisabled={!message.trim()}
+              disabled={!message.trim()}
             >
               <i
                 className="bx bx-right-arrow-alt"
