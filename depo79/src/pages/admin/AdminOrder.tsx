@@ -48,7 +48,7 @@ const AdminOrder = () => {
   const { colorMode } = useColorMode();
   const { checkouts, fetchCheckouts } = useCheckoutStore();
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null);
-  const [socket, setSocket] = React.useState<Socket | null>(null);
+  const socketRef = React.useRef<Socket | null>(null);
   const [localCheckouts, setLocalCheckouts] = React.useState(checkouts);
   const { searchParams, setSearchParams, searchCheckouts, searchResults, isLoading } = useCheckoutSearchStore();
   const [searchInput, setSearchInput] = React.useState('');
@@ -94,7 +94,6 @@ const AdminOrder = () => {
   useEffect(() => {
     const initializeSocket = async () => {
       try {
-        // Initial fetch
         await fetchCheckouts();
 
         const socketInstance = io(import.meta.env.VITE_API_URL, {
@@ -106,6 +105,10 @@ const AdminOrder = () => {
           timeout: 20000
         });
 
+        // Store socket instance in ref instead of state
+        socketRef.current = socketInstance;
+
+        // Set up event listeners
         socketInstance.on('connect', () => {
           console.log('Connected to socket server:', socketInstance.id);
         });
@@ -135,10 +138,11 @@ const AdminOrder = () => {
           }
         });
 
-        setSocket(socketInstance);
-
+        // Cleanup function
         return () => {
-          socketInstance.disconnect();
+          if (socketRef.current) {
+            socketRef.current.disconnect();
+          }
         };
       } catch (error) {
         console.error('Error initializing socket:', error);
