@@ -106,7 +106,7 @@ function Checkout() {
     setSelectedKelurahan(value);
   };
 
-  const { items, total, fetchCart, cart } = useCartStore();
+  const { items, total, fetchCart } = useCartStore();
 
   useEffect(() => {
     const initializeCheckout = async () => {
