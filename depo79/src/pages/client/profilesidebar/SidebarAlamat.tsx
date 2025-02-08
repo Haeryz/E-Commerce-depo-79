@@ -1,5 +1,5 @@
 import { Box, HStack, Input, Text, VStack } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { LuMapPin } from 'react-icons/lu';
 import { Field } from '../../../components/ui/field';
 import { useAlamatStore } from '../../../store/alamat';
