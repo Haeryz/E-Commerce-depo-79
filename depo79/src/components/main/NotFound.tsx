@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Heading, Text } from "@chakra-ui/react";
 import { useColorMode } from '../ui/color-mode'
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -55,21 +55,21 @@ export default function NotFound() {
         >
           Sorry, the page you're looking for doesn't exist.
         </Text>
-        <Button
-          as={Link}
+        <Link
           to="/"
-          colorScheme="teal"
-          size="lg"
           style={{
             backgroundColor: "#38B2AC", // Button color
             padding: "12px 24px",
             borderRadius: "5px",
             color: "white",
             fontWeight: "bold",
+            textDecoration: "none",
+            display: "inline-block",
+            textAlign: "center",
           }}
         >
           Go Back Home
-        </Button>
+        </Link>
       </Box>
     </motion.div>
   );
