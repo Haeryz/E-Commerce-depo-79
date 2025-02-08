@@ -33,6 +33,7 @@ const AdminHistory = () => {
   const { colorMode } = useColorMode()
   const { checkouts } = useCheckoutStore();
   const [selectedCheckout, setSelectedCheckout] = React.useState<typeof checkouts[0] | null>(null);
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
 
   // Calculate total for all items
   const calculateTotal = (items: CheckoutItem[]) => {
@@ -76,7 +77,10 @@ const AdminHistory = () => {
                 ))}
               </SelectContent>
             </SelectRoot>
-            <CustomDatePicker />
+            <CustomDatePicker 
+              selectedDate={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+            />
             <Field w={'60%'}>
               <Input placeholder="Nama Customer" />
             </Field>
