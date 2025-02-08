@@ -1,4 +1,5 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
 
@@ -9,7 +10,7 @@ const customIcon = new Icon({
   });
 
 interface MapProps {
-    position: [number, number]; // latitude, longitude
+    position: LatLngExpression; // Using proper type from leaflet
 }
   
 
