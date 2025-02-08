@@ -1,5 +1,4 @@
-import { Alert, Box, Group, Text } from '@chakra-ui/react'
-import React from 'react'
+import { Alert, Box } from '@chakra-ui/react'
 import { useColorMode } from '../../components/ui/color-mode'
 import { EmptyState } from '../../components/ui/empty-state'
 import { Button } from '../../components/ui/button'
