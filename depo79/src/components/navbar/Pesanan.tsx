@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button, Text, VStack, Box, HStack, Icon, Textarea } from '@chakra-ui/react';
 import { DialogContent, DialogCloseTrigger } from '../ui/dialog';
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline';

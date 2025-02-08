@@ -277,8 +277,8 @@ function Navbar2() {
             </DialogContent>
           </DialogRoot>
         </Box>
-        <Box 
-          position="relative" 
+        <Box
+          position="relative"
           ref={searchRef}
           w={{ base: "120px", sm: "150px", md: "200px" }}
         >
@@ -449,18 +449,20 @@ function Navbar2() {
             <Button
               onClick={() => navigate("/login")}
               colorScheme="blue"
-              height="40px" // Adjust the height to make it more compact
-              paddingX="8" // Reduced padding for a more compact look
-              fontSize="sm" // Adjust font size if necessary
+              height="40px"
+              paddingX="8"
+              fontSize="sm"
+              borderRadius="md"
+              transition="border-radius 0.3s ease"
               _hover={{
-                borderRadius: "full", // Change borderRadius to full on hover
+                borderRadius: "2xl"
               }}
             >
               Login
             </Button>
           )}
         </HStack>
-        
+
         {/* Mobile Menu Button - Always visible on mobile */}
         <Box display={{ base: "block", md: "none" }}>
           <MobileDrawer />

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { DrawerBackdrop, DrawerBody, DrawerCloseTrigger, DrawerContent, DrawerHeader, DrawerRoot, DrawerTitle, DrawerTrigger } from '../ui/drawer'
-import { IconButton, Input, Text, useBreakpointValue, VStack, HStack, Box, Stack } from '@chakra-ui/react'
+import { IconButton, Input, Text, VStack, HStack, Box, Stack } from '@chakra-ui/react'
 import { MdChat, MdMenu, MdOutlineDarkMode, MdOutlineShoppingCart } from 'react-icons/md'
 import { Button } from '../ui/button'
 import { useAuthStore } from '../../store/auth'
@@ -12,7 +12,7 @@ import { useCartStore } from "../../store/cart"; // Add this import at the top
 import { TimelineConnector, TimelineContent, TimelineDescription, TimelineItem, TimelineRoot, TimelineTitle } from '../ui/timeline'
 import { useProfileStore } from '../../store/profile';
 import useCheckoutStore from '../../store/checkout';
-import { LuCheck, LuPackage, LuShip, LuClock, LuCircle } from 'react-icons/lu';
+import { LuCheck, LuClock, LuCircle } from 'react-icons/lu';
 
 const MobileDrawer = () => {
     const { colorMode, toggleColorMode } = useColorMode(); // Access color mode and toggle function
@@ -29,7 +29,6 @@ const MobileDrawer = () => {
         navigate(path);
     };
 
-    const [isScrolled, setIsScrolled] = useState(false);
     const [open, setOpen] = useState(false);
     const [isPesananOpen, setIsPesananOpen] = useState(false);
 
@@ -106,16 +105,6 @@ const MobileDrawer = () => {
         return items;
     };
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
     return (
         <Stack>
             <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>

@@ -18,8 +18,8 @@ import {
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
-  DialogRoot,
   DialogHeader,
+  DialogRoot,
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
@@ -45,7 +45,7 @@ interface PageChangeDetails {
 const AdminProduct = () => {
   const { adminProducts, loading: productsLoading, error: productsError, fetchAdminProducts, totalPages: storeTotalPages } = useProductStore();
   const { beratMap, loading: beratLoading, fetchBerat } = useBeratStore();
-  const { results, loading: searchLoading, fetchSuggestions, clearResults } = useSearchStore();
+  const { results, fetchSuggestions, clearResults } = useSearchStore();
   
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -61,7 +61,8 @@ const AdminProduct = () => {
 
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (searchQuery.trim()) {
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery !== '') {  // Changed from Boolean(searchQuery.trim())
       setIsSearching(true);
       fetchSuggestions(searchQuery);
     } else {
@@ -194,7 +195,6 @@ const AdminProduct = () => {
                   type="submit"
                   colorScheme="blackAlpha" 
                   w="10%" 
-                  isLoading={searchLoading}
                 >
                   Cari
                 </Button>

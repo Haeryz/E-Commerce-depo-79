@@ -68,12 +68,18 @@ export const createCheckout = async (req, res) => {
       });
     }
 
-    // Validate email format if provided
-    if (Email && !/\S+@\S+\.\S+/.test(Email)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email format"
-      });
+    // Replace vulnerable email validation with a more secure approach
+    if (Email) {
+      // Basic structural validation
+      const parts = Email.split('@');
+      if (parts.length !== 2 || !parts[0] || !parts[1] || 
+          !parts[1].includes('.') || parts[1].startsWith('.') || 
+          parts[1].endsWith('.') || Email.length > 254) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid email format"
+        });
+      }
     }
 
     // Validate phone number if provided
