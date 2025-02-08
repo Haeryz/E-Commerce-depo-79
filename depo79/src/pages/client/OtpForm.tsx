@@ -79,6 +79,7 @@ const OtpForm: React.FC = () => {
                         borderRadius="50px"
                         pl={10}
                         pr={10}
+                        loading={isVerifyingOtp}
                     >
                         Verify OTP
                     </Button>
