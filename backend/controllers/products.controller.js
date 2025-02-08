@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Product from "../models/products.model.js";
 import Review from "../models/review.model.js";  // Add this import
+import { isValidProductData } from '../utils/validators.js';
 
 export const getProducts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -100,28 +101,47 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const updateData = { ...req.body };
-  
-  // Remove any MongoDB operators from input
-  delete updateData.$set;
-  delete updateData.$unset;
-  delete updateData.$inc;
   
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Product not found" });
   }
 
   try {
-    // Use $eq operator and sanitized update data
-    const updatedProduct = await Product.findOneAndUpdate(
-      { _id: { $eq: id } },
-      { $set: updateData },
-      { new: true, runValidators: true }
-    );
+    // Deep clone and sanitize update data
+    const updateData = JSON.parse(JSON.stringify(req.body));
+    
+    // Remove any MongoDB operators or special characters
+    const sanitizedData = Object.entries(updateData).reduce((acc, [key, value]) => {
+      if (!key.includes('$') && !key.includes('.') && value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
 
-    if (!updatedProduct) {
+    // Validate data types and constraints
+    if (!isValidProductData(sanitizedData)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid product data" 
+      });
+    }
+
+    // Use findById first to ensure document exists
+    const product = await Product.findById(id);
+    if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
+
+    // Update only if document exists and data is valid
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { $set: sanitizedData },
+      { 
+        new: true, 
+        runValidators: true,
+        sanitizeFilter: true // Enable MongoDB 5.0+ sanitization
+      }
+    );
 
     return res.status(200).json({ success: true, product: updatedProduct });
   } catch (error) {
