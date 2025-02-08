@@ -173,6 +173,7 @@ export const useProductStore = create<ProductState>((set) => ({
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: 'include',
                 body: JSON.stringify(product),
             });
             if (!response.ok) {
