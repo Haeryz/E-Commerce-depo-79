@@ -261,7 +261,7 @@ const AdminOrder = () => {
           <HStack gap={4} align="stretch" width="100%">
             <SelectRoot
               value={searchParams.status ? [searchParams.status] : undefined}
-              onChange={(value) => handleStatusChange(value[0])}
+              onValueChange={(details) => handleStatusChange(details.items[0].value)}
               collection={frameworks}
               size="sm"
               width="100px"
@@ -289,7 +289,7 @@ const AdminOrder = () => {
               />
             </Field>
             <Button
-              isLoading={isLoading}
+              loading={isLoading}
               onClick={() => searchCheckouts()}
             >
               Search
