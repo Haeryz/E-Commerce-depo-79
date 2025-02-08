@@ -158,13 +158,28 @@ export const createCheckout = async (req, res) => {
         price: item.product.harga_jual // assuming this is the price field
       }));
 
-      // Optionally clear the cart or mark it as checked out
-      await Cart.findByIdAndUpdate(cartId, { 
-        $set: { 
-          items: [],
-          total: 0
+      // Secure cart update using findOneAndUpdate with $eq operator
+      const updatedCart = await Cart.findOneAndUpdate(
+        { _id: { $eq: cartId } },
+        { 
+          $set: { 
+            items: [],
+            total: 0
+          }
+        },
+        { 
+          new: true,
+          runValidators: true,
+          upsert: false // Prevent creation of new documents
         }
-      });
+      );
+
+      if (!updatedCart) {
+        return res.status(404).json({
+          success: false,
+          message: "Failed to update cart"
+        });
+      }
     }
 
     // Create new checkout with pending status and items
