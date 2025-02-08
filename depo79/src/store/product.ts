@@ -15,6 +15,16 @@ interface Product {
     keterangan?: string;
     kategori: string;
     image: string;
+    terjual?: number;  // Add this property
+    reviews?: Array<{  // Add this property
+        _id: string;
+        user: {
+            _id: string;
+            nama: string;
+        };
+        rating: number;
+        comment: string;
+    }>;
 }
 
 interface ProductState {

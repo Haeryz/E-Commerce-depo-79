@@ -75,7 +75,7 @@ function DetailBarang() {
     const { productDetail, loading: productLoading, error: productError, fetchProductById } = useProductStore();
     const { beratMap, loading: beratLoading, error: beratError, fetchBerat } = useBeratStore();
     const { profileMap, fetchProfileReviews } = useProfileStore();
-    const { addToCart, loading: cartLoading } = useCartStore();
+    const { addToCart } = useCartStore();
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
@@ -236,7 +236,6 @@ function DetailBarang() {
                                                 <Button variant="outline">Cancel</Button>
                                             </DialogActionTrigger>
                                             <Button 
-                                                isLoading={cartLoading}
                                                 onClick={handleAddToCart}
                                             >
                                                 Add to Cart
