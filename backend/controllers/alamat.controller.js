@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import sanitize from "mongo-sanitize";
 import Alamat from "../models/alamat.model.js"; // Assuming the model is named 'alamats.model.js'
 
 export const getAlamat = async (req, res) => {
@@ -27,10 +28,15 @@ export const getAlamat = async (req, res) => {
 };
 
 export const createAlamat = async (req, res) => {
-  const { user, provinsi, kota, kecamatan, kelurahan, kodepos, detail } =
-    req.body;
+  const safeUser = sanitize(req.body.user);
+  const safeProvinsi = sanitize(req.body.provinsi);
+  const safeKota = sanitize(req.body.kota);
+  const safeKecamatan = sanitize(req.body.kecamatan);
+  const safeKelurahan = sanitize(req.body.kelurahan);
+  const safeKodepos = sanitize(req.body.kodepos);
+  const safeDetail = sanitize(req.body.detail);
 
-  if (!user || !provinsi || !kota || !kecamatan || !kelurahan || !kodepos) {
+  if (!safeUser || !safeProvinsi || !safeKota || !safeKecamatan || !safeKelurahan || !safeKodepos) {
     return res
       .status(400)
       .json({
@@ -40,13 +46,13 @@ export const createAlamat = async (req, res) => {
   }
 
   const newAlamat = new Alamat({
-    user,
-    provinsi,
-    kota,
-    kecamatan,
-    kelurahan,
-    kodepos,
-    detail,
+    user: safeUser,
+    provinsi: safeProvinsi,
+    kota: safeKota,
+    kecamatan: safeKecamatan,
+    kelurahan: safeKelurahan,
+    kodepos: safeKodepos,
+    detail: safeDetail,
   });
 
   try {
@@ -60,8 +66,13 @@ export const createAlamat = async (req, res) => {
 
 export const updateAlamat = async (req, res) => {
   const { id } = req.params;
-  const { user, provinsi, kota, kecamatan, kelurahan, kodepos, detail } =
-    req.body;
+  const safeUser = sanitize(req.body.user);
+  const safeProvinsi = sanitize(req.body.provinsi);
+  const safeKota = sanitize(req.body.kota);
+  const safeKecamatan = sanitize(req.body.kecamatan);
+  const safeKelurahan = sanitize(req.body.kelurahan);
+  const safeKodepos = sanitize(req.body.kodepos);
+  const safeDetail = sanitize(req.body.detail);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -70,13 +81,13 @@ export const updateAlamat = async (req, res) => {
   }
 
   const updatedAlamat = {
-    user,
-    provinsi,
-    kota,
-    kecamatan,
-    kelurahan,
-    kodepos,
-    detail,
+    user: safeUser,
+    provinsi: safeProvinsi,
+    kota: safeKota,
+    kecamatan: safeKecamatan,
+    kelurahan: safeKelurahan,
+    kodepos: safeKodepos,
+    detail: safeDetail,
     _id: id,
   };
 
