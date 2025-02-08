@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
 import Kategori from "../models/kategori.model.js";
 
+const validateInput = (input) => {
+  return typeof input === 'string' && input.trim().length > 0;
+};
+
 export const createKategori = async (req, res) => {
   const { nama } = req.body;
 
-  if (!nama) {
+  if (!validateInput(nama)) {
     return res
       .status(400)
-      .json({ success: false, message: "Nama is required" });
+      .json({ success: false, message: "Invalid nama value" });
   }
-  const newKategori = new Kategori({ nama });
+
+  const newKategori = new Kategori({ nama: nama.trim() });
   try {
     await newKategori.save();
     return res.status(201).json({ success: true, kategori: newKategori });
@@ -22,7 +27,15 @@ export const createKategori = async (req, res) => {
 export const getKategori = async (req, res) => {
   try {
     if (req.params.id) {
-      const kategori = await Kategori.findById(req.params.id);
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid ID format" });
+      }
+
+      const kategori = await Kategori.findOne({
+        _id: { $eq: req.params.id }
+      });
       if (!kategori) {
         return res
           .status(404)
@@ -30,7 +43,7 @@ export const getKategori = async (req, res) => {
       }
       return res.status(200).json({ success: true, kategori });
     } else {
-      const kategoris = await Kategori.find();
+      const kategoris = await Kategori.find({});
       return res.status(200).json({ success: true, kategoris });
     }
   } catch (error) {
@@ -45,13 +58,29 @@ export const updateKategori = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
-      .status(404)
-      .json({ success: false, message: "Kategori not found" });
+      .status(400)
+      .json({ success: false, message: "Invalid ID format" });
   }
 
-  const updatedKategori = { nama, _id: id };
+  if (!validateInput(nama)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid nama value" });
+  }
+
   try {
-    await Kategori.findByIdAndUpdate(id, updatedKategori, { new: true });
+    const updatedKategori = await Kategori.findOneAndUpdate(
+      { _id: { $eq: id } },
+      { nama: nama.trim() },
+      { new: true }
+    );
+    
+    if (!updatedKategori) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Kategori not found" });
+    }
+    
     return res.status(200).json({ success: true, kategori: updatedKategori });
   } catch (error) {
     console.log("Error:", error);
@@ -64,12 +93,21 @@ export const deleteKategori = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
-      .status(404)
-      .json({ success: false, message: "Kategori not found" });
+      .status(400)
+      .json({ success: false, message: "Invalid ID format" });
   }
 
   try {
-    await Kategori.findByIdAndRemove(id);
+    const deletedKategori = await Kategori.findOneAndDelete({
+      _id: { $eq: id }
+    });
+
+    if (!deletedKategori) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Kategori not found" });
+    }
+
     return res
       .status(200)
       .json({ success: true, message: "Kategori deleted successfully" });
