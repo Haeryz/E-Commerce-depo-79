@@ -4,6 +4,11 @@ import Alamat from "../models/alamat.model.js"; // Assuming the model is named '
 export const getAlamat = async (req, res) => {
   try {
     if (req.params.id) {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid ID format" });
+      }
       const alamat = await Alamat.findById(req.params.id);
       if (!alamat) {
         return res
