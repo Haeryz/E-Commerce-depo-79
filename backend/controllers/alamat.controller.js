@@ -1,121 +1,191 @@
 import mongoose from "mongoose";
-import sanitize from "mongo-sanitize";
-import Alamat from "../models/alamat.model.js"; // Assuming the model is named 'alamats.model.js'
+import Alamat from "../models/alamat.model.js";
 
 export const getAlamat = async (req, res) => {
   try {
     if (req.params.id) {
       if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid ID format" });
+        return res.status(400).json({
+          success: false,
+          message: "Invalid ID format"
+        });
       }
-      const alamat = await Alamat.findById(req.params.id);
+      
+      const alamat = await Alamat.findOne({
+        _id: { $eq: req.params.id }
+      });
+      
       if (!alamat) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Alamat not found" });
+        return res.status(404).json({
+          success: false,
+          message: "Alamat not found"
+        });
       }
+      
       return res.status(200).json({ success: true, alamat });
-    } else {
-      const alamats = await Alamat.find();
-      return res.status(200).json({ success: true, alamats }); // Added "return" for consistency
     }
+
+    const alamats = await Alamat.find({}).limit(100);
+    return res.status(200).json({ success: true, alamats });
+    
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message }); // Added "return" for consistency
+    console.error("Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching address"
+    });
   }
 };
 
 export const createAlamat = async (req, res) => {
-  const safeUser = sanitize(req.body.user);
-  const safeProvinsi = sanitize(req.body.provinsi);
-  const safeKota = sanitize(req.body.kota);
-  const safeKecamatan = sanitize(req.body.kecamatan);
-  const safeKelurahan = sanitize(req.body.kelurahan);
-  const safeKodepos = sanitize(req.body.kodepos);
-  const safeDetail = sanitize(req.body.detail);
-
-  if (!safeUser || !safeProvinsi || !safeKota || !safeKecamatan || !safeKelurahan || !safeKodepos) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "All required fields must be provided",
-      });
-  }
-
-  const newAlamat = new Alamat({
-    user: safeUser,
-    provinsi: safeProvinsi,
-    kota: safeKota,
-    kecamatan: safeKecamatan,
-    kelurahan: safeKelurahan,
-    kodepos: safeKodepos,
-    detail: safeDetail,
-  });
-
   try {
+    const { user, provinsi, kota, kecamatan, kelurahan, kodepos, detail } = req.body;
+
+    // Validate required fields
+    if (!user || !provinsi || !kota || !kecamatan || !kelurahan || !kodepos) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be provided"
+      });
+    }
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(user)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format"
+      });
+    }
+
+    // Validate postal code format (numbers only, specific length)
+    if (!/^\d{5}$/.test(kodepos)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid postal code format"
+      });
+    }
+
+    // Create new address with validated data
+    const newAlamat = new Alamat({
+      user,
+      provinsi,
+      kota,
+      kecamatan,
+      kelurahan,
+      kodepos,
+      detail: detail || ""
+    });
+
     await newAlamat.save();
     return res.status(201).json({ success: true, alamat: newAlamat });
+    
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while creating address"
+    });
   }
 };
 
 export const updateAlamat = async (req, res) => {
-  const { id } = req.params;
-  const safeUser = sanitize(req.body.user);
-  const safeProvinsi = sanitize(req.body.provinsi);
-  const safeKota = sanitize(req.body.kota);
-  const safeKecamatan = sanitize(req.body.kecamatan);
-  const safeKelurahan = sanitize(req.body.kelurahan);
-  const safeKodepos = sanitize(req.body.kodepos);
-  const safeDetail = sanitize(req.body.detail);
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Alamat not found" });
-  }
-
-  const updatedAlamat = {
-    user: safeUser,
-    provinsi: safeProvinsi,
-    kota: safeKota,
-    kecamatan: safeKecamatan,
-    kelurahan: safeKelurahan,
-    kodepos: safeKodepos,
-    detail: safeDetail,
-    _id: id,
-  };
-
   try {
-    await Alamat.findByIdAndUpdate(id, updatedAlamat, { new: true });
+    const { id } = req.params;
+    const { user, provinsi, kota, kecamatan, kelurahan, kodepos, detail } = req.body;
+
+    // Validate ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(user)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format"
+      });
+    }
+
+    // Validate required fields
+    if (!user || !provinsi || !kota || !kecamatan || !kelurahan || !kodepos) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be provided"
+      });
+    }
+
+    // Validate postal code format
+    if (!/^\d{5}$/.test(kodepos)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid postal code format"
+      });
+    }
+
+    const updatedAlamat = await Alamat.findOneAndUpdate(
+      { _id: { $eq: id } },
+      {
+        $set: {
+          user,
+          provinsi,
+          kota,
+          kecamatan,
+          kelurahan,
+          kodepos,
+          detail: detail || ""
+        }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+
+    if (!updatedAlamat) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found"
+      });
+    }
+
     return res.status(200).json({ success: true, alamat: updatedAlamat });
+    
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while updating address"
+    });
   }
 };
 
 export const deleteAlamat = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Alamat not found" });
-  }
-
   try {
-    await Alamat.findByIdAndRemove(id);
-    return res
-      .status(200)
-      .json({ success: true, message: "Alamat deleted successfully" });
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format"
+      });
+    }
+
+    const deletedAlamat = await Alamat.findOneAndDelete({
+      _id: { $eq: id }
+    });
+
+    if (!deletedAlamat) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Address deleted successfully"
+    });
+    
   } catch (error) {
-    console.log("Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting address"
+    });
   }
 };
