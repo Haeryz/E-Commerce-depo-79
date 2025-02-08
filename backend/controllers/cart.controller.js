@@ -1,6 +1,7 @@
 import Cart from "../models/cart.model.js";
 import Product from "../models/products.model.js";
 import Profile from "../models/profile.model.js";
+import mongoose from "mongoose";
 
 export const getCart = async (req, res) => {
   try {
@@ -31,6 +32,10 @@ export const getCart = async (req, res) => {
 export const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: "Invalid product ID" });
+    }
 
     // Get profile
     const profile = await Profile.findOne({ User: req.user.id });
@@ -78,6 +83,10 @@ export const removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: "Invalid product ID" });
+    }
+
     // Get profile
     const profile = await Profile.findOne({ User: req.user.id });
     if (!profile) {
@@ -113,6 +122,10 @@ export const updateCart = async (req, res) => {
   try {
     const { productId } = req.params;
     const { quantity } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: "Invalid product ID" });
+    }
 
     // Get profile
     const profile = await Profile.findOne({ User: req.user.id });
