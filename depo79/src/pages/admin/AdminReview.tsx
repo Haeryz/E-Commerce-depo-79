@@ -146,10 +146,10 @@ const AdminReview = () => {
               </Box>
               <VStack m={4} align="start" w={'20%'}>
                 <Text fontSize={'lg'} fontWeight="bold">
-                  {profileMap[review.user]?.nama || 'Unknown User'}
+                  {review.userName || 'Unknown User'}
                 </Text>
                 <Text>
-                  {productMap[review.product] || 'Unknown Product'}
+                  {review.productName || 'Unknown Product'}
                 </Text>
               </VStack>
               <VStack w={'60%'} align={'start'}>
