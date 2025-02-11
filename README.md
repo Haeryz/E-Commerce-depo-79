@@ -1,4 +1,4 @@
-# Depo79 E-Commerce Platform
+# Depo79 E-Commerce Web Platform
 
 A modern e-commerce web application built with the MERN stack (MongoDB, Express.js, React, Node.js) for construction materials retail. Developed as part of an internship project at Azka Group Malang.
 
