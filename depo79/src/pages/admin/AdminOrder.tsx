@@ -15,7 +15,7 @@ import { io, Socket } from 'socket.io-client'
 import * as XLSX from 'xlsx';
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from '../../components/ui/select'
 import { useCheckoutSearchStore } from '../../store/checkoutSearch';
-import debounce from 'lodash/debounce';  // Add this import
+import debounce from 'lodash.debounce';  // Add this import
 
 interface CheckoutItem {
   _id: string;

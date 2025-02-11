@@ -1,6 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from "path";
 import Beratroutes from "./routes/berat.route.js";
 import Kategoriroutes from "./routes/kategori.route.js";
 import Productroutes from "./routes/product.route.js";
@@ -15,9 +18,13 @@ import checkoutRoute from "./routes/checkout.route.js";
 import { createServer } from 'http';
 import { initSocket } from './socket.js'; // Make sure path is correct
 import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
-import path from "path";
 import strukRoute from "./routes/struk.route.js";
 import rateLimit from 'express-rate-limit';
+
+// Fix directory path resolution for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const rootDir = dirname(__dirname); // go up one level to reach project root
 
 dotenv.config();
 
@@ -66,9 +73,22 @@ app.use("/api/struk", strukRoute);
 if(process.env.NODE_ENV === 'production'){
   // Apply stricter rate limiting to static file serving
   app.use(staticLimiter);
-  app.use(express.static(path.join(__dirname, "/depo79/dist")));
+  
+  // Construct absolute paths
+  const distPath = path.join(rootDir, 'depo79', 'dist');
+  
+  // Debug logging
+  console.log('Root directory:', rootDir);
+  console.log('Dist path:', distPath);
+  
+  // Serve static files
+  app.use(express.static(distPath));
+  
+  // Serve index.html for all other routes
   app.get("*", staticLimiter, (req, res) => {
-    res.sendFile(path.resolve(__dirname, "depo79", "dist", "index.html"));
+    const indexPath = path.join(distPath, 'index.html');
+    console.log('Serving index.html from:', indexPath);
+    res.sendFile(indexPath);
   });
 }
 
