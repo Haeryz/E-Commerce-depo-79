@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon backend/server.js",
     "build": "npm install && npm install --prefix depo79 && npm run build --prefix depo79",
-    "start": "NODE_ENV=production node backend/server.js"
+    "start": "NODE_ENV=production node backend/server.js",
+    "tunnel": "lt --port 5000 --subdomain depo79-store"
   },
   "type": "module",
   "keywords": [],

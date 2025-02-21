@@ -117,7 +117,7 @@ export const createCheckout = async (req, res) => {
     }
 
     // Validate phone number if provided
-    if (nomor_telefon && nomor_telefon.length !== 12 || 13) {
+    if (nomor_telefon && nomor_telefon.length !== 12 ) {
       return res.status(400).json({
         success: false,
         message: "Phone number must be exactly 12 characters"

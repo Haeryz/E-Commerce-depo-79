@@ -34,13 +34,13 @@ const httpServer = createServer(app);
 // Configure rate limiter
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 500 // increased from 100 to 500 requests per windowMs
 });
 
 // Configure stricter rate limiter for static files
 const staticLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50 // limit each IP to 50 requests per windowMs
+  max: 200 // increased from 50 to 200 requests per windowMs
 });
 
 // Apply rate limiting to all routes
@@ -51,7 +51,10 @@ const io = initSocket(httpServer);
 
 // Enable CORS with credentials
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: [
+    process.env.FRONTEND_URL || "http://localhost:5173",
+    /\.loca\.lt$/  // Allow localtunnel domains
+  ],
   credentials: true
 }));
 
