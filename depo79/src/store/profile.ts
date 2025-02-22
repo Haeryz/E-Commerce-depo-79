@@ -2,12 +2,14 @@ import { create } from "zustand";
 import { useAuthStore } from "./auth";
 import { Alamat } from "./alamat";
 
-interface Profile {
+// Make the Profile interface exportable
+export interface Profile {
   _id: string;
   nama: string;
   nomorhp: string;
   alamat: Alamat;
   jeniskelamin: string;
+  User: string;
 }
 
 interface CreateProfileData {
@@ -206,20 +208,44 @@ export const useProfileStore = create<ProfileState>((set) => ({
     set({ loading: true, error: null });
 
     try {
-      const response = await fetch("/api/profile/reviews", { method: "GET" }); // Adjusted endpoint for reviews
-
-      if (!response.ok) throw new Error("Failed to fetch profile reviews");
+      console.log('[PROFILE] Fetching profiles...');
+      
+      const response = await fetch("/api/profile", {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
 
       const data = await response.json();
-      if (data.success) {
-        // Handle the review data if necessary
-        console.log("Fetched profile reviews:", data.reviews);
-      } else {
-        console.log("Error fetching profile reviews:", data.message);
-        set({ error: data.message });
+      console.log('[PROFILE] Raw API response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch profiles");
       }
-    } catch (error: unknown) {
-      console.log("Error during profile reviews fetch:", error instanceof Error ? error.message : String(error));
+
+      if (data.success) {
+        // Create a map using User ID as the key
+        const profilesMap = data.profiles.reduce((acc: Record<string, Profile>, profile: any) => {
+          if (profile.User) {
+            acc[profile.User] = {
+              ...profile,
+              // Ensure all required fields are present
+              nama: profile.nama || 'Unknown',
+              _id: profile._id,
+              User: profile.User
+            };
+          }
+          return acc;
+        }, {});
+
+        console.log('[PROFILE] Created profiles map:', profilesMap);
+        set({ profileMap: profilesMap });
+        return profilesMap; // Return the map for immediate use
+      }
+    } catch (error) {
+      console.error("[PROFILE] Error fetching profiles:", error);
       set({ error: error instanceof Error ? error.message : String(error) });
     } finally {
       set({ loading: false });

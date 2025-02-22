@@ -50,7 +50,10 @@ const AdminChat = () => {
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [message, setMessage] = useState('');
   const [rooms, setRooms] = useState<string[]>([]);  // List of active chat rooms
-  const { profileMap, fetchProfileReviews } = useProfileStore();
+  const { fetchProfileReviews } = useProfileStore();
+
+  // Update the state definition to be explicit
+  const [userNames, setUserNames] = useState<Record<string, string>>({});
 
   // Add debug logging for messages state
   const logMessages = () => {
@@ -91,6 +94,14 @@ const AdminChat = () => {
     // Listen for messages with improved logging and handling
     const handleReceiveMessage = (data: ChatMessage) => {
       console.log('[ADMIN UI] Received message:', data);
+      
+      // Only store the name if both sender and senderName are present
+      if (data.sender !== 'admin' && data.senderName && data.room) {
+        setUserNames(prev => ({
+          ...prev,
+          [data.room]: data.senderName as string // Type assertion since we checked it exists
+        }));
+      }
       
       setMessages(prev => {
         const roomId = data.room;
@@ -137,9 +148,20 @@ const AdminChat = () => {
     logMessages();
   }, [messages, activeRoom]);
 
-  // Add useEffect to fetch profiles
+  // Update the useEffect for fetching profiles
   useEffect(() => {
-    fetchProfileReviews();
+    const loadProfiles = async () => {
+      try {
+        await fetchProfileReviews();
+        console.log('[ADMIN] Profiles fetch completed');
+      } catch (error) {
+        console.error('[ADMIN] Error loading profiles:', error);
+      }
+    };
+
+    loadProfiles();
+    const interval = setInterval(loadProfiles, 30000);
+    return () => clearInterval(interval);
   }, [fetchProfileReviews]);
 
   // Add useEffect to scroll on new messages
@@ -212,6 +234,34 @@ const AdminChat = () => {
     fileInputRef.current?.click();
   };
 
+
+  // Update getUserDisplayName function
+  const getUserDisplayName = (roomId: string) => {
+    if (roomId === 'guest') return 'Guest';
+    
+    // Use stored username if available
+    const storedName = userNames[roomId];
+    if (storedName) return storedName;
+
+    // Try to get name from last message
+    const roomMessages = messages[roomId];
+    if (roomMessages?.length > 0) {
+      for (let i = roomMessages.length - 1; i >= 0; i--) {
+        const msg = roomMessages[i];
+        if (msg.sender !== 'admin' && msg.senderName) {
+          // Store the name for future use
+          setUserNames(prev => ({
+            ...prev,
+            [roomId]: msg.senderName! // Non-null assertion since we checked it exists
+          }));
+          return msg.senderName;
+        }
+      }
+    }
+
+    return `User ${roomId}`;
+  };
+
   return (
     <Box display="flex" height="100vh" w="85%" p={4}>
       <Box
@@ -250,7 +300,7 @@ const AdminChat = () => {
               p={2}
             >
               {rooms.map(roomId => {
-                const userProfile = profileMap[roomId];
+                const displayName = getUserDisplayName(roomId);
                 return (
                   <HStack
                     key={roomId}
@@ -268,12 +318,12 @@ const AdminChat = () => {
                     onClick={() => handleRoomSelect(roomId)}
                   >
                     <Avatar 
-                      name={userProfile?.nama || roomId} 
-                      colorPalette={pickPalette(userProfile?.nama || roomId)} 
+                      name={displayName}
+                      colorPalette={pickPalette(displayName)} 
                     />
                     <VStack align="start" gap={0}>
                       <Text fontWeight="medium">
-                        {userProfile?.nama || `User ${roomId}`}
+                        {displayName}
                       </Text>
                       {messages[roomId]?.length > 0 && (
                         <Text fontSize="xs" color="gray.500" truncate>
@@ -301,7 +351,9 @@ const AdminChat = () => {
               borderColor={colorMode === 'light' ? 'gray.200' : 'gray.700'}
               bg={colorMode === 'light' ? 'gray.50' : 'gray.800'}
             >
-              <Text fontWeight="semibold">Aingmacan</Text>
+              <Text fontWeight="semibold">
+                {activeRoom ? getUserDisplayName(activeRoom) : 'Select a chat'}
+              </Text>
             </Box>
 
             <VStack w="100%" h="calc(100% - 140px)" p={6} overflowY="auto" gap={4}>
