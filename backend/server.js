@@ -46,8 +46,10 @@ const staticLimiter = rateLimit({
 // Apply rate limiting to all routes
 app.use(limiter);
 
-// Initialize Socket.IO before routes
+// Initialize Socket.IO with debug message
+console.log('Initializing Socket.IO...');
 const io = initSocket(httpServer);
+console.log('Socket.IO initialized successfully');
 
 // Enable CORS with credentials
 app.use(cors({
@@ -121,4 +123,5 @@ const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
     connectDB();
     console.log(`Server running on http://localhost:${PORT}`);
+    console.log('Socket.IO is ready for connections');
 });

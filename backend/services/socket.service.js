@@ -1,11 +1,7 @@
 import { Server } from 'socket.io';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid'; // Add this dependency
 
 let io;
 
-// Add debug helper
 const debug = (context, message, data = {}) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] [${context}]:`, message, JSON.stringify(data, null, 2));
@@ -14,7 +10,7 @@ const debug = (context, message, data = {}) => {
 export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173"], // Keep this the same since your frontend is on 5173
+      origin: ["http://localhost:5173"],
       methods: ["GET", "POST"],
       credentials: true
     }
@@ -58,47 +54,38 @@ export const initSocket = (server) => {
         members: Array.from(roomMembers || [])
       });
 
-      // Notify admins
       adminSockets.forEach(adminId => {
         io.to(adminId).emit('user_connected', roomId);
       });
     });
 
-    socket.on('send_message', async (data) => {
-      debug('MESSAGE', `Message received`, {
-        type: data.type,
-        hasAttachment: !!data.file
+    socket.on('send_message', (data) => {
+      debug('MESSAGE', `Message received from socket ${socket.id}`, {
+        messageData: data,
+        room: data.room,
+        sender: data.sender,
+        roomExists: io.sockets.adapter.rooms.has(data.room),
+        roomSize: io.sockets.adapter.rooms.get(data.room)?.size || 0
       });
 
-      let messageData = { ...data };
-
-      // Handle file attachment if present
-      if (data.file) {
-        try {
-          const fileId = uuidv4();
-          const fileExt = data.file.name.split('.').pop();
-          const fileName = `${fileId}.${fileExt}`;
-          const filePath = join(process.cwd(), 'uploads', fileName);
-          
-          // Convert base64 to buffer and save
-          const fileBuffer = Buffer.from(data.file.data, 'base64');
-          await writeFile(filePath, fileBuffer);
-
-          // Add file info to message
-          messageData.attachment = {
-            id: fileId,
-            name: data.file.name,
-            type: data.file.type,
-            size: data.file.size,
-            url: `/uploads/${fileName}`
-          };
-          delete messageData.file; // Remove raw file data
-        } catch (error) {
-          debug('ERROR', `File upload failed`, { error });
-        }
+      // Check if room exists
+      if (!io.sockets.adapter.rooms.has(data.room)) {
+        debug('MESSAGE_ERROR', `Room ${data.room} does not exist!`);
+        return;
       }
 
-      io.in(data.room).emit('receive_message', messageData);
+      // Log room members
+      const roomMembers = Array.from(io.sockets.adapter.rooms.get(data.room) || []);
+      debug('MESSAGE_ROOM', `Broadcasting to room ${data.room}`, {
+        roomMembers,
+        messageContent: data.content
+      });
+
+      io.in(data.room).emit('receive_message', data);
+      
+      debug('MESSAGE_SENT', `Message broadcasted to room ${data.room}`, {
+        timestamp: new Date().toISOString()
+      });
     });
 
     socket.on('disconnect', () => {
