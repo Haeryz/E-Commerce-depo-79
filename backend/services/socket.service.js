@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import { ChatMessage } from '../models/chat.model.js';
 
 let io;
 
@@ -59,33 +60,54 @@ export const initSocket = (server) => {
       });
     });
 
-    socket.on('send_message', (data) => {
+    socket.on('send_message', async (data) => {
       debug('MESSAGE', `Message received from socket ${socket.id}`, {
         messageData: data,
         room: data.room,
-        sender: data.sender,
-        roomExists: io.sockets.adapter.rooms.has(data.room),
-        roomSize: io.sockets.adapter.rooms.get(data.room)?.size || 0
+        sender: data.sender
       });
 
-      // Check if room exists
-      if (!io.sockets.adapter.rooms.has(data.room)) {
-        debug('MESSAGE_ERROR', `Room ${data.room} does not exist!`);
-        return;
+      try {
+        // Create message document
+        const messageData = {
+          room: data.room,
+          content: data.content,
+          sender: data.sender,
+          senderName: data.senderName || 'Unknown',
+          timestamp: data.timestamp || new Date(),
+          file: data.file ? {
+            name: data.file.name,
+            type: data.file.type,
+            size: data.file.size,
+            url: data.file.url
+          } : undefined
+        };
+
+        console.log('Saving message to database:', messageData);
+
+        // Store message in MongoDB
+        const chatMessage = new ChatMessage(messageData);
+        const savedMessage = await chatMessage.save();
+        
+        console.log('Message saved successfully:', savedMessage);
+
+        // Broadcast to room
+        io.in(data.room).emit('receive_message', {
+          ...data,
+          _id: savedMessage._id
+        });
+        
+        debug('MESSAGE_SENT', `Message saved and broadcasted`, {
+          messageId: savedMessage._id,
+          room: data.room
+        });
+      } catch (error) {
+        console.error('Error saving message:', error);
+        debug('MESSAGE_ERROR', `Error saving message`, {
+          error: error.message,
+          stack: error.stack
+        });
       }
-
-      // Log room members
-      const roomMembers = Array.from(io.sockets.adapter.rooms.get(data.room) || []);
-      debug('MESSAGE_ROOM', `Broadcasting to room ${data.room}`, {
-        roomMembers,
-        messageContent: data.content
-      });
-
-      io.in(data.room).emit('receive_message', data);
-      
-      debug('MESSAGE_SENT', `Message broadcasted to room ${data.room}`, {
-        timestamp: new Date().toISOString()
-      });
     });
 
     socket.on('disconnect', () => {
