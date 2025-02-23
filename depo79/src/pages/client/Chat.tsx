@@ -35,8 +35,23 @@ function Chat() {
     fetchProfile();
   }, [fetchProfile]);
 
+  // Add function to fetch chat history
+  const fetchChatHistory = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/chat/history/${roomId}`, {
+        credentials: 'include'
+      });
+      const history = await response.json();
+      setMessages(history);
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+    }
+  };
+
+  // Update useEffect to fetch history when room changes
   useEffect(() => {
     socket.emit("join_room", roomId);
+    fetchChatHistory();
 
     socket.on("receive_message", (data) => {
       setMessages((prev) => [...prev, data]);

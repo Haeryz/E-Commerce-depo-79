@@ -73,8 +73,38 @@ const AdminChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Add function to fetch all rooms
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/chat/rooms', {
+        credentials: 'include'
+      });
+      const rooms = await response.json();
+      setRooms(rooms);
+    } catch (error) {
+      console.error('Error fetching rooms:', error);
+    }
+  };
+
+  // Add function to fetch chat history for a room
+  const fetchRoomHistory = async (roomId: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/chat/history/${roomId}`, {
+        credentials: 'include'
+      });
+      const history = await response.json();
+      setMessages(prev => ({
+        ...prev,
+        [roomId]: history
+      }));
+    } catch (error) {
+      console.error('Error fetching room history:', error);
+    }
+  };
+
   // Fix the useEffect for socket events
   useEffect(() => {
+    fetchRooms();
     // Register as admin when component mounts
     socket.emit('join_admin');
     console.log('[ADMIN UI] Emitted join_admin');
@@ -194,6 +224,7 @@ const AdminChat = () => {
     setActiveRoom(roomId);
     // Ensure we're joined to the room
     socket.emit('join_room', roomId);
+    fetchRoomHistory(roomId);
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
