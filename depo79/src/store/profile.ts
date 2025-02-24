@@ -27,6 +27,7 @@ interface ProfileState {
   createProfile: (profileData: CreateProfileData) => Promise<void>;
   updateProfile: (profile: Profile) => Promise<void>;
   updateProfileName: (name: string) => void; // Function to update profile name
+  clearProfile: () => void;
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
@@ -50,16 +51,19 @@ export const useProfileStore = create<ProfileState>((set) => ({
     });
   },
 
+  clearProfile: () => {
+    set({ profile: null, profileMap: {}, error: null });
+  },
+
   // Fetch the user's profile
   fetchProfile: async () => {
     const { token } = useAuthStore.getState();
     if (!token) {
-      console.log("User not authenticated");
-      set({ error: "User not authenticated", loading: false });
+      set({ profile: null, error: "User not authenticated", loading: false });
       return;
     }
 
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, profile: null }); // Clear profile before fetching
 
     try {
       const response = await fetch("/api/profile/account", {
@@ -81,7 +85,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
       }
     } catch (error: unknown) {
       console.log("Error during profile fetch:", error instanceof Error ? error.message : String(error));
-      set({ error: error instanceof Error ? error.message : String(error) });
+      set({ 
+        profile: null,
+        error: error instanceof Error ? error.message : String(error) 
+      });
     } finally {
       set({ loading: false });
     }

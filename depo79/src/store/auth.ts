@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import Cookies from "js-cookie";
+import { useProfileStore } from './profile';
 
 interface User {
     name: string;
@@ -43,6 +44,7 @@ export const useAuthStore = create<AuthState>((set) => {
         logout: (callback?: () => void) => {
             Cookies.remove("authToken");
             Cookies.remove("user");
+            useProfileStore.getState().clearProfile(); // Clear profile data on logout
             set({ user: null, token: null, isAuthenticated: false });
             if (callback) callback();
         },

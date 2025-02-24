@@ -4,20 +4,40 @@ import Banner2 from "../assets/image 2.png";
 import BarangBaru from "../components/home/BarangBaru";
 import BarangRekomendasi from "../components/home/BarangRekomendasi";
 import ReviewScroll from "../components/home/ReviewScroll";
+import { useProfileStore } from "../store/profile";
+import { useAuthStore } from "../store/auth";
 
 const Home: React.FC = () => {
-  const [isProfileComplete, setIsProfileComplete] = useState(false);
+  const [isProfileComplete, setIsProfileComplete] = useState(true);
+  const { profile, fetchProfile } = useProfileStore();
+  const { token } = useAuthStore();
 
-  // Add your profile check logic here
   useEffect(() => {
-    // Replace this with your actual profile check logic
-    const checkProfile = () => {
-      const userProfile = localStorage.getItem('userProfile');
-      setIsProfileComplete(!!userProfile);
+    if (token) {
+      fetchProfile();
+    }
+  }, [token, fetchProfile]);
+
+  useEffect(() => {
+    const checkProfileComplete = () => {
+      if (!profile) {
+        setIsProfileComplete(false);
+        return;
+      }
+
+      const isComplete = 
+        profile.nama !== undefined && 
+        profile.nama !== "" && 
+        profile.nomorhp !== undefined && 
+        profile.nomorhp !== "" && 
+        profile.jeniskelamin !== undefined && 
+        profile.jeniskelamin !== "";
+
+      setIsProfileComplete(isComplete);
     };
-    
-    checkProfile();
-  }, []);
+
+    checkProfileComplete();
+  }, [profile]);
 
   return (
     <VStack mt={7} overflow={"hidden"} px={{ base: 4, md: 0 }}>
