@@ -1,11 +1,8 @@
 import { Server } from 'socket.io';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid'; // Add this dependency
+import { ChatMessage } from '../models/chat.model.js';
 
 let io;
 
-// Add debug helper
 const debug = (context, message, data = {}) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] [${context}]:`, message, JSON.stringify(data, null, 2));
@@ -14,7 +11,7 @@ const debug = (context, message, data = {}) => {
 export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173"], // Keep this the same since your frontend is on 5173
+      origin: ["http://localhost:5173"],
       methods: ["GET", "POST"],
       credentials: true
     }
@@ -58,47 +55,59 @@ export const initSocket = (server) => {
         members: Array.from(roomMembers || [])
       });
 
-      // Notify admins
       adminSockets.forEach(adminId => {
         io.to(adminId).emit('user_connected', roomId);
       });
     });
 
     socket.on('send_message', async (data) => {
-      debug('MESSAGE', `Message received`, {
-        type: data.type,
-        hasAttachment: !!data.file
+      debug('MESSAGE', `Message received from socket ${socket.id}`, {
+        messageData: data,
+        room: data.room,
+        sender: data.sender
       });
 
-      let messageData = { ...data };
-
-      // Handle file attachment if present
-      if (data.file) {
-        try {
-          const fileId = uuidv4();
-          const fileExt = data.file.name.split('.').pop();
-          const fileName = `${fileId}.${fileExt}`;
-          const filePath = join(process.cwd(), 'uploads', fileName);
-          
-          // Convert base64 to buffer and save
-          const fileBuffer = Buffer.from(data.file.data, 'base64');
-          await writeFile(filePath, fileBuffer);
-
-          // Add file info to message
-          messageData.attachment = {
-            id: fileId,
+      try {
+        // Create message document
+        const messageData = {
+          room: data.room,
+          content: data.content,
+          sender: data.sender,
+          senderName: data.senderName || 'Unknown',
+          timestamp: data.timestamp || new Date(),
+          file: data.file ? {
             name: data.file.name,
             type: data.file.type,
             size: data.file.size,
-            url: `/uploads/${fileName}`
-          };
-          delete messageData.file; // Remove raw file data
-        } catch (error) {
-          debug('ERROR', `File upload failed`, { error });
-        }
-      }
+            url: data.file.url
+          } : undefined
+        };
 
-      io.in(data.room).emit('receive_message', messageData);
+        console.log('Saving message to database:', messageData);
+
+        // Store message in MongoDB
+        const chatMessage = new ChatMessage(messageData);
+        const savedMessage = await chatMessage.save();
+        
+        console.log('Message saved successfully:', savedMessage);
+
+        // Broadcast to room
+        io.in(data.room).emit('receive_message', {
+          ...data,
+          _id: savedMessage._id
+        });
+        
+        debug('MESSAGE_SENT', `Message saved and broadcasted`, {
+          messageId: savedMessage._id,
+          room: data.room
+        });
+      } catch (error) {
+        console.error('Error saving message:', error);
+        debug('MESSAGE_ERROR', `Error saving message`, {
+          error: error.message,
+          stack: error.stack
+        });
+      }
     });
 
     socket.on('disconnect', () => {

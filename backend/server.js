@@ -16,10 +16,13 @@ import cartRoutes from "./routes/cart.route.js";
 import cors from 'cors';
 import checkoutRoute from "./routes/checkout.route.js";
 import { createServer } from 'http';
-import { initSocket } from './socket.js'; // Make sure path is correct
-import { uploadImage, getOptimizedImageUrl, deleteImage } from './services/cloudinary.service.js';
+import { initSocket } from './services/socket.service.js'; // Updated path
+import { uploadImage } from './services/cloudinary.service.js';
 import strukRoute from "./routes/struk.route.js";
 import rateLimit from 'express-rate-limit';
+import chatRoutes from "./routes/chat.route.js";
+import { ChatMessage } from './models/chat.model.js'; // Add this import
+import { scheduleCleanup } from './services/cleanup.service.js';
 
 // Fix directory path resolution for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -46,8 +49,10 @@ const staticLimiter = rateLimit({
 // Apply rate limiting to all routes
 app.use(limiter);
 
-// Initialize Socket.IO before routes
+// Initialize Socket.IO with debug message
+console.log('Initializing Socket.IO...');
 const io = initSocket(httpServer);
+console.log('Socket.IO initialized successfully');
 
 // Enable CORS with credentials
 app.use(cors({
@@ -72,6 +77,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/checkout", checkoutRoute);
 app.use("/api/struk", strukRoute);
+app.use("/api/chat", chatRoutes);
 
 if(process.env.NODE_ENV === 'production'){
   // Apply stricter rate limiting to static file serving
@@ -118,7 +124,26 @@ app.use((err, req, res, next) => {
 
 
 const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
-    connectDB();
-    console.log(`Server running on http://localhost:${PORT}`);
+httpServer.listen(PORT, async () => {
+    try {
+        await connectDB();
+        console.log('MongoDB connected successfully');
+        
+        // Initialize cleanup service
+        scheduleCleanup();
+        console.log('Message cleanup service initialized');
+        
+        try {
+            // Test database connection by trying to count chat messages
+            const count = await ChatMessage.countDocuments();
+            console.log(`Current chat messages in database: ${count}`);
+        } catch (countError) {
+            console.warn('Could not count chat messages:', countError.message);
+        }
+        
+        console.log(`Server running on http://localhost:${PORT}`);
+        console.log('Socket.IO is ready for connections');
+    } catch (error) {
+        console.error('Error during startup:', error);
+    }
 });
