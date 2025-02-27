@@ -50,10 +50,12 @@ jobs:
       # Create a clean deployment package
       - name: Create deployment directory
         run: |
-          # Create temp directory for deployment
+          # Create ALL necessary directories first
           mkdir -p deployment_package
+          mkdir -p deployment_package/depo79
+          mkdir -p deployment_package/depo79/dist
 
-      # Modify package.json for deployment
+      # Modify package.json files
       - name: Create deployment package.json
         run: |
           cat package.json | jq '.scripts.build = "echo Frontend already built"' | jq '.scripts.start = "node backend/server.js"' > deployment_package/package.json
@@ -63,24 +65,16 @@ jobs:
         run: |
           cat depo79/package.json | jq '.scripts.build = "echo Frontend already built - skipping tsc build"' > deployment_package/depo79/package.json
           
-      # Complete the deployment package and remove sharp
+      # Complete the deployment package
       - name: Copy deployment files and prepare for Azure
         run: |
-          # Copy ENTIRE backend directory with all subdirectories
+          # Copy backend directory with all subdirectories
           cp -r backend deployment_package/
           
-          # Debug: List files to verify complete copy
-          find deployment_package/backend -type f | sort
-          
-          # Create frontend directory structure
-          mkdir -p deployment_package/depo79/dist
+          # Copy frontend files
           cp -r depo79/dist/* deployment_package/depo79/dist/
           
-          # IMPORTANT: Copy and modify depo79 package.json file
-          cat depo79/package.json | jq '.scripts.build = "echo Frontend already built - skipping tsc build"' > deployment_package/depo79/package.json
-          
-          # Copy all root files needed
-          cp package.json deployment_package/
+          # Copy other required files
           cp package-lock.json deployment_package/
           cp .env deployment_package/
           
