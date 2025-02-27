@@ -89,6 +89,30 @@ jobs:
           # Create zip from clean directory
           zip -r ../deploy.zip .
           cd ..
+          
+          # Create Web.config for Windows App Service
+          echo '<?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <webSocket enabled="true" />
+              <handlers>
+                <add name="iisnode" path="backend/server.js" verb="*" modules="iisnode" />
+              </handlers>
+              <rewrite>
+                <rules>
+                  <rule name="backend">
+                    <match url="/*" />
+                    <action type="Rewrite" url="backend/server.js" />
+                  </rule>
+                </rules>
+              </rewrite>
+              <iisnode
+                nodeProcessCommandLine="node --experimental-modules --es-module-specifier-resolution=node"
+                watchedFiles="web.config;*.js"
+                loggingEnabled="true"
+              />
+            </system.webServer>
+          </configuration>' > deployment_package/web.config
 
       # Add a step to fix server.js
       - name: Fix ES module imports in server.js
@@ -107,4 +131,3 @@ jobs:
           slot-name: "production"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./deploy.zip
-          startup-command: "node --experimental-modules backend/server.js"
