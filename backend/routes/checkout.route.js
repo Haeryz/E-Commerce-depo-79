@@ -8,7 +8,7 @@ import {
     getCheckoutsByProfile,
     searchCheckouts
 } from "../controllers/checkout.controller.js";
-import upload, { compressImage } from '../middleware/upload.middleware.js';
+import upload from '../middleware/upload.middleware.js';
 
 const router = express.Router();
 
@@ -18,8 +18,8 @@ router.get('/profile/:profileId', getCheckoutsByProfile);
 router.get('/search/query', searchCheckouts);
 // Create checkout without bukti transfer
 router.post('/', createCheckout);
-// Separate endpoint for uploading bukti transfer
-router.post('/:id/bukti-transfer', upload.single('file'), compressImage, uploadBuktiTransfer);
+// Separate endpoint for uploading bukti transfer - removed compressImage middleware
+router.post('/:id/bukti-transfer', upload.single('file'), uploadBuktiTransfer);
 router.patch('/:id', updateCheckout);
 router.delete('/:id', deleteCheckout);
 
