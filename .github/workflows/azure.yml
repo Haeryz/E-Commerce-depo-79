@@ -61,71 +61,24 @@ jobs:
       # Complete the deployment package and remove sharp
       - name: Copy deployment files and prepare for Azure
         run: |
-          # Copy only necessary files
+          # Copy ENTIRE backend directory with all subdirectories
           cp -r backend deployment_package/
+          
+          # Debug: List files to verify complete copy
+          find deployment_package/backend -type f | sort
+          
+          # Create frontend directory and copy dist
           mkdir -p deployment_package/depo79/dist
           cp -r depo79/dist/* deployment_package/depo79/dist/
           
-          # Create a clean package.json file WITHOUT trailing commas
-          echo '{
-            "name": "e-commerce",
-            "version": "1.0.0",
-            "main": "index.js",
-            "type": "module",
-            "scripts": {
-              "build": "echo Frontend already built",
-              "start": "node backend/server.js"
-            },
-            "dependencies": {
-              "@chakra-ui/react": "^3.5.1",
-              "@emotion/react": "^11.14.0",
-              "@emotion/styled": "^11.14.0",
-              "axios": "^1.7.9",
-              "bcryptjs": "^2.4.3", 
-              "body-parser": "^1.20.3",
-              "boxicons": "^2.1.4",
-              "cloudinary": "^2.5.1",
-              "compression": "^1.7.5",
-              "cors": "^2.8.5",
-              "cross-env": "^7.0.3",
-              "csv-parser": "^3.2.0",
-              "dotenv": "^16.4.7",
-              "express": "^4.21.2",
-              "express-rate-limit": "^7.5.0",
-              "font-awesome": "^4.7.0",
-              "framer-motion": "^12.0.6",
-              "helmet": "^8.0.0",
-              "jsonwebtoken": "^9.0.2",
-              "mongodb": "^6.12.0",
-              "mongoose": "^8.9.5",
-              "morgan": "^1.10.0",
-              "multer": "^1.4.5-lts.1",
-              "nodemailer": "^6.9.16",
-              "nodemon": "^3.1.9",
-              "socket.io": "^4.8.1",
-              "uuid": "^11.0.5"
-            }
-          }' > deployment_package/package.json
-          
-          # Copy package-lock.json and .env
+          # Copy all root files needed
+          cp package.json deployment_package/
           cp package-lock.json deployment_package/
           cp .env deployment_package/
-          
-          # Create a valid depo79 package.json
-          mkdir -p deployment_package/depo79
-          echo '{
-            "name": "depo79",
-            "private": true,
-            "version": "0.0.0",
-            "type": "module"
-          }' > deployment_package/depo79/package.json
           
           # Add a .deployment file
           echo '[config]' > deployment_package/.deployment
           echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> deployment_package/.deployment
-          
-          # Debug: Check if package.json is valid
-          cat deployment_package/package.json | jq
           
           # Create zip from clean directory
           cd deployment_package

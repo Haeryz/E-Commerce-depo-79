@@ -25,6 +25,13 @@ import { ChatMessage } from './models/chat.model.js'; // Add this import
 import { scheduleCleanup } from './services/cleanup.service.js';
 import { URL } from 'url';
 
+// Add at the top of your file
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:');
+  console.error(err.message);
+  console.error(err.stack);
+});
+
 // Fix directory path resolution for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,6 +53,11 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+
+// At the beginning of your server startup
+console.log('Starting server with NODE_ENV:', process.env.NODE_ENV);
+console.log('Current directory:', process.cwd());
+console.log('Files in backend directory:', require('fs').readdirSync('./backend').join(', '));
 
 // Configure rate limiter
 const limiter = rateLimit({
