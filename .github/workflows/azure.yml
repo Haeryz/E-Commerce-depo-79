@@ -47,6 +47,11 @@ jobs:
           echo "IMAGE_STORAGE_SECRET=${{ secrets.IMAGE_STORAGE_SECRET }}" >> .env
           echo "FRONTEND_URL=https://internship-bngefpfzewbrd8dw.southeastasia-01.azurewebsites.net" >> .env
 
+      # Modify package.json for deployment
+      - name: Create deployment package.json
+        run: |
+          cat package.json | jq '.scripts.build = "echo Frontend already built"' | jq '.scripts.start = "node backend/server.js"' > deployment_package/package.json
+
       # Create a clean deployment package
       - name: Create clean deployment package
         run: |
@@ -57,7 +62,6 @@ jobs:
           cp -r backend deployment_package/
           mkdir -p deployment_package/depo79/dist
           cp -r depo79/dist deployment_package/depo79/
-          cp package.json deployment_package/
           cp package-lock.json deployment_package/
           cp .env deployment_package/
           
