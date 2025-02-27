@@ -23,11 +23,24 @@ import rateLimit from 'express-rate-limit';
 import chatRoutes from "./routes/chat.route.js";
 import { ChatMessage } from './models/chat.model.js'; // Add this import
 import { scheduleCleanup } from './services/cleanup.service.js';
+import { URL } from 'url';
 
 // Fix directory path resolution for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = dirname(__dirname); // go up one level to reach project root
+
+// Add this helper function to debug module resolution
+const resolveModule = (modulePath) => {
+  try {
+    const resolvedPath = path.resolve(rootDir, modulePath);
+    console.log(`Resolving module: ${modulePath} => ${resolvedPath}`);
+    return resolvedPath;
+  } catch (err) {
+    console.error(`Failed to resolve module: ${modulePath}`, err);
+    throw err;
+  }
+};
 
 dotenv.config();
 

@@ -59,24 +59,27 @@ jobs:
           cat package.json | jq '.scripts.build = "echo Frontend already built"' | jq '.scripts.start = "node backend/server.js"' > deployment_package/package.json
           
       # Complete the deployment package and remove sharp
-      - name: Copy deployment files and remove sharp
+      - name: Copy deployment files and prepare for Azure
         run: |
           # Copy only necessary files
           cp -r backend deployment_package/
           mkdir -p deployment_package/depo79/dist
-          cp -r depo79/dist deployment_package/depo79/
+          cp -r depo79/dist/* deployment_package/depo79/dist/
+          cp package.json deployment_package/
           cp package-lock.json deployment_package/
           cp .env deployment_package/
           
-          # Check if sharp exists and remove it (direct or nested dependencies)
+          # Fix package.json circular dependencies
           cd deployment_package
-          npm list sharp || echo "Sharp not directly installed"
+          cat package.json | jq '.dependencies."sharp" = undefined' | jq '.scripts.build = "echo Frontend already built"' | jq '.scripts.start = "node backend/server.js"' > temp.json && mv temp.json package.json
           
-          # Create package.json that explicitly excludes sharp
-          cat package.json | jq '.dependencies."sharp" = undefined' > temp.json && mv temp.json package.json
+          # Copy a fixed version of the frontend package.json without circular refs
+          mkdir -p depo79
+          echo '{"name":"depo79","private":true,"version":"0.0.0","type":"module"}' > depo79/package.json
           
-          # Create an npm ignore file to prevent sharp installation
-          echo "sharp" > .npmignore
+          # Add a .deployment file
+          echo '[config]' > .deployment
+          echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> .deployment
           
           # Create zip from clean directory
           zip -r ../deploy.zip .
