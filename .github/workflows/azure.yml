@@ -47,19 +47,19 @@ jobs:
           echo "IMAGE_STORAGE_SECRET=${{ secrets.IMAGE_STORAGE_SECRET }}" >> .env
           echo "FRONTEND_URL=https://internship-bngefpfzewbrd8dw.southeastasia-01.azurewebsites.net" >> .env
 
-      # Create a clean deployment package - MOVED THIS STEP EARLIER
+      # Create a clean deployment package
       - name: Create deployment directory
         run: |
           # Create temp directory for deployment
           mkdir -p deployment_package
 
-      # Modify package.json for deployment - NOW AFTER DIRECTORY CREATION
+      # Modify package.json for deployment
       - name: Create deployment package.json
         run: |
           cat package.json | jq '.scripts.build = "echo Frontend already built"' | jq '.scripts.start = "node backend/server.js"' > deployment_package/package.json
           
-      # Complete the deployment package
-      - name: Copy deployment files
+      # Complete the deployment package and remove sharp
+      - name: Copy deployment files and remove sharp
         run: |
           # Copy only necessary files
           cp -r backend deployment_package/
@@ -68,8 +68,17 @@ jobs:
           cp package-lock.json deployment_package/
           cp .env deployment_package/
           
-          # Create zip from clean directory
+          # Check if sharp exists and remove it (direct or nested dependencies)
           cd deployment_package
+          npm list sharp || echo "Sharp not directly installed"
+          
+          # Create package.json that explicitly excludes sharp
+          cat package.json | jq '.dependencies."sharp" = undefined' > temp.json && mv temp.json package.json
+          
+          # Create an npm ignore file to prevent sharp installation
+          echo "sharp" > .npmignore
+          
+          # Create zip from clean directory
           zip -r ../deploy.zip .
           cd ..
 
