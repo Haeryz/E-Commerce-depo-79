@@ -67,9 +67,12 @@ jobs:
           # Debug: List files to verify complete copy
           find deployment_package/backend -type f | sort
           
-          # Create frontend directory and copy dist
+          # Create frontend directory structure
           mkdir -p deployment_package/depo79/dist
           cp -r depo79/dist/* deployment_package/depo79/dist/
+          
+          # IMPORTANT: Copy depo79 package.json file
+          cp depo79/package.json deployment_package/depo79/
           
           # Copy all root files needed
           cp package.json deployment_package/
@@ -79,6 +82,30 @@ jobs:
           # Add a .deployment file
           echo '[config]' > deployment_package/.deployment
           echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> deployment_package/.deployment
+          
+          # Create Web.config for Azure
+          echo '<?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <webSocket enabled="true" />
+              <handlers>
+                <add name="iisnode" path="backend/server.js" verb="*" modules="iisnode" />
+              </handlers>
+              <rewrite>
+                <rules>
+                  <rule name="backend">
+                    <match url="/*" />
+                    <action type="Rewrite" url="backend/server.js" />
+                  </rule>
+                </rules>
+              </rewrite>
+              <iisnode
+                nodeProcessCommandLine="node --experimental-specifier-resolution=node"
+                watchedFiles="web.config;*.js"
+                loggingEnabled="true"
+              />
+            </system.webServer>
+          </configuration>' > deployment_package/web.config
           
           # Create zip from clean directory
           cd deployment_package
