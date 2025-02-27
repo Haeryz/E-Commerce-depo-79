@@ -58,6 +58,11 @@ jobs:
         run: |
           cat package.json | jq '.scripts.build = "echo Frontend already built"' | jq '.scripts.start = "node backend/server.js"' > deployment_package/package.json
           
+      # Modify depo79 package.json to prevent build failures
+      - name: Modify depo79 package.json
+        run: |
+          cat depo79/package.json | jq '.scripts.build = "echo Frontend already built - skipping tsc build"' > deployment_package/depo79/package.json
+          
       # Complete the deployment package and remove sharp
       - name: Copy deployment files and prepare for Azure
         run: |
@@ -71,17 +76,18 @@ jobs:
           mkdir -p deployment_package/depo79/dist
           cp -r depo79/dist/* deployment_package/depo79/dist/
           
-          # IMPORTANT: Copy depo79 package.json file
-          cp depo79/package.json deployment_package/depo79/
+          # IMPORTANT: Copy and modify depo79 package.json file
+          cat depo79/package.json | jq '.scripts.build = "echo Frontend already built - skipping tsc build"' > deployment_package/depo79/package.json
           
           # Copy all root files needed
           cp package.json deployment_package/
           cp package-lock.json deployment_package/
           cp .env deployment_package/
           
-          # Add a .deployment file
+          # Add a .deployment file with stronger setting
           echo '[config]' > deployment_package/.deployment
           echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> deployment_package/.deployment
+          echo 'WEBSITE_NODE_DEFAULT_VERSION=~20' >> deployment_package/.deployment
           
           # Create Web.config for Azure
           echo '<?xml version="1.0" encoding="utf-8"?>
@@ -111,6 +117,16 @@ jobs:
           cd deployment_package
           zip -r ../deploy.zip .
           cd ..
+
+      # Add a step to fix server.js
+      - name: Fix ES module imports in server.js
+        run: |
+          # Create a temporary fixed version of server.js
+          cat backend/server.js | sed 's/require(\x27fs\x27)/fs/g' > backend/server.js.fixed
+          mv backend/server.js.fixed backend/server.js
+          
+          # Add fs import at the top of the file
+          sed -i '1s/^/import fs from "fs";\n/' backend/server.js
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2

@@ -24,6 +24,7 @@ import chatRoutes from "./routes/chat.route.js";
 import { ChatMessage } from './models/chat.model.js'; // Add this import
 import { scheduleCleanup } from './services/cleanup.service.js';
 import { URL } from 'url';
+import fs from 'fs';
 
 // Add at the top of your file
 process.on('uncaughtException', (err) => {
@@ -57,7 +58,7 @@ const httpServer = createServer(app);
 // At the beginning of your server startup
 console.log('Starting server with NODE_ENV:', process.env.NODE_ENV);
 console.log('Current directory:', process.cwd());
-console.log('Files in backend directory:', require('fs').readdirSync('./backend').join(', '));
+console.log('Files in backend directory:', fs.readdirSync('./backend').join(', '));
 
 // Configure rate limiter
 const limiter = rateLimit({
