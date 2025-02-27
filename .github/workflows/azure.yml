@@ -84,34 +84,7 @@ jobs:
           cd deployment_package
           npm install --production
           
-          # Add a .deployment file with stronger setting
-          echo '[config]' > .deployment
-          echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> .deployment
-          echo 'WEBSITE_NODE_DEFAULT_VERSION=~20' >> .deployment
-          
-          # Create Web.config for Azure
-          echo '<?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <system.webServer>
-              <webSocket enabled="true" />
-              <handlers>
-                <add name="iisnode" path="backend/server.js" verb="*" modules="iisnode" />
-              </handlers>
-              <rewrite>
-                <rules>
-                  <rule name="backend">
-                    <match url="/*" />
-                    <action type="Rewrite" url="backend/server.js" />
-                  </rule>
-                </rules>
-              </rewrite>
-              <iisnode
-                nodeProcessCommandLine="node --experimental-specifier-resolution=node"
-                watchedFiles="web.config;*.js"
-                loggingEnabled="true"
-              />
-            </system.webServer>
-          </configuration>' > web.config
+          # DO NOT create web.config - we'll use a different approach
           
           # Create zip from clean directory
           zip -r ../deploy.zip .
@@ -134,3 +107,4 @@ jobs:
           slot-name: "production"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./deploy.zip
+          startup-command: "node --experimental-modules backend/server.js"
