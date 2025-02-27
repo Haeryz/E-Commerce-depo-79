@@ -72,16 +72,22 @@ jobs:
           cp -r backend deployment_package/
           
           # Copy frontend files
+          mkdir -p deployment_package/depo79/dist
           cp -r depo79/dist/* deployment_package/depo79/dist/
           
           # Copy other required files
+          cp package.json deployment_package/
           cp package-lock.json deployment_package/
           cp .env deployment_package/
           
+          # Install production dependencies inside deployment_package
+          cd deployment_package
+          npm install --production
+          
           # Add a .deployment file with stronger setting
-          echo '[config]' > deployment_package/.deployment
-          echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> deployment_package/.deployment
-          echo 'WEBSITE_NODE_DEFAULT_VERSION=~20' >> deployment_package/.deployment
+          echo '[config]' > .deployment
+          echo 'SCM_DO_BUILD_DURING_DEPLOYMENT=false' >> .deployment
+          echo 'WEBSITE_NODE_DEFAULT_VERSION=~20' >> .deployment
           
           # Create Web.config for Azure
           echo '<?xml version="1.0" encoding="utf-8"?>
@@ -105,10 +111,9 @@ jobs:
                 loggingEnabled="true"
               />
             </system.webServer>
-          </configuration>' > deployment_package/web.config
+          </configuration>' > web.config
           
           # Create zip from clean directory
-          cd deployment_package
           zip -r ../deploy.zip .
           cd ..
 
