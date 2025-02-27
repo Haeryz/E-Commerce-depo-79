@@ -58,6 +58,7 @@ console.log('Socket.IO initialized successfully');
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL || "http://localhost:5173",
+    /\.azurewebsites\.net$/,  // Allow Azure domains
     /\.loca\.lt$/  // Allow localtunnel domains
   ],
   credentials: true

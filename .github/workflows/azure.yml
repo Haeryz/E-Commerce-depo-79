@@ -3,7 +3,7 @@ name: Deploy to Azure Web App
 on:
   push:
     branches:
-      - main # or your default branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -16,17 +16,46 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20.x"
+          
+      # Add caching to speed up deployment
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies and build
         run: |
-          npm install
-          npm install --prefix depo79
+          npm ci
+          npm ci --prefix depo79
           npm run build --prefix depo79
+          
+      # Create a .env file with the needed variables
+      - name: Create environment file
+        run: |
+          echo "NODE_ENV=production" > .env
+          echo "PORT=8080" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "SITE_KEY=${{ secrets.SITE_KEY }}" >> .env
+          echo "CLOUDFLARE_SECRET_KEY=${{ secrets.CLOUDFLARE_SECRET_KEY }}" >> .env
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }}" >> .env
+          echo "IMAGE_STORAGE_KEY=${{ secrets.IMAGE_STORAGE_KEY }}" >> .env
+          echo "IMAGE_STORAGE_SECRET=${{ secrets.IMAGE_STORAGE_SECRET }}" >> .env
+          echo "FRONTEND_URL=https://internship-bngefpfzewbrd8dw.southeastasia-01.azurewebsites.net" >> .env
+
+      # Create a deployment-package excluding node_modules
+      - name: Create deployment package
+        run: |
+          zip -r deploy.zip . -x "node_modules/*" "depo79/node_modules/*" ".git/*"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "Internship"
+          app-name: "internship-bngefpfzewbrd8dw"
           slot-name: "production"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+          package: ./deploy.zip

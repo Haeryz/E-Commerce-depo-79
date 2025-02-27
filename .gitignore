@@ -7,11 +7,23 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
-dist
-dist-ssr
-*.local
+/node_modules
+/depo79/node_modules
+
+# Local env files
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build files
+# Note: Don't ignore dist in production deployment
+# dist
+# dist-ssr
+*.local
 
 # Editor directories and files
 .vscode/*
@@ -26,3 +38,7 @@ dist-ssr
 
 generate-admin-key.js
 backend/scripts
+
+# Azure deployment files
+/.deployment
+.deployment
