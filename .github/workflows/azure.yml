@@ -47,10 +47,23 @@ jobs:
           echo "IMAGE_STORAGE_SECRET=${{ secrets.IMAGE_STORAGE_SECRET }}" >> .env
           echo "FRONTEND_URL=https://internship-bngefpfzewbrd8dw.southeastasia-01.azurewebsites.net" >> .env
 
-      # Create a deployment-package excluding node_modules
-      - name: Create deployment package
+      # Create a clean deployment package
+      - name: Create clean deployment package
         run: |
-          zip -r deploy.zip . -x "node_modules/*" "depo79/node_modules/*" ".git/*"
+          # Create temp directory for deployment
+          mkdir -p deployment_package
+          
+          # Copy only necessary files
+          cp -r backend deployment_package/
+          cp -r depo79/dist deployment_package/depo79/
+          cp package.json deployment_package/
+          cp package-lock.json deployment_package/
+          cp .env deployment_package/
+          
+          # Create zip from clean directory
+          cd deployment_package
+          zip -r ../deploy.zip .
+          cd ..
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
