@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Checkout from "../models/checkout.model.js";  // Fixed typo
 import Cart from "../models/cart.model.js";
 import { uploadImage } from "../services/cloudinary.service.js";
-import { getIO } from '../socket.js';
+import { getIO } from '../services/socket.service.js'; // Updated import path
 import Struk from "../models/struk.model.js";
 
 export const getCheckout = async (req, res) => {

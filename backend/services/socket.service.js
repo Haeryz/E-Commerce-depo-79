@@ -2,6 +2,8 @@ import { Server } from 'socket.io';
 import { ChatMessage } from '../models/chat.model.js';
 
 let io;
+const adminSockets = new Set();
+const activeRooms = new Set();
 
 const debug = (context, message, data = {}) => {
   const timestamp = new Date().toISOString();
@@ -16,9 +18,6 @@ export const initSocket = (server) => {
       credentials: true
     }
   });
-
-  let adminSockets = new Set();
-  let activeRooms = new Set();
 
   io.on('connection', (socket) => {
     debug('CONNECTION', `Client connected: ${socket.id}`);
