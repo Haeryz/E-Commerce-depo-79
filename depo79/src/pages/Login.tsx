@@ -107,7 +107,7 @@ const Login: React.FC = () => {
 
                     <Box display="flex" justifyContent="center" width="100%">
                         <Turnstile
-                            sitekey={import.meta.env.VITE_TURNSTILE_SITEKEY}
+                            sitekey="0x4AAAAAAA5XlhkyPKe_seiW"
                             onSuccess={(token) => setTurnstileToken(token)}
                         />
                     </Box>
