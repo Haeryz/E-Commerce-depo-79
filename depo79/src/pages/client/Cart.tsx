@@ -175,7 +175,7 @@ function Cart() {
                                     }}
                                 >
                                     <Box 
-                                        p={{ base: 3, md: 4 }} 
+                                        p={{ base: 2, sm: 3, md: 4 }} 
                                         borderRadius={{ base: 'lg', md: 'xl' }} 
                                         border="1px" 
                                         borderColor={'gray.100'} 
@@ -185,28 +185,58 @@ function Cart() {
                                             _dark: { bg: 'gray.700' }
                                         }}
                                     >
-                                        <HStack justifyContent={'space-between'} w={'full'} flexDir={{ base: 'column', sm: 'row' }} gap={{ base: 3, md: 4 }}>
-                                            <Checkbox>
-                                                <HStack gap={{ base: 3, md: 6 }}>
-                                                    <Image src={item.product?.image} alt={item.product?.nama} w={{ base: '70px', sm: '80px', md: '100px' }} h={{ base: '70px', sm: '80px', md: '100px' }} objectFit="cover" borderRadius="xl" shadow="md" />
-                                                    <VStack align="start" gap={1}>
-                                                        <Text fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} fontWeight="bold">{item.product?.nama}</Text>
-                                                        <Text color={'blue.500'} fontSize="sm">
-                                                            {item.product?.stok > 0 ? 'In Stock' : 'Out of Stock'}
-                                                        </Text>
-                                                    </VStack>
-                                                </HStack>
-                                            </Checkbox>
-                                            <HStack gap={{ base: 2, md: 4 }} alignSelf='center' ml={{ base: 4, sm: 8, md: 0 }}>
+                                        <VStack
+                                            w="full"
+                                            align="stretch"
+                                            gap={{ base: 2, sm: 3, md: 4 }}
+                                        >
+                                            {/* Product Info */}
+                                            <HStack gap={{ base: 2, sm: 3, md: 6 }}>
+                                                <Checkbox>
+                                                    <HStack gap={{ base: 2, sm: 3, md: 6 }}>
+                                                        <Image 
+                                                            src={item.product?.image} 
+                                                            alt={item.product?.nama} 
+                                                            w={{ base: '60px', sm: '80px', md: '100px' }} 
+                                                            h={{ base: '60px', sm: '80px', md: '100px' }} 
+                                                            objectFit="cover" 
+                                                            borderRadius="xl" 
+                                                            shadow="md" 
+                                                        />
+                                                        <VStack align="start" gap={1} maxW={{ base: '150px', sm: '200px', md: 'full' }}>
+                                                            <Text 
+                                                                fontSize={{ base: 'xs', sm: 'sm', md: 'md' }} 
+                                                                fontWeight="bold"
+                                                            >
+                                                                {item.product?.nama}
+                                                            </Text>
+                                                            <Text 
+                                                                color={'blue.500'} 
+                                                                fontSize={{ base: 'xs', sm: 'sm' }}
+                                                            >
+                                                                {item.product?.stok > 0 ? 'In Stock' : 'Out of Stock'}
+                                                            </Text>
+                                                        </VStack>
+                                                    </HStack>
+                                                </Checkbox>
+                                            </HStack>
+
+                                            {/* Quantity and Price */}
+                                            <HStack 
+                                                justify="space-between" 
+                                                w="full"
+                                                gap={{ base: 2, sm: 4 }}
+                                                flexWrap={{ base: 'wrap', sm: 'nowrap' }}
+                                            >
                                                 <Box 
                                                     bg={'white'} 
                                                     _dark={{ bg: 'gray.700' }}
                                                     shadow="md" 
                                                     borderRadius="full" 
-                                                    px={4} 
+                                                    px={{ base: 2, sm: 4 }}
                                                     py={2}
                                                 >
-                                                    <HStack gap={4}>
+                                                    <HStack gap={{ base: 2, sm: 4 }}>
                                                         <IconButton
                                                             aria-label="Decrease quantity"
                                                             onClick={() => item.product && handleQuantityChange(item.product._id, Math.max(1, item.quantity - 1))}
@@ -235,22 +265,28 @@ function Cart() {
                                                         </IconButton>
                                                     </HStack>
                                                 </Box>
-                                                <IconButton
-                                                    aria-label="Delete item"
-                                                    variant="ghost"
-                                                    colorScheme="red"
-                                                    size="sm"
-                                                    onClick={() => item.product && handleRemoveItem(item.product._id)}
-                                                    disabled={!item.product}
-                                                >
-                                                    <FaTrashAlt />
-                                                </IconButton>
-                                            </HStack>
 
-                                            <Text fontWeight="" fontSize={{ base: 'sm', sm: 'md', md: 'lg' }} color="blue.600" mt={{ base: 2, md: 0 }}>
-                                                Rp.{((item.product?.harga_jual || 0) * (item.quantity || 0)).toLocaleString()}
-                                            </Text>
-                                        </HStack>
+                                                <HStack gap={2}>
+                                                    <Text 
+                                                        fontSize={{ base: 'xs', sm: 'sm', md: 'md' }} 
+                                                        color="blue.600"
+                                                        fontWeight="semibold"
+                                                    >
+                                                        Rp.{((item.product?.harga_jual || 0) * (item.quantity || 0)).toLocaleString()}
+                                                    </Text>
+                                                    <IconButton
+                                                        aria-label="Delete item"
+                                                        variant="ghost"
+                                                        colorScheme="red"
+                                                        size={{ base: 'xs', sm: 'sm' }}
+                                                        onClick={() => item.product && handleRemoveItem(item.product._id)}
+                                                        disabled={!item.product}
+                                                    >
+                                                        <FaTrashAlt />
+                                                    </IconButton>
+                                                </HStack>
+                                            </HStack>
+                                        </VStack>
                                     </Box>
                                 </motion.div>
                                 <Separator />
