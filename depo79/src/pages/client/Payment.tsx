@@ -22,6 +22,7 @@ const Payment = () => {
   }, [id, fetchCheckoutById]);
 
   const handlePaymentSelect = (method: 'transfer' | 'cod') => {
+    if (method === 'cod') return; // Prevent COD selection
     setSelectedPayment(method);
   };
 
@@ -98,6 +99,9 @@ const Payment = () => {
                       description="Cash on delivery"
                       w="100%"
                       checked={selectedPayment === 'cod'}
+                      disabled={true} // Add this prop
+                      opacity={0.5} // Add this to make it look disabled
+                      cursor="not-allowed" // Add this to show not-allowed cursor
                     />
                   </Box>
                 </HStack>
