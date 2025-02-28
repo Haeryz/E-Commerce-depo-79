@@ -53,11 +53,12 @@ const Login: React.FC = () => {
 
     return (
         <Box
-            mt={185}
-            mb={500}
-            w="md"
+            mt={{ base: "4", md: "185px" }}
+            mb={{ base: "4", md: "500px" }}
             mx="auto"
-            p={6}
+            width={{ base: "90%", sm: "80%", md: "60%", lg: "40%" }}
+            maxWidth="500px"
+            p={{ base: 4, md: 6 }}
             borderWidth={2}
             borderRadius="30px"
             border="1px solid #000"
