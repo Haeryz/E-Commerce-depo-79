@@ -88,12 +88,13 @@ function Cart() {
         <VStack
             align={'stretch'}
             w="full"
-            bg="gray.50"
+            bg={'gray.50'}
+            _dark={{ bg: 'gray.900' }}
             minH="100vh"
             py={{ base: 4, md: 8 }}
             px={{ base: 2, sm: 4, md: 6, lg: 8 }}
-            maxW={{ base: 'full', xl: '7xl' }}  // added
-            mx="auto"                           // added
+            maxW={{ base: 'full', xl: '7xl' }}
+            mx="auto"
         >
             <BreadcrumbRoot fontWeight="bold" ml={[4, 6, 10]} mb={5} alignSelf="flex-start">
                 <BreadcrumbCurrentLink fontSize={{ base: 'md', md: 'lg' }}>
@@ -112,7 +113,8 @@ function Cart() {
             >
                 {/* Cart Section */}
                 <Box
-                    bg="white"
+                    bg={'white'}
+                    _dark={{ bg: 'gray.800' }}
                     shadow={{ base: 'md', md: 'xl' }}
                     borderRadius={{ base: 'lg', md: '2xl' }}
                     w={{ base: '100%', lg: '70%' }}
@@ -123,7 +125,8 @@ function Cart() {
                             justifyContent={'space-between'}
                             w={'full'}
                             p={{ base: 4, sm: 6, md: 8 }}
-                            bg="gray.50"
+                            bg={'gray.50'}
+                            _dark={{ bg: 'gray.700' }}
                             flexWrap={{ base: 'wrap', sm: 'nowrap' }}
                         >
                             <Text
@@ -171,7 +174,17 @@ function Cart() {
                                         transition: 'opacity 0.2s'
                                     }}
                                 >
-                                    <Box p={{ base: 3, md: 4 }} borderRadius={{ base: 'lg', md: 'xl' }} border="1px" borderColor="gray.100" _hover={{ bg: 'gray.50' }}>
+                                    <Box 
+                                        p={{ base: 3, md: 4 }} 
+                                        borderRadius={{ base: 'lg', md: 'xl' }} 
+                                        border="1px" 
+                                        borderColor={'gray.100'} 
+                                        _dark={{ borderColor: 'gray.700' }}
+                                        _hover={{ 
+                                            bg: 'gray.50',
+                                            _dark: { bg: 'gray.700' }
+                                        }}
+                                    >
                                         <HStack justifyContent={'space-between'} w={'full'} flexDir={{ base: 'column', sm: 'row' }} gap={{ base: 3, md: 4 }}>
                                             <Checkbox>
                                                 <HStack gap={{ base: 3, md: 6 }}>
@@ -185,7 +198,14 @@ function Cart() {
                                                 </HStack>
                                             </Checkbox>
                                             <HStack gap={{ base: 2, md: 4 }} alignSelf='center' ml={{ base: 4, sm: 8, md: 0 }}>
-                                                <Box bg="white" shadow="md" borderRadius="full" px={4} py={2}>
+                                                <Box 
+                                                    bg={'white'} 
+                                                    _dark={{ bg: 'gray.700' }}
+                                                    shadow="md" 
+                                                    borderRadius="full" 
+                                                    px={4} 
+                                                    py={2}
+                                                >
                                                     <HStack gap={4}>
                                                         <IconButton
                                                             aria-label="Decrease quantity"
@@ -241,7 +261,8 @@ function Cart() {
 
                 {/* Summary Section */}
                 <Box
-                    bg="white"
+                    bg={'white'}
+                    _dark={{ bg: 'gray.800' }}
                     shadow={{ base: 'md', md: 'xl' }}
                     borderRadius={{ base: 'lg', md: '2xl' }}
                     w={{ base: '100%', lg: '30%' }}
@@ -262,16 +283,34 @@ function Cart() {
                         </Text>
 
                         <HStack justifyContent={'space-between'} w={'full'}>
-                            <Text color={'gray.600'} fontSize={{ base: 'sm', md: 'md' }}>Subtotal</Text>
+                            <Text 
+                                color={'gray.600'}
+                                _dark={{ color: 'gray.300' }}
+                                fontSize={{ base: 'sm', md: 'md' }}
+                            >
+                                Subtotal
+                            </Text>
                             <Text fontWeight="medium">Rp.{total.toLocaleString()}</Text>
                         </HStack>
 
                         <HStack justifyContent={'space-between'} w={'full'}>
-                            <Text color={'gray.600'} fontSize={{ base: 'sm', md: 'md' }}>Discount</Text>
+                            <Text 
+                                color={'gray.600'}
+                                _dark={{ color: 'gray.300' }}
+                                fontSize={{ base: 'sm', md: 'md' }}
+                            >
+                                Discount
+                            </Text>
                             <Text fontWeight="medium" color="green.500">- Rp.0</Text>
                         </HStack>
 
-                        <Box w="full" h="1px" bg="gray.100" my={2} />
+                        <Box 
+                            w="full" 
+                            h="1px" 
+                            bg={'gray.100'}
+                            _dark={{ bg: 'gray.700' }}
+                            my={2} 
+                        />
 
                         <HStack justifyContent={'space-between'} w={'full'}>
                             <Text fontWeight="bold">Total</Text>
