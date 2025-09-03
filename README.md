@@ -59,47 +59,99 @@ The application is now deployed and available online:
 
 Depo79 follows a modern MERN stack architecture with clear separation of concerns:
 
-```
-                  ┌─────────────────────┐
-                  │    Client Browser   │
-                  └──────────┬──────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────┐
-│                  Frontend                     │
-│  ┌─────────────┐  ┌────────────┐ ┌─────────┐  │
-│  │   React     │  │ TypeScript │ │  Vite   │  │
-│  └─────────────┘  └────────────┘ └─────────┘  │
-│  ┌─────────────┐  ┌────────────┐              │
-│  │   Zustand   │  │  Chakra UI │              │
-│  └─────────────┘  └────────────┘              │
-└───────────────────────┬───────────────────────┘
-                        │
-                        ▼
-┌───────────────────────────────────────────────┐
-│                  Backend                      │
-│  ┌─────────────┐  ┌────────────┐ ┌─────────┐  │
-│  │  Express.js │  │  Node.js   │ │Socket.IO│  │
-│  └─────────────┘  └────────────┘ └─────────┘  │
-│  ┌─────────────┐  ┌────────────┐              │
-│  │  JWT Auth   │  │  REST API  │              │
-│  └─────────────┘  └────────────┘              │
-└───────────────────────┬───────────────────────┘
-                        │
-                        ▼
-┌───────────────────────────────────────────────┐
-│                  Database                     │
-│               ┌─────────────────┐             │
-│               │     MongoDB     │             │
-│               └─────────────────┘             │
-└───────────────────────────────────────────────┘
+### 📊 Complete System Architecture Diagram
+
+For a comprehensive view of the entire system architecture, including detailed component interactions, user flows, and technology integrations, please refer to our detailed Mermaid diagrams in [ARCHITECTURE_DIAGRAM.md](./ARCHITECTURE_DIAGRAM.md).
+
+### High-Level Architecture Overview
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        BROWSER[Web Browser]
+        MOBILE[Mobile Device]
+    end
+
+    subgraph "Frontend - React TypeScript (Port 5173)"
+        subgraph "Pages"
+            CUSTOMER[Customer Pages<br/>Home, Products, Cart, Checkout]
+            ADMIN[Admin Pages<br/>Dashboard, Management, Analytics]
+        end
+        
+        subgraph "State & Services"
+            ZUSTAND[Zustand Stores<br/>Auth, Cart, Products]
+            SOCKET_CLIENT[Socket.IO Client<br/>Real-time Chat]
+            API[Axios API Client<br/>HTTP Requests]
+        end
+    end
+
+    subgraph "Backend - Node.js Express (Port 5000)"
+        subgraph "API Layer"
+            AUTH_API[Authentication API<br/>JWT, Login, Register]
+            PRODUCT_API[Product API<br/>CRUD Operations]
+            ORDER_API[Order API<br/>Checkout, Tracking]
+            CHAT_API[Chat API<br/>Real-time Messaging]
+        end
+        
+        subgraph "Services"
+            SOCKET_IO[Socket.IO Server<br/>Real-time Features]
+            CLOUDINARY[Cloudinary Service<br/>Image Upload]
+            EMAIL[Email Service<br/>Notifications]
+        end
+    end
+
+    subgraph "Database & Storage"
+        MONGODB[(MongoDB Atlas<br/>Users, Products, Orders)]
+        CLOUD_STORAGE[Cloudinary CDN<br/>Product Images]
+    end
+
+    subgraph "Deployment"
+        GITHUB[GitHub Repository<br/>Version Control]
+        ACTIONS[GitHub Actions<br/>CI/CD Pipeline]
+        AZURE[Azure Web App<br/>Production Hosting]
+    end
+
+    %% Connections
+    BROWSER --> CUSTOMER
+    MOBILE --> ADMIN
+    CUSTOMER --> ZUSTAND
+    ADMIN --> ZUSTAND
+    ZUSTAND --> API
+    API --> AUTH_API
+    API --> PRODUCT_API
+    API --> ORDER_API
+    SOCKET_CLIENT -.-> SOCKET_IO
+    CHAT_API -.-> SOCKET_IO
+    
+    AUTH_API --> MONGODB
+    PRODUCT_API --> MONGODB
+    ORDER_API --> MONGODB
+    CLOUDINARY --> CLOUD_STORAGE
+    
+    GITHUB --> ACTIONS
+    ACTIONS --> AZURE
+
+    %% Styling
+    classDef frontend fill:#87CEEB,stroke:#333,stroke-width:2px
+    classDef backend fill:#98FB98,stroke:#333,stroke-width:2px
+    classDef database fill:#FFB6C1,stroke:#333,stroke-width:2px
+    classDef deployment fill:#DDA0DD,stroke:#333,stroke-width:2px
+    
+    class CUSTOMER,ADMIN,ZUSTAND,API,SOCKET_CLIENT frontend
+    class AUTH_API,PRODUCT_API,ORDER_API,SOCKET_IO,CLOUDINARY backend
+    class MONGODB,CLOUD_STORAGE database
+    class GITHUB,ACTIONS,AZURE deployment
 ```
 
-- **Frontend**: React application with Zustand for state management and Chakra UI for styling
+### Architecture Components
+
+- **Frontend**: React application with TypeScript, Zustand for state management, and Chakra UI for styling
 - **Backend**: Node.js and Express server with REST API endpoints and Socket.IO for real-time features
 - **Database**: MongoDB for storing products, users, orders and other application data
-- **Authentication**: JWT-based authentication system
-- **Cloud Storage**: Cloudinary for product image storage
+- **Authentication**: JWT-based authentication system with role-based access control
+- **Real-time Features**: Socket.IO for instant messaging and live updates
+- **Cloud Storage**: Cloudinary for product image storage and optimization
+- **Deployment**: Azure Web App with automated CI/CD via GitHub Actions
 
 ## 🚀 Tech Stack
 
