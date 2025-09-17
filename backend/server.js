@@ -50,7 +50,7 @@ const resolveModule = (modulePath) => {
   }
 };
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const app = express();
 const httpServer = createServer(app);
@@ -58,7 +58,7 @@ const httpServer = createServer(app);
 // At the beginning of your server startup
 console.log('Starting server with NODE_ENV:', process.env.NODE_ENV);
 console.log('Current directory:', process.cwd());
-console.log('Files in backend directory:', fs.readdirSync('./backend').join(', '));
+console.log('Files in backend directory:', fs.readdirSync('.').join(', '));
 
 // Configure rate limiter
 const limiter = rateLimit({

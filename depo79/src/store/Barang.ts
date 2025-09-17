@@ -50,22 +50,28 @@ export const useProductStore = create<ProductState>((set) => ({
 
     fetchProducts: async (page = 1, limit = 10) => {
         set({ loading: true, error: null });
+        console.log('Starting fetchProducts with page:', page, 'limit:', limit);
 
         try {
-            const response = await fetch(`api/product?page=${page}&limit=${limit}`);
+            const response = await fetch(`/api/product?page=${page}&limit=${limit}`);
+            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error("Failed to fetch products");
             }
             const data = await response.json();
+            console.log('API response data:', data);
             if (data.success) {
+                console.log('Setting products:', data.products.length, 'items');
                 set({
                     products: data.products,
                     pagination: data.pagination,
                 });
             } else {
+                console.log('API returned error:', data.message);
                 set({ error: data.message });
             }
         } catch (error: unknown) {
+            console.log('Fetch error:', error);
             set({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
         } finally {
             set({ loading: false });
