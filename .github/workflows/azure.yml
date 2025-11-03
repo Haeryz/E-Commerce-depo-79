@@ -125,7 +125,7 @@ jobs:
           sed -i '1s/^/import fs from "fs";\n/' backend/server.js
 
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: "Internship"
           slot-name: "production"
